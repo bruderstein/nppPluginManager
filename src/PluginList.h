@@ -1,6 +1,6 @@
 #pragma once
 #include <tchar.h>
-
+#include "PluginInterface.h"
 #include "Plugin.h"
 #include "PluginManager.h"
 
@@ -11,6 +11,8 @@ class PluginList
 public:
 	PluginList(void);
 	~PluginList(void);
+
+	void init(NppData *nppData);
 
 	BOOL parsePluginFile(TCHAR *filename);
 	BOOL checkInstalledPlugins(TCHAR *nppDirectory);
@@ -29,7 +31,8 @@ private:
 
 
 
-	void		setInstalledVersion(tstring filename, Plugin* plugin);
+	BOOL		setInstalledVersion(tstring filename, Plugin* plugin);
 	tstring		getPluginName(tstring filename);
 
+	NppData *_nppData;
 };

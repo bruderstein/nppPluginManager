@@ -4,7 +4,6 @@
 
 #include "StaticDialog.h"
 #include "resource.h"
-#include "curl\curl.h"
 #include "PluginManager.h"
 #include "PluginList.h"
 #include "PluginListView.h"

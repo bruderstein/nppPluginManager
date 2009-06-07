@@ -511,8 +511,8 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 
 	// Download the plugins.xml from the repository
 	DownloadManager downloadManager;
-	downloadManager.getUrl("http://www.brotherstone.co.uk/npp/pm/plugins.xml", pluginConfig);
-	
+	downloadManager.getUrl("http://localhost:100/plugins.xml", pluginConfig);
+	dlg->_pluginList.init(&dlg->_nppData);	
 	// Parse it
 	dlg->_pluginList.parsePluginFile(pluginConfig);
 	

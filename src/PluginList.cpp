@@ -1,10 +1,16 @@
 #include "PluginList.h"
 #include "PluginManager.h"
+
 #include "tinyxml.h"
 #include <strsafe.h>
 #include <windows.h>
+#include <boost/shared_ptr.hpp>
+#include "InstallStep.h"
+#include "DownloadStep.h"
+#include "md5.h"
 
 using namespace std;
+using namespace boost;
 
 typedef BOOL (__cdecl * PFUNCISUNICODE)();
 
@@ -17,6 +23,10 @@ PluginList::~PluginList(void)
 {
 }
 
+void PluginList::init(NppData *nppData)
+{
+	_nppData = nppData;
+}
 
 
 BOOL PluginList::parsePluginFile(TCHAR *filename)
@@ -25,7 +35,14 @@ BOOL PluginList::parsePluginFile(TCHAR *filename)
 	char *cFilename = new char[len];
 	wcstombs(cFilename, filename, len);
 	TiXmlDocument doc(cFilename);
+	
 	doc.LoadFile();
+	if (doc.Error())
+	{
+		const char *er = doc.ErrorDesc();
+		int l = strlen(er);
+	}
+
 	TiXmlNode *pluginsDoc = doc.FirstChildElement("plugins");
 	if (pluginsDoc)
 	{
@@ -38,25 +55,25 @@ BOOL PluginList::parsePluginFile(TCHAR *filename)
 
 			plugin->setName(pluginNode->Attribute("name"));
 			 
-			TiXmlElement *unicodeUrlElement = pluginNode->FirstChildElement("unicodeURL");
-			if (unicodeUrlElement && unicodeUrlElement->FirstChild())
-				plugin->setUnicodeUrl(unicodeUrlElement->FirstChild()->Value());
-
-			TiXmlElement *ansiUrlElement = pluginNode->FirstChildElement("ansiURL");
-			if (ansiUrlElement && ansiUrlElement->FirstChild())
-				plugin->setAnsiUrl(ansiUrlElement->FirstChild()->Value());
+			BOOL available;
 
 			if (g_isUnicode)
 			{
 				TiXmlElement *versionUrlElement = pluginNode->FirstChildElement("unicodeVersion");
 				if (versionUrlElement && versionUrlElement->FirstChild())
+				{
 					plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
+					available = TRUE;
+				}
 			}
 			else 
 			{
 				TiXmlElement *versionUrlElement = pluginNode->FirstChildElement("ansiVersion");
 				if (versionUrlElement && versionUrlElement->FirstChild())
+				{
 					plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
+					available = TRUE;
+				}
 
 			}
 
@@ -68,8 +85,39 @@ BOOL PluginList::parsePluginFile(TCHAR *filename)
 			if (filenameUrlElement && filenameUrlElement->FirstChild())
 				plugin->setFilename(filenameUrlElement->FirstChild()->Value());
 			
-			_plugins[plugin->getName()] = plugin;
+			TiXmlElement *versionsUrlElement = pluginNode->FirstChildElement("versions");
 			
+			if (versionsUrlElement)
+			{
+				TiXmlElement *versionUrlElement = versionsUrlElement->FirstChildElement("version");
+				while(versionUrlElement)
+				{
+					plugin->addVersion(versionUrlElement->Attribute("md5"), PluginVersion(versionUrlElement->Attribute("number")));
+					versionUrlElement = (TiXmlElement *)versionsUrlElement->IterateChildren(versionUrlElement);
+				}
+			}
+
+			TiXmlElement *installElement = pluginNode->FirstChildElement("install");
+			if (installElement)
+			{
+				
+				TiXmlElement *installStepElement = installElement->FirstChildElement();
+				while (installStepElement)
+				{
+					if (!strcmp(installStepElement->Value(), "download"))
+					{
+						shared_ptr<DownloadStep> downloadStep(new DownloadStep(installStepElement->FirstChild()->Value()));
+						plugin->addInstallStep(downloadStep);
+					}
+					installStepElement = (TiXmlElement *)installElement->IterateChildren(installStepElement);
+				}
+			}
+
+			if (available)
+				_plugins[plugin->getName()] = plugin;
+			
+	
+
 			pluginNode = (TiXmlElement *)pluginsDoc->IterateChildren(pluginNode);
 		}
 	}
@@ -118,6 +166,15 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 					plugin->setFilename(pluginFilename);
 
 					setInstalledVersion(pluginFilename, plugin);
+					
+					TCHAR hashBuffer[(MD5LEN * 2) + 1];
+					
+					if (MD5::hash(pluginFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1))
+					{
+						tstring hash = hashBuffer;
+						plugin->setInstalledVersionFromHash(hash);
+					}
+				
 					if (plugin->getVersion() == plugin->getInstalledVersion())
 						_installedPlugins.push_back(plugin);
 					else if (plugin->getVersion() > plugin->getInstalledVersion())
@@ -132,6 +189,37 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 					plugin->setName(pluginName);
 					plugin->setFilename(pluginFilename);
 					setInstalledVersion(pluginFilename, plugin);
+					/*
+					TCHAR hashBuffer[(MD5LEN * 2) + 1];
+					tstring plugintext = _T("");
+					plugintext.append(_T("<plugin name=\""));
+					plugintext.append(pluginName);
+					plugintext.append(_T("\"><unicodeVersion>"));
+					plugintext.append(plugin->getInstalledVersion().getDisplayString());
+					plugintext.append(_T("</unicodeVersion>"));
+					plugintext.append(_T("<ansiVersion>"));
+					plugintext.append(plugin->getInstalledVersion().getDisplayString());
+					plugintext.append(_T("</ansiVersion>"));
+
+					if (plugin->getInstalledVersion() == PluginVersion(0,0,0,0))
+					{
+						plugintext.append(_T("<versions><version number=\"1.0.0.0\" md5=\""));
+						MD5::hash(pluginFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
+						plugintext.append(hashBuffer);
+						plugintext.append(_T("\"/></versions>"));
+					}
+					plugintext.append(_T("<sourceURL></sourceURL>"));
+					
+					plugintext.append(_T("<install><download></download><ansi></ansi><unicode></unicode></install>\r\n"));
+
+
+					plugintext.append(_T("</plugin>"));
+					char *dest = new char[plugintext.size() + 1];
+					wcstombs(dest, plugintext.c_str(), plugintext.size() + 1);
+					::SendMessage(_nppData->_scintillaMainHandle, SCI_INSERTTEXT, 0, reinterpret_cast<LPARAM>(dest));
+					*/
+					plugin->setDescription("Unknown plugin");
+
 					_installedPlugins.push_back(plugin);
 				}
 
@@ -174,11 +262,23 @@ tstring PluginList::getPluginName(tstring pluginFilename)
 			if (pluginName)
 			{
 				tstring tpluginName = pluginName;
+				tstring::size_type ampPosition = tpluginName.find(_T("&"));
+				while(ampPosition != tstring::npos)
+				{
+					tpluginName.replace(ampPosition, 1, _T(""));
+					ampPosition = tpluginName.find(_T("&"));
+				}
+
+				::FreeLibrary(pluginInstance);
+				
 				return tpluginName;
 			}
+
+			::FreeLibrary(pluginInstance);
 		}
 		else
 		{
+			::FreeLibrary(pluginInstance);
 			throw tstring(_T("Plugin name call not defined"));
 		}
 	}
@@ -189,10 +289,14 @@ tstring PluginList::getPluginName(tstring pluginFilename)
 	
 }
 
-void PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
+BOOL PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 {
 	DWORD handle;
 	DWORD bufferSize = ::GetFileVersionInfoSize(pluginFilename.c_str(), &handle);
+	
+	if (bufferSize <= 0) 
+		return FALSE;
+
 	unsigned char* buffer = new unsigned char[bufferSize];
 	::GetFileVersionInfo(pluginFilename.c_str(), handle, bufferSize, buffer);
 	
@@ -220,7 +324,7 @@ void PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 
 		if (FAILED(hr))
 		{
-			return;
+			return FALSE;
 		}
 		else
 		{
@@ -229,9 +333,15 @@ void PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 			::VerQueryValue(buffer, subBlock, reinterpret_cast<LPVOID *>(&fileVersion), &fileVersionLength);
 
 			plugin->setInstalledVersion(PluginVersion(fileVersion));
-
+			
 		}
 	}
+	else
+	{
+		return FALSE;
+	}
+
+	return TRUE;
 
 
 }

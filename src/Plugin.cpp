@@ -2,7 +2,9 @@
 #include <tchar.h>
 #include <string>
 
+
 using namespace std;
+using namespace boost;
 
 
 Plugin::Plugin(void)
@@ -65,7 +67,13 @@ void Plugin::setInstalledVersion(PluginVersion &version)
 	_isInstalled = TRUE;
 }
 
-
+void Plugin::setInstalledVersionFromHash(tstring &hash)
+{
+	if (_versionMap.find(hash) != _versionMap.end())
+	{
+		_installedVersion = _versionMap[hash];
+	}
+}
 
 /* Getters */
 tstring& Plugin::getAnsiUrl()
@@ -112,7 +120,18 @@ BOOL Plugin::isInstalled()
 	return _isInstalled;
 }
 
+void Plugin::addVersion(const char* hash, PluginVersion &version)
+{
+	tstring *hashString = new tstring;
+	setTstring(hash, (*hashString));
 
+	_versionMap[(*hashString)] = PluginVersion(version);
+}
+
+void Plugin::addInstallStep(shared_ptr<InstallStep> step)
+{
+	_installSteps.push_back(step);
+}
 
 
 void Plugin::setTstring(const char *src, tstring &dest)

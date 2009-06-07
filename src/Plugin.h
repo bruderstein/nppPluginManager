@@ -3,8 +3,13 @@
 
 #include <windows.h>
 #include <string>
+#include <map>
+#include <list>
+#include <memory>
 #include "tstring.h"
 #include "PluginVersion.h"
+#include "InstallStep.h"
+#include <boost/shared_ptr.hpp>
 
 class Plugin
 {
@@ -22,7 +27,9 @@ public:
 	void	setFilename		(const char* filename);
 	void	setFilename		(tstring filename);
 	void	setInstalledVersion(PluginVersion &version);
-	
+	void	setInstalledVersionFromHash(tstring &hash);
+
+
 	/* Getters */
 	tstring&		getName();
 	tstring&		getUnicodeUrl();
@@ -35,6 +42,8 @@ public:
 
 	/* General methods */
 	BOOL			isInstalled();
+	void			addVersion(const char* hash, PluginVersion &version);
+	void			addInstallStep(boost::shared_ptr<InstallStep> step);
 
 private:
 	tstring					_name;
@@ -46,9 +55,11 @@ private:
 	PluginVersion			_installedVersion;
 	//DependencyContainer	_dependencies;
 	BOOL					_isInstalled;
-
+	std::map<tstring, PluginVersion>  _versionMap;
 	/* TCHAR Conversion function */
 	void   setTstring(const char *src, tstring &dest);
+
+	std::list<boost::shared_ptr<InstallStep> >	_installSteps;
 };
 
 #endif
