@@ -17,14 +17,18 @@ public:
 	Plugin(void);
     ~Plugin(void);
 
+	enum InstallStatus {
+		INSTALL_SUCCESS,
+		INSTALL_NEEDRESTART,
+		INSTALL_FAIL
+	};
+
 	/* Setters */
-	void	setName			(const char* name);
+	void	setName			(const TCHAR* name);
 	void	setName			(tstring name);
-    void	setUnicodeUrl	(const char* unicodeUrl);
-	void	setAnsiUrl		(const char* ansiUrl);
-	void	setVersion	(PluginVersion &version);
-	void	setDescription	(const char* description);
-	void	setFilename		(const char* filename);
+    void	setVersion	(PluginVersion &version);
+	void	setDescription	(const TCHAR* description);
+	void	setFilename		(const TCHAR* filename);
 	void	setFilename		(tstring filename);
 	void	setInstalledVersion(PluginVersion &version);
 	void	setInstalledVersionFromHash(tstring &hash);
@@ -32,8 +36,6 @@ public:
 
 	/* Getters */
 	tstring&		getName();
-	tstring&		getUnicodeUrl();
-	tstring&		getAnsiUrl();
 	PluginVersion	getVersion();
 	tstring&		getDescription();
 	tstring&		getFilename();
@@ -42,8 +44,9 @@ public:
 
 	/* General methods */
 	BOOL			isInstalled();
-	void			addVersion(const char* hash, PluginVersion &version);
+	void			addVersion(const TCHAR* hash, PluginVersion &version);
 	void			addInstallStep(boost::shared_ptr<InstallStep> step);
+	InstallStatus   install();
 
 private:
 	tstring					_name;
@@ -55,11 +58,15 @@ private:
 	PluginVersion			_installedVersion;
 	//DependencyContainer	_dependencies;
 	BOOL					_isInstalled;
+
+	
 	std::map<tstring, PluginVersion>  _versionMap;
 	/* TCHAR Conversion function */
 	void   setTstring(const char *src, tstring &dest);
 
-	std::list<boost::shared_ptr<InstallStep> >	_installSteps;
+	typedef std::list<boost::shared_ptr<InstallStep> > InstallStepContainer;
+
+	InstallStepContainer	_installSteps;
 };
 
 #endif

@@ -14,7 +14,7 @@ public:
 
 	void init(NppData *nppData);
 
-	BOOL parsePluginFile(TCHAR *filename);
+	BOOL parsePluginFile(CONST TCHAR *filename);
 	BOOL checkInstalledPlugins(TCHAR *nppDirectory);
 	PluginListContainer& getInstalledPlugins();
 	PluginListContainer& getUpdateablePlugins();

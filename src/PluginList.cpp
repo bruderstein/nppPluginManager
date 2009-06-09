@@ -29,37 +29,37 @@ void PluginList::init(NppData *nppData)
 }
 
 
-BOOL PluginList::parsePluginFile(TCHAR *filename)
+BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 {
-	int len = _tcslen(filename) + 2;
+	/*int len = _tcslen(filename) + 2;
 	char *cFilename = new char[len];
 	wcstombs(cFilename, filename, len);
-	TiXmlDocument doc(cFilename);
+	*/
+	TiXmlDocument doc(filename);
 	
 	doc.LoadFile();
 	if (doc.Error())
 	{
-		const char *er = doc.ErrorDesc();
-		int l = strlen(er);
+		return FALSE;
 	}
 
-	TiXmlNode *pluginsDoc = doc.FirstChildElement("plugins");
+	TiXmlNode *pluginsDoc = doc.FirstChildElement(_T("plugins"));
 	if (pluginsDoc)
 	{
-		TiXmlElement *pluginNode = pluginsDoc->FirstChildElement("plugin");
+		TiXmlElement *pluginNode = pluginsDoc->FirstChildElement(_T("plugin"));
 		Plugin *plugin;
 
 		while(pluginNode)
 		{
 			plugin = new Plugin();
 
-			plugin->setName(pluginNode->Attribute("name"));
+			plugin->setName(pluginNode->Attribute(_T("name")));
 			 
-			BOOL available;
+			BOOL available = FALSE;
 
 			if (g_isUnicode)
 			{
-				TiXmlElement *versionUrlElement = pluginNode->FirstChildElement("unicodeVersion");
+				TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("unicodeVersion"));
 				if (versionUrlElement && versionUrlElement->FirstChild())
 				{
 					plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
@@ -68,7 +68,7 @@ BOOL PluginList::parsePluginFile(TCHAR *filename)
 			}
 			else 
 			{
-				TiXmlElement *versionUrlElement = pluginNode->FirstChildElement("ansiVersion");
+				TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("ansiVersion"));
 				if (versionUrlElement && versionUrlElement->FirstChild())
 				{
 					plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
@@ -77,34 +77,34 @@ BOOL PluginList::parsePluginFile(TCHAR *filename)
 
 			}
 
-			TiXmlElement *descriptionUrlElement = pluginNode->FirstChildElement("description");
+			TiXmlElement *descriptionUrlElement = pluginNode->FirstChildElement(_T("description"));
 			if (descriptionUrlElement && descriptionUrlElement->FirstChild())
 				plugin->setDescription(descriptionUrlElement->FirstChild()->Value());
 
-			TiXmlElement *filenameUrlElement = pluginNode->FirstChildElement("filename");
+			TiXmlElement *filenameUrlElement = pluginNode->FirstChildElement(_T("filename"));
 			if (filenameUrlElement && filenameUrlElement->FirstChild())
 				plugin->setFilename(filenameUrlElement->FirstChild()->Value());
 			
-			TiXmlElement *versionsUrlElement = pluginNode->FirstChildElement("versions");
+			TiXmlElement *versionsUrlElement = pluginNode->FirstChildElement(_T("versions"));
 			
 			if (versionsUrlElement)
 			{
-				TiXmlElement *versionUrlElement = versionsUrlElement->FirstChildElement("version");
+				TiXmlElement *versionUrlElement = versionsUrlElement->FirstChildElement(_T("version"));
 				while(versionUrlElement)
 				{
-					plugin->addVersion(versionUrlElement->Attribute("md5"), PluginVersion(versionUrlElement->Attribute("number")));
+					plugin->addVersion(versionUrlElement->Attribute(_T("md5")), PluginVersion(versionUrlElement->Attribute(_T("number"))));
 					versionUrlElement = (TiXmlElement *)versionsUrlElement->IterateChildren(versionUrlElement);
 				}
 			}
 
-			TiXmlElement *installElement = pluginNode->FirstChildElement("install");
+			TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
 			if (installElement)
 			{
 				
 				TiXmlElement *installStepElement = installElement->FirstChildElement();
 				while (installStepElement)
 				{
-					if (!strcmp(installStepElement->Value(), "download"))
+					if (!_tcscmp(installStepElement->Value(), _T("download")) && installStepElement->FirstChild())
 					{
 						shared_ptr<DownloadStep> downloadStep(new DownloadStep(installStepElement->FirstChild()->Value()));
 						plugin->addInstallStep(downloadStep);
@@ -126,7 +126,10 @@ BOOL PluginList::parsePluginFile(TCHAR *filename)
 
 BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 {
-	tstring pluginsFullPathFilter = pluginPath;
+	tstring pluginsFullPathFilter;
+	
+	pluginsFullPathFilter.append(pluginPath);
+
 	pluginsFullPathFilter += _T("\\plugins\\*.dll");
 
 	WIN32_FIND_DATA foundData;
@@ -218,7 +221,7 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 					wcstombs(dest, plugintext.c_str(), plugintext.size() + 1);
 					::SendMessage(_nppData->_scintillaMainHandle, SCI_INSERTTEXT, 0, reinterpret_cast<LPARAM>(dest));
 					*/
-					plugin->setDescription("Unknown plugin");
+					plugin->setDescription(_T("Unknown plugin"));
 
 					_installedPlugins.push_back(plugin);
 				}

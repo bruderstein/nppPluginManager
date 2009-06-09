@@ -86,6 +86,21 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 				return FALSE;
 		}
 
+		case WM_COMMAND:
+		{
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+
+			switch(LOWORD(wParam))
+			{
+				case IDC_BUTTONINSTALL:
+				{
+					dlg->_availableListView.getCurrentPlugin()->install();
+					break;
+				}
+			}
+			break;
+		}
+
 	}
 	return FALSE;
 }
@@ -506,15 +521,19 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 	// Work out the path of the Plugins.xml destinatino (in config dir)
 	TCHAR pluginConfig[MAX_PATH];
 	::SendMessage(dlg->_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
-	_tcscat(pluginConfig, _T("\\PluginManagerPlugins.xml"));
+	
+	tstring pluginsListFilename(pluginConfig);
+	pluginsListFilename.append(_T("\\PluginManagerPlugins.xml"));
+		
 	
 
 	// Download the plugins.xml from the repository
 	DownloadManager downloadManager;
-	downloadManager.getUrl("http://localhost:100/plugins.xml", pluginConfig);
+	tstring contentType;
+	downloadManager.getUrl(_T("http://localhost:100/plugins.xml"), pluginsListFilename, contentType);
 	dlg->_pluginList.init(&dlg->_nppData);	
 	// Parse it
-	dlg->_pluginList.parsePluginFile(pluginConfig);
+	dlg->_pluginList.parsePluginFile(pluginsListFilename.c_str());
 	
 	// Check for what is installed
 	TCHAR nppDirectory[MAX_PATH];

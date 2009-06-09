@@ -21,7 +21,7 @@ public:
 	void	setList(PluginListContainer &list);
 	void	setMessage(TCHAR *msg);
 	LRESULT notify(WPARAM wParam, LPARAM lParam);
-
+	Plugin* getCurrentPlugin();
 
 
 	
@@ -38,7 +38,7 @@ private:
 	/* Private methods */
 	void	initColumns(void);
 	int		getCurrentSelectedIndex();
-	Plugin* getCurrentPlugin();
+
 
 	int _nVersionColumns;
 	VERSIONCOLUMN* _columns;

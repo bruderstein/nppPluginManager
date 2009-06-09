@@ -9,6 +9,7 @@ using namespace boost;
 
 Plugin::Plugin(void)
 {
+	_isInstalled = FALSE;
 }
 
 Plugin::~Plugin(void)
@@ -19,19 +20,14 @@ Plugin::~Plugin(void)
 
 /* Setters */
 
-void Plugin::setAnsiUrl(const char* ansiUrl)
+void Plugin::setDescription(const TCHAR* description)
 {
-	setTstring(ansiUrl, _ansiUrl);
+	_description = description; 
 }
 
-void Plugin::setDescription(const char* description)
+void Plugin::setFilename(const TCHAR* filename)
 {
-	setTstring(description, _description);
-}
-
-void Plugin::setFilename(const char* filename)
-{
-	setTstring(filename, _filename);
+	_filename = filename;;
 }
 
 void Plugin::setFilename(tstring filename)
@@ -39,9 +35,9 @@ void Plugin::setFilename(tstring filename)
 	_filename = filename;
 }
 
-void Plugin::setName(const char *name)
+void Plugin::setName(const TCHAR* name)
 {
-	setTstring(name, _name);
+	_name = name;
 }
 
 void Plugin::setName(tstring name)
@@ -49,10 +45,6 @@ void Plugin::setName(tstring name)
 	_name = name;
 }
 
-void Plugin::setUnicodeUrl(const char *unicodeUrl)
-{
-	setTstring(unicodeUrl, _unicodeUrl);
-}
 
 void Plugin::setVersion(PluginVersion &version)
 {
@@ -73,13 +65,10 @@ void Plugin::setInstalledVersionFromHash(tstring &hash)
 	{
 		_installedVersion = _versionMap[hash];
 	}
+	_isInstalled = TRUE;
 }
 
 /* Getters */
-tstring& Plugin::getAnsiUrl()
-{
-	return _ansiUrl;
-}
 
 tstring& Plugin::getDescription()
 {
@@ -94,11 +83,6 @@ tstring& Plugin::getFilename()
 tstring& Plugin::getName()
 {
 	return _name;
-}
-
-tstring& Plugin::getUnicodeUrl()
-{
-	return _unicodeUrl;
 }
 
 
@@ -120,10 +104,10 @@ BOOL Plugin::isInstalled()
 	return _isInstalled;
 }
 
-void Plugin::addVersion(const char* hash, PluginVersion &version)
+void Plugin::addVersion(const TCHAR* hash, PluginVersion &version)
 {
 	tstring *hashString = new tstring;
-	setTstring(hash, (*hashString));
+	*hashString = hash;
 
 	_versionMap[(*hashString)] = PluginVersion(version);
 }
@@ -131,6 +115,19 @@ void Plugin::addVersion(const char* hash, PluginVersion &version)
 void Plugin::addInstallStep(shared_ptr<InstallStep> step)
 {
 	_installSteps.push_back(step);
+}
+
+
+Plugin::InstallStatus Plugin::install()
+{
+	InstallStatus status = INSTALL_SUCCESS;
+
+	InstallStepContainer::iterator stepIterator = _installSteps.begin();
+	while (stepIterator != _installSteps.end())
+	{
+		++stepIterator;
+	}
+	return status;
 }
 
 
