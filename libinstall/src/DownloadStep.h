@@ -10,13 +10,13 @@
 class DownloadStep : public InstallStep
 {
 public:
-	DownloadStep(const char* url);
+	DownloadStep(const TCHAR* url);
 	~DownloadStep() {};
 	
 	BOOL Perform(tstring& basePath);
 
 private:
-	std::string	_url;
+	tstring	_url;
 };
 
 #endif
