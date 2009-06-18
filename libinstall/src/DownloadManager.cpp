@@ -1,7 +1,12 @@
 #include "DownloadManager.h"
 #include "Common.h"
-
+#include <boost/shared_ptr.hpp>
+#include "WcharMbcsConverter.h"
 #include "curl/curl.h"
+
+using namespace std;
+using namespace boost;
+
 
 DownloadManager::DownloadManager(void)
 {
@@ -17,21 +22,20 @@ DownloadManager::~DownloadManager(void)
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType)
 {
-#ifdef _UNICODE
-	WcharMbcsConvertor *wcharConverter = WcharMbcsConvertor::getInstance();
-	const char *charUrl = wcharConverter->wchar2char(url, 65001);
-	curl_easy_setopt(_curl, CURLOPT_URL, charUrl);
-	delete[] charUrl;
-#else
-	curl_easy_setopt(_curl, CURLOPT_URL, url);
-#endif
+	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
+	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
+
 	FILE *fp = _tfopen(filename.c_str(), _T("wb"));
 	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteCallback);
 	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, fp);
 	curl_easy_setopt(_curl, CURLOPT_HEADERDATA, &contentType);
-	curl_easy_setopt(_curl, CURLOPT_HEADERFUNCTION, DownloadManager::curlHeaderCallback);
 	CURLcode code = curl_easy_perform(_curl);
 	
+	// Get the content type
+	char contentTypeBuffer[1024];
+	CURLcode contentTypeCode = curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, contentTypeBuffer);
+	shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
+	contentType = tContentTypeBuffer.get();
 	fclose(fp);
 	
 	if (0 == code)

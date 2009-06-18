@@ -3,7 +3,7 @@
 #include "PluginInterface.h"
 #include "Plugin.h"
 #include "PluginManager.h"
-
+#include "tinyxml.h"
 
 
 class PluginList
@@ -30,7 +30,7 @@ private:
 
 
 
-
+    void        addInstallSteps(Plugin* plugin, TiXmlElement* installElement);
 	BOOL		setInstalledVersion(tstring filename, Plugin* plugin);
 	tstring		getPluginName(tstring filename);
 

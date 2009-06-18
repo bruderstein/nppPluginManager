@@ -118,13 +118,15 @@ void Plugin::addInstallStep(shared_ptr<InstallStep> step)
 }
 
 
-Plugin::InstallStatus Plugin::install()
+Plugin::InstallStatus Plugin::install(tstring& basePath)
 {
 	InstallStatus status = INSTALL_SUCCESS;
 
 	InstallStepContainer::iterator stepIterator = _installSteps.begin();
+
 	while (stepIterator != _installSteps.end())
 	{
+		(*stepIterator)->Perform(basePath);
 		++stepIterator;
 	}
 	return status;

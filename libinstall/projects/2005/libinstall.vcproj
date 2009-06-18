@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/NODEFAULTLIB:library"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\libcurl\include;..\..\src;..\..\src\miniunzip"
+				AdditionalIncludeDirectories="..\..\src\libcurl\include;..\..\src;..\..\src\miniunzip;..\..\src\tinyxml"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -160,6 +160,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\DirectLinkSearch.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\DownloadManager.cpp"
 				>
 			</File>
@@ -168,7 +172,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\FileBuffer.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\InstallStep.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\InstallStepFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\WcharMbcsConverter.cpp"
 				>
 			</File>
 			<Filter
@@ -176,6 +192,26 @@
 				>
 				<File
 					RelativePath="..\..\src\miniunzip\unzip.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="TinyXml"
+				>
+				<File
+					RelativePath="..\..\src\tinyxml\tinystr.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\tinyxml\tinyxml.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\tinyxml\tinyxmlerror.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\tinyxml\tinyxmlparser.cpp"
 					>
 				</File>
 			</Filter>
@@ -194,6 +230,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\DirectLinkSearch.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\DownloadManager.h"
 				>
 			</File>
@@ -202,11 +242,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\FileBuffer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\InstallStep.h"
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\InstallStepFactory.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\tstring.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\WcharMbcsConverter.h"
 				>
 			</File>
 			<Filter
@@ -250,6 +302,18 @@
 				</File>
 				<File
 					RelativePath="..\..\src\miniunzip\zlib.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="TinyXml"
+				>
+				<File
+					RelativePath="..\..\src\tinyxml\tinystr.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\tinyxml\tinyxml.h"
 					>
 				</File>
 			</Filter>

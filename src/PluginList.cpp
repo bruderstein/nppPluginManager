@@ -7,6 +7,7 @@
 #include <boost/shared_ptr.hpp>
 #include "InstallStep.h"
 #include "DownloadStep.h"
+#include "InstallStepFactory.h"
 #include "md5.h"
 
 using namespace std;
@@ -98,20 +99,11 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 			}
 
 			TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
-			if (installElement)
-			{
-				
-				TiXmlElement *installStepElement = installElement->FirstChildElement();
-				while (installStepElement)
-				{
-					if (!_tcscmp(installStepElement->Value(), _T("download")) && installStepElement->FirstChild())
-					{
-						shared_ptr<DownloadStep> downloadStep(new DownloadStep(installStepElement->FirstChild()->Value()));
-						plugin->addInstallStep(downloadStep);
-					}
-					installStepElement = (TiXmlElement *)installElement->IterateChildren(installStepElement);
-				}
-			}
+			
+			addInstallSteps(plugin, installElement);
+			
+			
+			
 
 			if (available)
 				_plugins[plugin->getName()] = plugin;
@@ -123,6 +115,41 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 	}
 	return TRUE;
 }
+
+void PluginList::addInstallSteps(Plugin* plugin, TiXmlElement* installElement)
+{
+	if (!installElement)
+		return;
+
+	TiXmlElement *installStepElement = installElement->FirstChildElement();
+	while (installStepElement)
+	{
+		// If it is a unicode tag, then only process the contents if it's a unicode N++
+		// or if it's an ansi tag, then only process the contents if it's an ansi N++
+		if ((g_isUnicode 
+			&& !_tcscmp(installStepElement->Value(), _T("unicode")) 
+			&& installStepElement->FirstChild())
+			||
+			(!g_isUnicode
+			&& !_tcscmp(installStepElement->Value(), _T("ansi")) 
+			&& installStepElement->FirstChild()))
+		{
+			addInstallSteps(plugin, installStepElement);
+		}
+		else 
+		{
+			shared_ptr<InstallStep> installStep = InstallStepFactory::create(installStepElement);
+			if (installStep.get()) 
+				plugin->addInstallStep(installStep);
+
+		}
+
+
+		
+		installStepElement = (TiXmlElement *)installElement->IterateChildren(installStepElement);
+	}
+}
+
 
 BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 {

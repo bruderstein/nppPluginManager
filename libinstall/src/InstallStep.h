@@ -11,7 +11,7 @@ class InstallStep
 public:
 	InstallStep() {};
 	~InstallStep() {};
-	virtual BOOL Perform() { return TRUE; };
+	virtual BOOL Perform(tstring &basePath) { return TRUE; };
 
 protected:
 	void setTstring(const char *src, tstring &dest);

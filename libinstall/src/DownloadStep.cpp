@@ -1,11 +1,23 @@
 #include <string>
+#include <fstream>
+#include <iostream>
+#include <boost/shared_ptr.hpp>
+
 #include "DownloadStep.h"
 #include "DownloadManager.h"
 #include "Decompress.h"
+#include "tstring.h"
+#include "Common.h"
+#include "WcharMbcsConverter.h"
+#include "DirectLinkSearch.h"
 
-DownloadStep::DownloadStep(const TCHAR *url)
+using namespace std;
+using namespace boost;
+
+DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename)
 {
 	_url = url;
+	_filename = filename;
 }
 
 BOOL DownloadStep::Perform(tstring &basePath)
@@ -34,8 +46,18 @@ BOOL DownloadStep::Perform(tstring &basePath)
 	}
 	else if (contentType == _T("text/html"))
 	{
-		// Read HTML and search for real filename, then re-perform
+		shared_ptr<char> cFilename = WcharMbcsConverter::tchar2char(_filename.c_str());
+		shared_ptr<char> cDownloadFilename = WcharMbcsConverter::tchar2char(downloadFilename.c_str());
+	    DirectLinkSearch linkSearch(cDownloadFilename.get());
+		shared_ptr<char> realLink = linkSearch.search(cFilename.get());
 		
+
+		if (realLink.get())
+		{
+			shared_ptr<TCHAR> tRealLink = WcharMbcsConverter::char2tchar(realLink.get());
+			_url = tRealLink.get();
+			return Perform(basePath);
+		}
 	}
 	
 	return TRUE;

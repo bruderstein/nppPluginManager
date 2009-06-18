@@ -46,7 +46,7 @@ public:
 	BOOL			isInstalled();
 	void			addVersion(const TCHAR* hash, PluginVersion &version);
 	void			addInstallStep(boost::shared_ptr<InstallStep> step);
-	InstallStatus   install();
+	InstallStatus   install(tstring& basePath);
 
 private:
 	tstring					_name;

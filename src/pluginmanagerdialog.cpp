@@ -94,7 +94,8 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 			{
 				case IDC_BUTTONINSTALL:
 				{
-					dlg->_availableListView.getCurrentPlugin()->install();
+					tstring basePath = _T("d:\\work\\npp\\temp\\");
+					dlg->_availableListView.getCurrentPlugin()->install(basePath);
 					break;
 				}
 			}
