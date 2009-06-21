@@ -156,6 +156,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\CopyStep.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\Decompress.cpp"
 				>
 			</File>
@@ -181,6 +185,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\InstallStepFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\VariableHandler.cpp"
 				>
 			</File>
 			<File
@@ -226,6 +234,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\CopyStep.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\Decompress.h"
 				>
 			</File>
@@ -255,6 +267,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\tstring.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\VariableHandler.h"
 				>
 			</File>
 			<File

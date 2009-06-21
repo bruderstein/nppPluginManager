@@ -4,7 +4,7 @@
 #include "Plugin.h"
 #include "PluginManager.h"
 #include "tinyxml.h"
-
+#include "VariableHandler.h"
 
 class PluginList
 {
@@ -33,6 +33,7 @@ private:
     void        addInstallSteps(Plugin* plugin, TiXmlElement* installElement);
 	BOOL		setInstalledVersion(tstring filename, Plugin* plugin);
 	tstring		getPluginName(tstring filename);
-
-	NppData *_nppData;
+	
+	VariableHandler* _variableHandler;
+	NppData*         _nppData;
 };

@@ -17,7 +17,9 @@ using namespace boost;
 DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename)
 {
 	_url = url;
-	_filename = filename;
+
+	if (filename)
+		_filename = filename;
 }
 
 BOOL DownloadStep::Perform(tstring &basePath)

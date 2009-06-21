@@ -56,6 +56,7 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 		} while(bytesRead > 0);
 		
 		unzCloseCurrentFile(hZip);
+		fclose(fp);
 
 		nextFileResult = unzGoToNextFile(hZip);
 		

@@ -28,12 +28,11 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 	FILE *fp = _tfopen(filename.c_str(), _T("wb"));
 	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteCallback);
 	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, fp);
-	curl_easy_setopt(_curl, CURLOPT_HEADERDATA, &contentType);
 	CURLcode code = curl_easy_perform(_curl);
 	
 	// Get the content type
-	char contentTypeBuffer[1024];
-	CURLcode contentTypeCode = curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, contentTypeBuffer);
+	char *contentTypeBuffer;
+	CURLcode contentTypeCode = curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
 	shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
 	contentType = tContentTypeBuffer.get();
 	fclose(fp);

@@ -18,16 +18,30 @@ typedef BOOL (__cdecl * PFUNCISUNICODE)();
 
 PluginList::PluginList(void)
 {
+	_variableHandler = NULL;
 }
 
 PluginList::~PluginList(void)
 {
+	if (_variableHandler)
+		delete _variableHandler;
 }
 
 void PluginList::init(NppData *nppData)
 {
 	_nppData = nppData;
+	TCHAR configDir[MAX_PATH];
+	TCHAR nppDir[MAX_PATH];
+	TCHAR pluginDir[MAX_PATH];
+
+	::SendMessage(nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, reinterpret_cast<LPARAM>(configDir));
+	::SendMessage(nppData->_nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDir));
+	_tcscpy_s(pluginDir, MAX_PATH, nppDir);
+	_tcscat_s(pluginDir, MAX_PATH, _T("\\plugins"));
+	
+	_variableHandler = new VariableHandler(nppDir, pluginDir, configDir);
 }
+
 
 
 BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
@@ -122,6 +136,9 @@ void PluginList::addInstallSteps(Plugin* plugin, TiXmlElement* installElement)
 		return;
 
 	TiXmlElement *installStepElement = installElement->FirstChildElement();
+	// TODO: create the variable handler
+	InstallStepFactory installStepFactory(_variableHandler);
+
 	while (installStepElement)
 	{
 		// If it is a unicode tag, then only process the contents if it's a unicode N++
@@ -138,7 +155,8 @@ void PluginList::addInstallSteps(Plugin* plugin, TiXmlElement* installElement)
 		}
 		else 
 		{
-			shared_ptr<InstallStep> installStep = InstallStepFactory::create(installStepElement);
+
+			shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement);
 			if (installStep.get()) 
 				plugin->addInstallStep(installStep);
 
@@ -303,6 +321,8 @@ tstring PluginList::getPluginName(tstring pluginFilename)
 				
 				return tpluginName;
 			}
+			else
+				return _T("");
 
 			::FreeLibrary(pluginInstance);
 		}
