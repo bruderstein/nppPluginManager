@@ -28,6 +28,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 	FILE *fp = _tfopen(filename.c_str(), _T("wb"));
 	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteCallback);
 	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, fp);
+	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
 	CURLcode code = curl_easy_perform(_curl);
 	
 	// Get the content type
@@ -46,6 +47,12 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 size_t DownloadManager::curlWriteCallback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	return fwrite(ptr, size, nmemb, reinterpret_cast<FILE*>(stream));
+}
+
+int DownloadManager::curlProgressCallback(void *ptr, double dltotal, double dlnow, 
+										  double /*ultotal*/, double /*ulnow*/)
+{
+	return 0;
 }
 
 size_t DownloadManager::curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *vContentType)

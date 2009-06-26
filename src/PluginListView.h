@@ -3,6 +3,8 @@
 
 #include <windows.h>
 #include <tchar.h>
+#include <boost/shared_ptr.hpp>
+#include <list>
 #include "PluginManager.h"
 
 class PluginListView
@@ -22,7 +24,7 @@ public:
 	void	setMessage(TCHAR *msg);
 	LRESULT notify(WPARAM wParam, LPARAM lParam);
 	Plugin* getCurrentPlugin();
-
+	boost::shared_ptr< std::list<Plugin*> > getSelectedPlugins();
 
 	
 

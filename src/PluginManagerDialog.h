@@ -37,6 +37,9 @@ public:
 	static BOOL CALLBACK updatesTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 	static BOOL CALLBACK installedTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
+	void setStatus(const TCHAR* status);
+	void setStepProgress(const int percentageComplete);
+	void setStepComplete();
 
 
 protected :

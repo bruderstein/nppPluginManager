@@ -3,6 +3,11 @@
 #include "PluginList.h"
 #include <commctrl.h>
 #include <string.h>
+#include <list>
+
+using namespace std;
+using namespace boost;
+
 
 PluginListView::PluginListView()
 {
@@ -50,12 +55,12 @@ LRESULT PluginListView::notify(WPARAM wParam, LPARAM lParam)
 						{
 							case VERSION_INSTALLED:
 								plvdi->item.pszText = plugin->getInstalledVersion().getDisplayString();
-								plvdi->item.cchTextMax = _tcslen(plvdi->item.pszText);
+								plvdi->item.cchTextMax = (int)_tcslen(plvdi->item.pszText);
 								break;
 
 							case VERSION_AVAILABLE:
 								plvdi->item.pszText = plugin->getVersion().getDisplayString();
-								plvdi->item.cchTextMax = _tcslen(plvdi->item.pszText);
+								plvdi->item.cchTextMax = (int)_tcslen(plvdi->item.pszText);
 								break;
 						}
 						break;
@@ -78,6 +83,8 @@ LRESULT PluginListView::notify(WPARAM wParam, LPARAM lParam)
 
 		}
 	}
+
+	return FALSE;
 }
 
 void PluginListView::initColumns(void)
@@ -150,7 +157,7 @@ void PluginListView::setList(PluginListContainer &list)
 
 int PluginListView::getCurrentSelectedIndex()
 {
-	return SendMessage(_hListView, LVM_GETNEXTITEM, -1, LVIS_SELECTED); 
+	return (int)SendMessage(_hListView, LVM_GETNEXTITEM, -1, LVIS_SELECTED); 
 }
 
 void PluginListView::setMessage(TCHAR *msg)
@@ -167,7 +174,7 @@ void PluginListView::setMessage(TCHAR *msg)
 	if (_message != NULL)
 		delete[] _message;
 
-	int msgLength = _tcslen(msg);
+	size_t msgLength = _tcslen(msg);
 	_message = new TCHAR[msgLength + 1];
 	_tcscpy_s(_message, msgLength + 1, msg);
 	LVITEM lvi;
@@ -192,4 +199,27 @@ Plugin* PluginListView::getCurrentPlugin()
 
 	::SendMessage(_hListView, LVM_GETITEM, 0, reinterpret_cast<LPARAM>(&item));
 	return reinterpret_cast<Plugin*>(item.lParam);
+}
+
+
+shared_ptr< list<Plugin*> > PluginListView::getSelectedPlugins()
+{
+	LVITEM item;
+	
+	item.mask = LVIF_PARAM;
+
+	shared_ptr< list<Plugin*> > selectedList(new list<Plugin*>());
+
+
+	for (UINT position = 0; position < _list.size(); position++)
+	{
+		item.iItem = position;
+		ListView_GetItem(_hListView, &item);
+		if (ListView_GetCheckState(_hListView, position))
+			selectedList->push_back(reinterpret_cast<Plugin*>(item.lParam));
+
+	}
+
+	return selectedList;
+
 }

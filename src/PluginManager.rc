@@ -53,6 +53,17 @@ BEGIN
     PUSHBUTTON      "Install",IDC_BUTTONINSTALL,325,237,50,14
 END
 
+IDD_DIALOG2 DIALOGEX 0, 0, 342, 130
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_BORDER | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Abort Download",IDCANCEL,245,108,90,14
+    CONTROL         "",IDC_PROGRESSCURRENT,"msctls_progress32",WS_BORDER,7,33,328,14
+    CONTROL         "",IDC_PROGRESSOVERALL,"msctls_progress32",WS_BORDER,7,76,328,14
+    LTEXT           "Current Action:",IDC_LABELCURRENT,7,17,328,13
+    LTEXT           "Overall Progress:",IDC_STATIC,7,60,56,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -84,6 +95,14 @@ BEGIN
         RIGHTMARGIN, 385
         TOPMARGIN, 7
         BOTTOMMARGIN, 259
+    END
+
+    IDD_DIALOG2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 335
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -10,14 +10,17 @@
 class CopyStep : public InstallStep
 {
 public:
-	CopyStep(const TCHAR* from, const TCHAR* to);
+	CopyStep(const TCHAR* from, const TCHAR* to, BOOL attemptReplace);
 	~CopyStep() {};
 	
-	BOOL Perform(tstring& basePath);
+	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
+		boost::function<void(const TCHAR*)> setStatus,
+	 boost::function<void(const int)> stepProgress);
 
 private:
 	tstring	_from;
 	tstring _to;
+	BOOL    _failIfExists;
 };
 
 #endif

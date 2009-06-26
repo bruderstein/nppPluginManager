@@ -565,6 +565,7 @@
 #define VK_NUMPAD9                      0x69
 #define IDD_TABAVAILABLE                105
 #define VK_MULTIPLY                     0x6A
+#define IDD_DIALOG2                     106
 #define VK_ADD                          0x6B
 #define VK_SEPARATOR                    0x6C
 #define VK_SUBTRACT                     0x6D
@@ -910,7 +911,11 @@
 #define IDC_EDIT1                       1013
 #define IDC_EDITUPDATE                  1013
 #define IDC_EDITAVAILABLE               1013
-#define IDC_EDITINSTALLED				1013
+#define IDC_EDITINSTALLED               1013
+#define IDC_PROGRESS1                   1014
+#define IDC_PROGRESSCURRENT             1014
+#define IDC_PROGRESSOVERALL             1015
+#define IDC_LABELCURRENT                1016
 #define CF_GDIOBJLAST                   0x03FF
 #define WM_USER                         0x0400
 #define WVR_VALIDRECTS                  0x0400
@@ -1221,9 +1226,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        105
+#define _APS_NEXT_RESOURCE_VALUE        107
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1014
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

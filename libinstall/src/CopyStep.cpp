@@ -1,6 +1,8 @@
 #include <tchar.h>
 #include <string.h>
 #include <windows.h>
+#include <boost/function.hpp>
+#include "InstallStep.h"
 #include "CopyStep.h"
 
 #include "tstring.h"
@@ -8,23 +10,33 @@
 using namespace std;
 
 
-CopyStep::CopyStep(const TCHAR *from, const TCHAR *to)
+CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, BOOL attemptReplace)
 {
 	_from = from;
 	_to = to;
+	_failIfExists = !attemptReplace;
 }
 
-BOOL CopyStep::Perform(tstring &basePath)
+StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup, 
+							 boost::function<void(const TCHAR*)> setStatus,
+							 boost::function<void(const int)> stepProgress)
 {
-	tstring fromPath = basePath;
+	StepStatus status = STEPSTATUS_SUCCESS;
 
+	tstring fromPath = basePath;
+	
 	fromPath.append(_from);
 	
+	tstring statusString = _T("Copying ");
+	statusString.append(_from);
+	setStatus(statusString.c_str());
+
+
 	tstring fromDir;
 
 	tstring toPath = _to;
 	toPath.append(_T("\\"));
-
+	
 	tstring::size_type backSlash = fromPath.find_last_of(_T("\\"));
 	if (backSlash != tstring::npos)
 	{
@@ -50,11 +62,23 @@ BOOL CopyStep::Perform(tstring &basePath)
 			dest.append(foundData.cFileName);
 			src = fromDir;
 			src.append(foundData.cFileName);
-			::CopyFile(src.c_str(), dest.c_str(), false);
+			if (!::CopyFile(src.c_str(), dest.c_str(), _failIfExists))
+			{
+				status = STEPSTATUS_NEEDGPUP;
+				// Add file to forGpup doc
+				
+				TiXmlElement* copy = new TiXmlElement(_T("copy"));
+				
+				copy->SetAttribute(_T("from"), src.c_str());
+				copy->SetAttribute(_T("to"), dest.c_str());
+				copy->SetAttribute(_T("replace"), _T("true"));
+				forGpup->LinkEndChild(copy);
+
+			}
 		} while(::FindNextFile(hFindFile, &foundData));
 	}
 
 	::FindClose(hFindFile);
 
-	return TRUE;
+	return status;
 }

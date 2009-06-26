@@ -2,7 +2,10 @@
 #include <windows.h>
 #include <commctrl.h>
 #include <process.h>
-
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
+#include <list>
 #include "resource.h"
 #include "tinyxml.h"
 
@@ -10,6 +13,10 @@
 #include "DownloadManager.h"
 #include "Plugin.h"
 #include "PluginManager.h"
+
+
+using namespace std;
+using namespace boost;
 
 
 void PluginManagerDialog::doDialog()
@@ -95,7 +102,25 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 				case IDC_BUTTONINSTALL:
 				{
 					tstring basePath = _T("d:\\work\\npp\\temp\\");
-					dlg->_availableListView.getCurrentPlugin()->install(basePath);
+					TiXmlDocument* forGpupDoc = new TiXmlDocument();
+					TiXmlElement* installElement = new TiXmlElement(_T("install"));
+					forGpupDoc->LinkEndChild(installElement);
+					
+					shared_ptr< list<Plugin*> > selectedPlugins = dlg->_availableListView.getSelectedPlugins();
+						
+					list<Plugin*>::iterator iter = selectedPlugins->begin();
+					while(iter != selectedPlugins->end())
+					{
+						(*iter)->install(basePath, installElement, 
+							boost::bind(&PluginManagerDialog::setStatus, dlg, _1),
+							boost::bind(&PluginManagerDialog::setStepProgress, dlg, _1),
+							boost::bind(&PluginManagerDialog::setStepComplete, dlg));
+						iter++;
+					}
+
+
+					forGpupDoc->SaveFile(_T("d:\\work\\npp\\gpuplist.xml"));
+					delete forGpupDoc;
 					break;
 				}
 			}
@@ -106,6 +131,22 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 	return FALSE;
 }
 
+void PluginManagerDialog::setStatus(const TCHAR* status)
+{
+	::MessageBox(_hSelf, status, _T("Status Update"), 0);
+}
+
+void PluginManagerDialog::setStepProgress(const int percentageComplete)
+{
+	TCHAR percentage[4];
+	_itot_s(percentageComplete, percentage, 4, 10);
+	::MessageBox(_hSelf, percentage, _T("Step Progress"), 0);
+}
+
+void PluginManagerDialog::setStepComplete()
+{
+	::MessageBox(_hSelf, _T("Step Complete"), _T("Step Complete"), 0);
+}
 
 BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {

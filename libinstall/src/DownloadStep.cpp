@@ -8,6 +8,7 @@
 #include "Decompress.h"
 #include "tstring.h"
 #include "Common.h"
+#include "InstallStep.h"
 #include "WcharMbcsConverter.h"
 #include "DirectLinkSearch.h"
 
@@ -22,7 +23,9 @@ DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename)
 		_filename = filename;
 }
 
-BOOL DownloadStep::Perform(tstring &basePath)
+StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup, 
+								 boost::function<void(const TCHAR*)> setStatus,
+								 boost::function<void(const int)> stepProgress)
 {
 	DownloadManager downloadManager;
 
@@ -35,14 +38,18 @@ BOOL DownloadStep::Perform(tstring &basePath)
 	::GetTempFileName(basePath.c_str(), _T("download"), 0, tDownloadFilename);
 	
 	tstring downloadFilename = tDownloadFilename;
+	tstring status = _T("Downloading ");
+	status.append(_url);
+	setStatus(status.c_str());
 
 	// need to get content type, if html we can search for 
 	tstring contentType;
 	downloadManager.getUrl(_url.c_str(), downloadFilename, contentType);
 
-	if (contentType == _T("application/zip"))
+	if (contentType == _T("application/zip") 
+		|| contentType == _T("application/octet-stream"))
 	{
-		// Unzip file into basePath
+		// Attempt to unzip file into basePath
 		Decompress::unzip(downloadFilename, basePath);
 		
 	}
@@ -58,9 +65,9 @@ BOOL DownloadStep::Perform(tstring &basePath)
 		{
 			shared_ptr<TCHAR> tRealLink = WcharMbcsConverter::char2tchar(realLink.get());
 			_url = tRealLink.get();
-			return Perform(basePath);
+			return perform(basePath, forGpup, setStatus, stepProgress);
 		}
 	}
 	
-	return TRUE;
+	return STEPSTATUS_SUCCESS;
 }

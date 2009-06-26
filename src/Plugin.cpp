@@ -1,7 +1,10 @@
 #include "Plugin.h"
 #include <tchar.h>
 #include <string>
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
 
+#include "tinyxml.h"
 
 using namespace std;
 using namespace boost;
@@ -118,17 +121,38 @@ void Plugin::addInstallStep(shared_ptr<InstallStep> step)
 }
 
 
-Plugin::InstallStatus Plugin::install(tstring& basePath)
+Plugin::InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup, 
+									  boost::function<void(const TCHAR*)> setStatus,
+									  boost::function<void(const int)> stepProgress,
+									  boost::function<void()> stepComplete)
 {
 	InstallStatus status = INSTALL_SUCCESS;
 
 	InstallStepContainer::iterator stepIterator = _installSteps.begin();
+	 
+	
+	StepStatus stepStatus;
 
 	while (stepIterator != _installSteps.end())
 	{
-		(*stepIterator)->Perform(basePath);
+		
+		stepStatus = (*stepIterator)->perform(basePath, forGpup, setStatus, stepProgress);
+
+		switch(stepStatus)
+		{
+			case STEPSTATUS_FAIL:
+				// Stop processing
+				return INSTALL_FAIL;
+
+			case STEPSTATUS_NEEDGPUP:
+				status = INSTALL_NEEDRESTART;
+				break;
+		}
+		stepComplete();
 		++stepIterator;
 	}
+
+
 	return status;
 }
 

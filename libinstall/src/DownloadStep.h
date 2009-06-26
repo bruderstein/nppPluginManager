@@ -13,7 +13,9 @@ public:
 	DownloadStep(const TCHAR* url, const TCHAR* filename);
 	~DownloadStep() {};
 	
-	BOOL Perform(tstring& basePath);
+	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
+		boost::function<void(const TCHAR*)> setStatus,
+    	boost::function<void(const int)> stepProgress);
 
 private:
 	tstring	_url;

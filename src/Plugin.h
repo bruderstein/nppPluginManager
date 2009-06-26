@@ -6,10 +6,14 @@
 #include <map>
 #include <list>
 #include <memory>
+#include <boost/shared_ptr.hpp>
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
 #include "tstring.h"
+#include "tinyxml.h"
 #include "PluginVersion.h"
 #include "InstallStep.h"
-#include <boost/shared_ptr.hpp>
+
 
 class Plugin
 {
@@ -46,7 +50,10 @@ public:
 	BOOL			isInstalled();
 	void			addVersion(const TCHAR* hash, PluginVersion &version);
 	void			addInstallStep(boost::shared_ptr<InstallStep> step);
-	InstallStatus   install(tstring& basePath);
+	InstallStatus   install(tstring& basePath, TiXmlElement* forGpup, 
+		boost::function<void(const TCHAR*)> setStatus,
+		boost::function<void(const int)> stepProgress,
+		boost::function<void()> stepComplete);
 
 private:
 	tstring					_name;
