@@ -1,6 +1,7 @@
 #include "DownloadManager.h"
 #include "Common.h"
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 #include "WcharMbcsConverter.h"
 #include "curl/curl.h"
 
@@ -13,11 +14,18 @@ DownloadManager::DownloadManager(void)
 	curl_global_init(CURL_GLOBAL_ALL);
 	_curl = curl_easy_init();
 	curl_easy_setopt(_curl, CURLOPT_USERAGENT, "Notepad++/Plugin-Manager");
+	_progressFunctionSet = FALSE;
 }
 
 DownloadManager::~DownloadManager(void)
 {
 	curl_easy_cleanup(_curl);
+}
+
+void DownloadManager::setProgressFunction(function<void(int)> progressFunction)
+{
+	_progressFunction = progressFunction;
+	_progressFunctionSet = TRUE;
 }
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType)
@@ -29,6 +37,8 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteCallback);
 	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, fp);
 	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
+	curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
+	curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
 	CURLcode code = curl_easy_perform(_curl);
 	
 	// Get the content type
@@ -52,6 +62,13 @@ size_t DownloadManager::curlWriteCallback(void *ptr, size_t size, size_t nmemb, 
 int DownloadManager::curlProgressCallback(void *ptr, double dltotal, double dlnow, 
 										  double /*ultotal*/, double /*ulnow*/)
 {
+	DownloadManager* mgr = reinterpret_cast<DownloadManager*>(ptr);
+	if(mgr->_progressFunctionSet)
+	{
+		int percentage = (int)((dlnow / dltotal) * 100);
+		mgr->_progressFunction(percentage);
+	}
+
 	return 0;
 }
 

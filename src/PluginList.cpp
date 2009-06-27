@@ -136,7 +136,7 @@ void PluginList::addInstallSteps(Plugin* plugin, TiXmlElement* installElement)
 		return;
 
 	TiXmlElement *installStepElement = installElement->FirstChildElement();
-	// TODO: create the variable handler
+
 	InstallStepFactory installStepFactory(_variableHandler);
 
 	while (installStepElement)
@@ -410,4 +410,9 @@ PluginListContainer& PluginList::getAvailablePlugins()
 PluginListContainer& PluginList::getUpdateablePlugins()
 {
 	return _updateablePlugins;
+}
+
+VariableHandler* PluginList::getVariableHandler()
+{
+	return _variableHandler;
 }

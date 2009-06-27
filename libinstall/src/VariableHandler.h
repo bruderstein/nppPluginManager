@@ -10,6 +10,9 @@ public:
 		
 	void replaceVariables(tstring &source);
 
+	const tstring& getConfigDir();
+	const tstring& getNppDir();
+
 private:
 	tstring _nppDir;
 	tstring _pluginDir;

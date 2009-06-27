@@ -50,10 +50,12 @@ public:
 	BOOL			isInstalled();
 	void			addVersion(const TCHAR* hash, PluginVersion &version);
 	void			addInstallStep(boost::shared_ptr<InstallStep> step);
+	int				getInstallStepCount();
 	InstallStatus   install(tstring& basePath, TiXmlElement* forGpup, 
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress,
 		boost::function<void()> stepComplete);
+
 
 private:
 	tstring					_name;

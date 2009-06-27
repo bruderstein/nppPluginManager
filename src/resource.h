@@ -566,6 +566,7 @@
 #define IDD_TABAVAILABLE                105
 #define VK_MULTIPLY                     0x6A
 #define IDD_DIALOG2                     106
+#define IDD_PROGRESSDIALOG              106
 #define VK_ADD                          0x6B
 #define VK_SEPARATOR                    0x6C
 #define VK_SUBTRACT                     0x6D
@@ -912,7 +913,6 @@
 #define IDC_EDITUPDATE                  1013
 #define IDC_EDITAVAILABLE               1013
 #define IDC_EDITINSTALLED               1013
-#define IDC_PROGRESS1                   1014
 #define IDC_PROGRESSCURRENT             1014
 #define IDC_PROGRESSOVERALL             1015
 #define IDC_LABELCURRENT                1016

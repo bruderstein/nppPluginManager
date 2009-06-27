@@ -1,6 +1,8 @@
 #include "InstallStepFactory.h"
 #include "DownloadStep.h"
 #include "CopyStep.h"
+#include "DeleteStep.h"
+
 #include "tstring.h"
 #include "VariableHandler.h"
 
@@ -48,9 +50,26 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element)
 
 		installStep.reset(new CopyStep(from.c_str(), to.c_str(), attemptReplace));
 	}
+	else if (!_tcscmp(element->Value(), _T("delete")))
+	{
+		const TCHAR *tFile = element->Attribute(_T("file"));
+		
+		// If no file attribute specified, just return a null step
+		if (!tFile)
+			return installStep;
+
+		tstring file;
+
+		file = tFile;
+		if (_variableHandler)
+		{
+			_variableHandler->replaceVariables(file);
+		}
+
+		installStep.reset(new DeleteStep(file.c_str()));
+	}
 
 	return installStep;
-
 }
 
 

@@ -7,6 +7,7 @@
 #include "PluginManager.h"
 #include "PluginList.h"
 #include "PluginListView.h"
+#include "ProgressDialog.h"
 
 #define PATHENV_MAX_LENGTH  8191
 #define TAB_PAGE_COUNT      3
@@ -119,5 +120,14 @@ private:
 
 	/* Threaded proc to download the plugin list and populate the views */
 	static void downloadAndPopulate(PVOID pvoid);
-	
+
+	/* Threaded procs to install plugins from a given list */
+	static UINT installThreadProc(LPVOID param);
+
+	/* Installs plugins from given list */ 
+	void startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView);
+	void installPlugins(ProgressDialog* progressDialog, PluginListView* pluginListView);
+	void removeDirectory(const tstring& directory);
+
+	void startGpup(const TCHAR* nppDir, const TCHAR* arguments);
 };

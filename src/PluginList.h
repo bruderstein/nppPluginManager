@@ -19,6 +19,10 @@ public:
 	PluginListContainer& getInstalledPlugins();
 	PluginListContainer& getUpdateablePlugins();
 	PluginListContainer& getAvailablePlugins();
+
+	VariableHandler*     getVariableHandler();
+
+
 private:
 	/* Plugin filename map */
 	PluginContainer _plugins;

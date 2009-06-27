@@ -13,6 +13,7 @@
 #include "DownloadManager.h"
 #include "Plugin.h"
 #include "PluginManager.h"
+#include "ProgressDialog.h"
 
 
 using namespace std;
@@ -101,26 +102,13 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 			{
 				case IDC_BUTTONINSTALL:
 				{
-					tstring basePath = _T("d:\\work\\npp\\temp\\");
-					TiXmlDocument* forGpupDoc = new TiXmlDocument();
-					TiXmlElement* installElement = new TiXmlElement(_T("install"));
-					forGpupDoc->LinkEndChild(installElement);
+					//
+
+					ProgressDialog progress(dlg->_hInst, 
+						boost::bind(&PluginManagerDialog::startInstall, dlg, _1, &dlg->_availableListView));
+					progress.doModal(dlg->_hSelf);
 					
-					shared_ptr< list<Plugin*> > selectedPlugins = dlg->_availableListView.getSelectedPlugins();
-						
-					list<Plugin*>::iterator iter = selectedPlugins->begin();
-					while(iter != selectedPlugins->end())
-					{
-						(*iter)->install(basePath, installElement, 
-							boost::bind(&PluginManagerDialog::setStatus, dlg, _1),
-							boost::bind(&PluginManagerDialog::setStepProgress, dlg, _1),
-							boost::bind(&PluginManagerDialog::setStepComplete, dlg));
-						iter++;
-					}
-
-
-					forGpupDoc->SaveFile(_T("d:\\work\\npp\\gpuplist.xml"));
-					delete forGpupDoc;
+					//	dlg->installPlugins(dlg->_availableListView);
 					break;
 				}
 			}
@@ -131,22 +119,200 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 	return FALSE;
 }
 
-void PluginManagerDialog::setStatus(const TCHAR* status)
+struct InstallParam
 {
-	::MessageBox(_hSelf, status, _T("Status Update"), 0);
+	PluginManagerDialog* pluginManagerDialog;
+	PluginListView*      pluginListView;
+	ProgressDialog*		 progressDialog;
+};
+
+void PluginManagerDialog::startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView)
+{
+	InstallParam *ip = new InstallParam;
+	ip->pluginListView = pluginListView;
+	ip->progressDialog = progressDialog;
+	ip->pluginManagerDialog = this;
+	
+
+	::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginManagerDialog::installThreadProc, (LPVOID)ip, 0, 0);
 }
 
-void PluginManagerDialog::setStepProgress(const int percentageComplete)
+
+UINT PluginManagerDialog::installThreadProc(LPVOID param)
 {
-	TCHAR percentage[4];
-	_itot_s(percentageComplete, percentage, 4, 10);
-	::MessageBox(_hSelf, percentage, _T("Step Progress"), 0);
+	InstallParam *ip = reinterpret_cast<InstallParam*>(param);
+	
+	PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(param);
+	ip->pluginManagerDialog->installPlugins(ip->progressDialog, ip->pluginListView);
+
+	// clean up the parameter
+	delete ip;
+
+	return 0;
 }
 
-void PluginManagerDialog::setStepComplete()
+void PluginManagerDialog::startGpup(const TCHAR* nppDir, const TCHAR* arguments)
 {
-	::MessageBox(_hSelf, _T("Step Complete"), _T("Step Complete"), 0);
+	tstring gpupArguments(arguments);
+	if (!gpupArguments.empty())
+		gpupArguments.append(_T(" "));
+
+	gpupArguments.append(_T("-w \"Notepad++\" -e \""));
+	gpupArguments.append(_tpgmptr);
+	gpupArguments.append(_T("\""));
+	
+	tstring gpupExe(nppDir);
+	gpupExe.append(_T("\\updater\\gpup.exe"));
+
+	STARTUPINFO startup;
+	memset(&startup, 0, sizeof(STARTUPINFO));
+
+	startup.cb = sizeof(STARTUPINFO);
+	PROCESS_INFORMATION procinfo;
+	
+    ::CreateProcess((TCHAR *)gpupExe.c_str(),          // exe
+				    (TCHAR *)gpupArguments.c_str(),    // arguments
+						NULL,        // process security
+						NULL,        // thread security
+						FALSE,        // inherit handles flag
+						NULL,           // flags
+						NULL,        // inherit environment
+						NULL,        // inherit directory
+						&startup,    // STARTUPINFO
+						&procinfo);  // PROCESS_INFORMATION
+
 }
+
+
+void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginListView* pluginListView)
+{
+	
+	tstring configDir = _pluginList.getVariableHandler()->getConfigDir();
+	
+	tstring basePath(configDir);
+
+	basePath.append(_T("\\plugin_install_temp"));
+
+	// Create the temp directory if it doesn't exist already
+	::CreateDirectory(basePath.c_str(), NULL);
+	basePath.append(_T("\\plugin"));
+	
+
+
+	TiXmlDocument* forGpupDoc = new TiXmlDocument();
+	TiXmlElement* installElement = new TiXmlElement(_T("install"));
+	forGpupDoc->LinkEndChild(installElement);
+	
+	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+
+	
+	int installSteps = 0;
+	list<Plugin*>::iterator iter = selectedPlugins->begin();
+	while(iter != selectedPlugins->end())
+	{
+		installSteps += (*iter)->getInstallStepCount();
+		++iter;
+	}
+
+	progressDialog->setStepCount(installSteps);
+
+	iter = selectedPlugins->begin();
+
+
+	tstring pluginTemp;
+	int pluginCount = 1;
+	
+	BOOL needRestart = FALSE;
+
+	TCHAR pluginCountChar[10];
+
+	while(iter != selectedPlugins->end())
+	{
+		BOOL directoryCreated = FALSE;
+		do 
+		{
+			pluginTemp = basePath;
+			_itot_s(pluginCount, pluginCountChar, 10, 10);
+			pluginTemp.append(pluginCountChar);
+			directoryCreated = ::CreateDirectory(pluginTemp.c_str(), NULL);
+			++pluginCount;
+		} while(!directoryCreated);
+
+		pluginTemp.append(_T("\\"));
+
+		Plugin::InstallStatus status = (*iter)->install(pluginTemp, installElement, 
+			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
+			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
+			boost::bind(&ProgressDialog::stepComplete, progressDialog));
+
+		switch(status)
+		{
+		    case Plugin::InstallStatus::INSTALL_SUCCESS:
+				removeDirectory(pluginTemp);
+				break;
+
+			case Plugin::InstallStatus::INSTALL_NEEDRESTART:
+				needRestart = TRUE;
+				break;
+
+			case Plugin::InstallStatus::INSTALL_FAIL:
+			{
+				tstring message (_T("Installation of "));
+				message.append((*iter)->getName());
+				message.append(_T(" failed."));
+
+				::MessageBox(_hSelf, message.c_str(), _T("Installation Error"), MB_OK | MB_ICONERROR);
+				removeDirectory(pluginTemp);
+				break;
+			}
+
+		}
+
+		++iter;
+	}
+	
+	
+	progressDialog->close(); 
+
+
+	if (needRestart)
+	{
+		tstring gpupFile(configDir);
+		gpupFile.append(_T("\\PluginManagerGpup.xml"));
+
+		forGpupDoc->SaveFile(gpupFile.c_str());
+		delete forGpupDoc;
+
+		int restartNow = ::MessageBox(_hSelf, _T("Some installation steps still need to be completed.  Notepad++ needs to be restarted in order to complete these steps.  If you restart later, the steps will not be completed.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
+		if (restartNow == IDYES)
+		{
+			
+			tstring gpupArguments(_T("-a \""));
+			gpupArguments.append(gpupFile);
+			gpupArguments.append(_T("\""));
+
+			startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), gpupArguments.c_str());
+		}
+	}
+	else
+	{
+		delete forGpupDoc;
+
+		int restartNow = ::MessageBox(_hSelf, _T("Notepad++ needs to be restarted for changes to take effect.  Would you like to do this now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
+		if (restartNow == IDYES)
+		{
+			startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), _T(""));
+		}
+	}
+	
+	
+}
+
+void PluginManagerDialog::removeDirectory(const tstring& directory)
+{
+	// TODO: implement removeDirectory using installStep?
+}
+
 
 BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {

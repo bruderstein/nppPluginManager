@@ -37,12 +37,16 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	TCHAR tDownloadFilename[MAX_PATH];
 	::GetTempFileName(basePath.c_str(), _T("download"), 0, tDownloadFilename);
 	
+	// Set the status 
 	tstring downloadFilename = tDownloadFilename;
 	tstring status = _T("Downloading ");
 	status.append(_url);
 	setStatus(status.c_str());
 
-	// need to get content type, if html we can search for 
+	// Link up the progress callback
+	downloadManager.setProgressFunction(stepProgress);
+
+
 	tstring contentType;
 	downloadManager.getUrl(_url.c_str(), downloadFilename, contentType);
 
@@ -67,6 +71,8 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 			_url = tRealLink.get();
 			return perform(basePath, forGpup, setStatus, stepProgress);
 		}
+		else
+			return STEPSTATUS_FAIL;
 	}
 	
 	return STEPSTATUS_SUCCESS;

@@ -121,6 +121,13 @@ void Plugin::addInstallStep(shared_ptr<InstallStep> step)
 }
 
 
+int Plugin::getInstallStepCount()
+{
+	return _installSteps.size();
+}
+
+
+
 Plugin::InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup, 
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,

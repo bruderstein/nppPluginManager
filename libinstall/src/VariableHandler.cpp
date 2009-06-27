@@ -29,4 +29,14 @@ void VariableHandler::replaceVariables(tstring &source)
 	if (p != string::npos)
 		source.replace(p, VAR_CONFIGDIR.size(), _configDir);
 }
+
+const tstring& VariableHandler::getConfigDir()
+{
+	return _configDir;
+}
+
+const tstring& VariableHandler::getNppDir()
+{
+	return _nppDir;
+}
 	

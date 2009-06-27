@@ -225,6 +225,14 @@
 				RelativePath="..\..\src\tstring.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\libinstall\src\VariableHandler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WcharMbcsConverter.h"
+				>
+			</File>
 			<Filter
 				Name="Common"
 				>
@@ -262,6 +270,10 @@
 				</File>
 				<File
 					RelativePath="..\..\src\PluginManagerDialog.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\ProgressDialog.h"
 					>
 				</File>
 			</Filter>
@@ -353,6 +365,10 @@
 				RelativePath="..\..\..\Common\Ccpp\stdafx.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\WcharMbcsConverter.cpp"
+				>
+			</File>
 			<Filter
 				Name="Common"
 				>
@@ -376,14 +392,14 @@
 					RelativePath="..\..\src\PluginManagerDialog.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\src\ProgressDialog.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="TinyXML"
 				>
-				<File
-					RelativePath="..\..\src\Common.cpp"
-					>
-				</File>
 				<File
 					RelativePath="..\..\src\tinyxml\tinystr.cpp"
 					>

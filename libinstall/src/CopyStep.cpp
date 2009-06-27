@@ -70,7 +70,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 				TiXmlElement* copy = new TiXmlElement(_T("copy"));
 				
 				copy->SetAttribute(_T("from"), src.c_str());
-				copy->SetAttribute(_T("to"), dest.c_str());
+				copy->SetAttribute(_T("to"), _to.c_str());
 				copy->SetAttribute(_T("replace"), _T("true"));
 				forGpup->LinkEndChild(copy);
 
