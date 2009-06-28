@@ -23,6 +23,8 @@
 #define RETURN_ACTIONERROR			3
 
 
+#define MAX_WRITE_ATTEMPTS			10
+
 // Global Variables:
 HINSTANCE hInst;								// current instance
 
@@ -159,8 +161,31 @@ BOOL closeMainProgram(Options &options)
 
 		h = ::FindWindowEx(NULL, NULL, options.getWindowName().c_str(), NULL);
 	}
+/*
+	int attempts = 0;
+	HANDLE hExe = INVALID_HANDLE_VALUE;
 
-	return TRUE;
+	while (hExe == INVALID_HANDLE_VALUE && attempts < MAX_WRITE_ATTEMPTS)
+	{
+		hExe = ::CreateFile(options.getExeName().c_str(), 
+			GENERIC_READ | GENERIC_WRITE, // Desired Access
+			0,						      // Share more
+			NULL,						  // Security Attributes
+			OPEN_EXISTING,				  // Creation Disposition
+			0,							  // Flags and attributes
+			NULL);						  // Template filename
+
+		++attempts;
+
+		if (hExe == INVALID_HANDLE_VALUE)
+			Sleep(100);
+	}
+	if (hExe == INVALID_HANDLE_VALUE)
+		return FALSE;
+	else
+	*/
+
+		return TRUE;
 }
 
 void startNewInstance(const tstring& exeName)
@@ -261,6 +286,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return RETURN_CANCELLED;
 	}
 
+	//::MessageBox(NULL, _T("Pause..."), _T("Timing test"), 0);
 
 	if (options.getActionsFile() != _T(""))
 	{

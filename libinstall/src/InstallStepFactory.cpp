@@ -31,7 +31,7 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element)
 		const TCHAR *tReplace = element->Attribute(_T("replace"));
 		BOOL attemptReplace = FALSE;
 
-		if (tReplace && _tcscmp(tReplace, _T("true")))
+		if (tReplace && !_tcscmp(tReplace, _T("true")))
 			attemptReplace = TRUE;
 
 		tstring from;

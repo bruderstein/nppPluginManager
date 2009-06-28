@@ -157,21 +157,42 @@ void PluginManagerDialog::startGpup(const TCHAR* nppDir, const TCHAR* arguments)
 	if (!gpupArguments.empty())
 		gpupArguments.append(_T(" "));
 
+	tstring notepadExe;
+	TCHAR* notepadCmdLine = ::GetCommandLine();
+
+	TCHAR stopChar = _T(' ');
+
+	if (*notepadCmdLine == _T('\"'))
+	{
+		++notepadCmdLine;
+		stopChar = _T('\"');
+	}
+
+	while(*notepadCmdLine && *notepadCmdLine != stopChar)
+	{
+		notepadExe.push_back(*notepadCmdLine);
+		++notepadCmdLine;
+	}
+
+	
+
 	gpupArguments.append(_T("-w \"Notepad++\" -e \""));
-	gpupArguments.append(_tpgmptr);
+	gpupArguments.append(notepadExe);
 	gpupArguments.append(_T("\""));
 	
-	tstring gpupExe(nppDir);
-	gpupExe.append(_T("\\updater\\gpup.exe"));
+	tstring gpupExe(_T("\""));
+	gpupExe.append(nppDir);
+	gpupExe.append(_T("\\updater\\gpup.exe\" "));
 
+	gpupExe.append(gpupArguments);
 	STARTUPINFO startup;
 	memset(&startup, 0, sizeof(STARTUPINFO));
 
 	startup.cb = sizeof(STARTUPINFO);
 	PROCESS_INFORMATION procinfo;
 	
-    ::CreateProcess((TCHAR *)gpupExe.c_str(),          // exe
-				    (TCHAR *)gpupArguments.c_str(),    // arguments
+    ::CreateProcess(NULL,						 // No module - using command line
+				    (TCHAR *)gpupExe.c_str(),    // command line & arguments
 						NULL,        // process security
 						NULL,        // thread security
 						FALSE,        // inherit handles flag
