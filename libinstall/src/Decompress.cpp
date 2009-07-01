@@ -37,27 +37,38 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 		}
 
 
-		char buffer[BUFFER_SIZE];
-		int bytesRead;
-		
-		FILE *fp;
-		string outputFilename;
-		setString(destDir, outputFilename);
-		outputFilename.append(filename);
-		fp = fopen(outputFilename.c_str(), "wb");
-
-		do
+		if (filename[strlen(filename) - 1] == '/')
 		{
-			bytesRead = unzReadCurrentFile(hZip, buffer, BUFFER_SIZE);
-			
-			if (bytesRead > 0)
-				fwrite(buffer, bytesRead, 1, fp);
-		
-		} while(bytesRead > 0);
-		
-		unzCloseCurrentFile(hZip);
-		fclose(fp);
+			string outputDir;
+			setString(destDir, outputDir);
+			outputDir.append(filename);
+			outputDir.erase(outputDir.size() - 1);
+			::CreateDirectoryA(outputDir.c_str(), NULL);
+		}
+		else
+		{
 
+			char buffer[BUFFER_SIZE];
+			int bytesRead;
+			
+			FILE *fp;
+			string outputFilename;
+			setString(destDir, outputFilename);
+			outputFilename.append(filename);
+			fp = fopen(outputFilename.c_str(), "wb");
+
+			do
+			{
+				bytesRead = unzReadCurrentFile(hZip, buffer, BUFFER_SIZE);
+				
+				if (bytesRead > 0)
+					fwrite(buffer, bytesRead, 1, fp);
+			
+			} while(bytesRead > 0);
+			
+			unzCloseCurrentFile(hZip);
+			fclose(fp);
+		}
 		nextFileResult = unzGoToNextFile(hZip);
 		
 	} while (nextFileResult == UNZ_OK);

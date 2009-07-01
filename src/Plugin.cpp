@@ -163,6 +163,23 @@ Plugin::InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 	return status;
 }
 
+void Plugin::addDependency(const TCHAR* pluginName)
+{
+	tstring plugin = pluginName;
+	_dependencies.push_back(pluginName);
+}
+
+
+BOOL Plugin::hasDependencies()
+{
+	return !_dependencies.empty();
+}
+
+const list<tstring>& Plugin::getDependencies()
+{
+	return _dependencies;
+}
+
 
 void Plugin::setTstring(const char *src, tstring &dest)
 {

@@ -49,6 +49,8 @@ public:
 	/* General methods */
 	BOOL			isInstalled();
 	void			addVersion(const TCHAR* hash, PluginVersion &version);
+
+	/* installation */
 	void			addInstallStep(boost::shared_ptr<InstallStep> step);
 	int				getInstallStepCount();
 	InstallStatus   install(tstring& basePath, TiXmlElement* forGpup, 
@@ -56,6 +58,11 @@ public:
 		boost::function<void(const int)> stepProgress,
 		boost::function<void()> stepComplete);
 
+
+	/* dependencies */
+	void				addDependency(const TCHAR* pluginName);
+	BOOL				hasDependencies();
+	const std::list<tstring>& getDependencies();
 
 private:
 	tstring					_name;
@@ -65,11 +72,14 @@ private:
 	tstring					_description;
 	tstring					_filename;
 	PluginVersion			_installedVersion;
-	//DependencyContainer	_dependencies;
+	
 	BOOL					_isInstalled;
 
-	
+	/* Dependencies on other plugins */
+	std::list<tstring>		_dependencies;
+
 	std::map<tstring, PluginVersion>  _versionMap;
+	
 	/* TCHAR Conversion function */
 	void   setTstring(const char *src, tstring &dest);
 

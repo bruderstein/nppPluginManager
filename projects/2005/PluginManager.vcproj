@@ -226,6 +226,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\Utility.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libinstall\src\VariableHandler.h"
 				>
 			</File>
@@ -363,6 +367,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\Common\Ccpp\stdafx.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\Utility.cpp"
 				>
 			</File>
 			<File

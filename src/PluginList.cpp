@@ -117,6 +117,26 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 			addInstallSteps(plugin, installElement);
 			
 			
+
+			TiXmlElement *dependencies = pluginNode->FirstChildElement(_T("dependencies"));
+			if (dependencies && !dependencies->NoChildren())
+			{
+				TiXmlElement *dependency = dependencies->FirstChildElement();
+				while (dependency)
+				{
+					// If dependency is another plugin (currently the only supported dependency)
+					if (!_tcscmp(dependency->Value(), _T("plugin")))
+					{
+						const TCHAR* dependencyName = dependency->Attribute(_T("name"));
+						if (dependencyName)
+							plugin->addDependency(dependencyName);
+					}
+
+					dependency = reinterpret_cast<TiXmlElement*>(dependencies->IterateChildren(dependency));
+				}
+			}
+
+
 			
 
 			if (available)
@@ -415,4 +435,9 @@ PluginListContainer& PluginList::getUpdateablePlugins()
 VariableHandler* PluginList::getVariableHandler()
 {
 	return _variableHandler;
+}
+
+Plugin* PluginList::getPlugin(tstring name)
+{
+	return _plugins[name];
 }

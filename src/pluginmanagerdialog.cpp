@@ -6,6 +6,8 @@
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <list>
+#include <set>
+
 #include "resource.h"
 #include "tinyxml.h"
 
@@ -225,19 +227,79 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 	forGpupDoc->LinkEndChild(installElement);
 	
 	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+	set<tstring> toBeInstalled;
+	list<tstring> installDueToDepends;
 
-	
-	int installSteps = 0;
-	list<Plugin*>::iterator iter = selectedPlugins->begin();
-	while(iter != selectedPlugins->end())
+	// Check dependencies are satisfied
+
+	// First add all selected plugins to a name map
+	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
+	while (pluginIter != selectedPlugins->end())
 	{
-		installSteps += (*iter)->getInstallStepCount();
-		++iter;
+		toBeInstalled.insert((*pluginIter)->getName());
+		++pluginIter;
+	}
+
+	// Now check all dependencies are in the name map
+	pluginIter = selectedPlugins->begin();
+	while(pluginIter != selectedPlugins->end())
+	{
+		if ((*pluginIter)->hasDependencies())
+		{
+			
+			list<tstring> dependencies = (*pluginIter)->getDependencies();
+			list<tstring>::iterator depIter = dependencies.begin();
+			while(depIter != dependencies.end())
+			{
+				if (toBeInstalled.count(*depIter) == 0)
+				{
+					// if not already selected to be installed, then add it to the list
+					Plugin* dependsPlugin = _pluginList.getPlugin(*depIter);
+					toBeInstalled.insert(*depIter);
+
+					selectedPlugins->push_back(dependsPlugin);
+					// Add the name to the list to show the message
+					installDueToDepends.push_back(*depIter); 
+				}
+
+				++depIter;
+			}
+		}
+		++pluginIter;
+
+	}
+	
+	if (!installDueToDepends.empty())
+	{
+		tstring dependsMessage = _T("The following plugin");
+		if (installDueToDepends.size() > 1)
+			dependsMessage.append(_T("s"));
+
+		dependsMessage.append(_T(" need to be installed to support your selection.\r\n\r\n"));
+		for(list<tstring>::iterator msgIter = installDueToDepends.begin(); msgIter != installDueToDepends.end(); msgIter++)
+		{
+			dependsMessage.append(*msgIter);
+			dependsMessage.append(_T("\r\n"));
+		}
+
+		dependsMessage.append(_T("\r\nThey will be installed automatically."));
+
+
+		::MessageBox(_hSelf, dependsMessage.c_str(), _T("Plugin Manager"), MB_OK | MB_ICONINFORMATION);
+
+	}
+
+	int installSteps = 0;
+	pluginIter = selectedPlugins->begin();
+	while(pluginIter != selectedPlugins->end())
+	{
+		installSteps += (*pluginIter)->getInstallStepCount();
+		++pluginIter;
 	}
 
 	progressDialog->setStepCount(installSteps);
 
-	iter = selectedPlugins->begin();
+	pluginIter = selectedPlugins->begin();
 
 
 	tstring pluginTemp;
@@ -247,7 +309,7 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 
 	TCHAR pluginCountChar[10];
 
-	while(iter != selectedPlugins->end())
+	while(pluginIter != selectedPlugins->end())
 	{
 		BOOL directoryCreated = FALSE;
 		do 
@@ -261,7 +323,7 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 
 		pluginTemp.append(_T("\\"));
 
-		Plugin::InstallStatus status = (*iter)->install(pluginTemp, installElement, 
+		Plugin::InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
 			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 			boost::bind(&ProgressDialog::stepComplete, progressDialog));
@@ -279,7 +341,7 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 			case Plugin::InstallStatus::INSTALL_FAIL:
 			{
 				tstring message (_T("Installation of "));
-				message.append((*iter)->getName());
+				message.append((*pluginIter)->getName());
 				message.append(_T(" failed."));
 
 				::MessageBox(_hSelf, message.c_str(), _T("Installation Error"), MB_OK | MB_ICONERROR);
@@ -289,7 +351,7 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 
 		}
 
-		++iter;
+		++pluginIter;
 	}
 	
 	

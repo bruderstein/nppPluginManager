@@ -19,18 +19,20 @@ public:
 	PluginListContainer& getInstalledPlugins();
 	PluginListContainer& getUpdateablePlugins();
 	PluginListContainer& getAvailablePlugins();
-
+	
+	Plugin*				 getPlugin(tstring name);
 	VariableHandler*     getVariableHandler();
 
 
 private:
-	/* Plugin filename map */
+	/* Plugin name map */
 	PluginContainer _plugins;
 
 	/* Lists of plugins */
 	PluginListContainer		_installedPlugins;
 	PluginListContainer	    _updateablePlugins;
 	PluginListContainer		_availablePlugins;
+
 
 
 
