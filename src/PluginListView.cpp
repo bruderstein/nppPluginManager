@@ -99,6 +99,7 @@ void PluginListView::initColumns(void)
 	col.pszText = _T("Plugin");
 	ListView_InsertColumn(_hListView, 0, &col);
 
+	col.fmt			= LVCFMT_RIGHT;
 	for(int index = 0; index < _nVersionColumns; index++)
 	{
 		col.iSubItem	= index + 1;

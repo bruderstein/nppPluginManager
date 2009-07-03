@@ -23,6 +23,13 @@ public:
 	Plugin*				 getPlugin(tstring name);
 	VariableHandler*     getVariableHandler();
 
+	// Returns true if the plugin is installable or upgradable 
+    BOOL				 isInstallOrUpgrade(const tstring& pluginName);
+
+/* Checks dependencies on a list of plugins
+ *  Any dependencies are added to the list, and a list of names of plugins added is returned
+ */
+	boost::shared_ptr< std::list<tstring> > calculateDependencies(boost::shared_ptr< std::list<Plugin*> > selectedPlugins);
 
 private:
 	/* Plugin name map */

@@ -15,9 +15,12 @@
 using namespace std;
 using namespace boost;
 
-DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename)
+DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename, const char* proxy, long proxyPort)
 {
 	_url = url;
+
+	_proxy = proxy;
+	_proxyPort = proxyPort;
 
 	if (filename)
 		_filename = filename;
@@ -48,7 +51,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 
 	tstring contentType;
-	downloadManager.getUrl(_url.c_str(), downloadFilename, contentType);
+	downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxy.c_str(), _proxyPort);
 
 	if (contentType == _T("application/zip") 
 		|| contentType == _T("application/octet-stream"))

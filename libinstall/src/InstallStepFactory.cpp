@@ -16,13 +16,13 @@ InstallStepFactory::InstallStepFactory(VariableHandler* variableHandler)
 
 
 
-shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element)
+shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, const char* proxy, long proxyPort)
 {
 	shared_ptr<InstallStep> installStep;
 
 	if (!_tcscmp(element->Value(), _T("download")) && element->FirstChild())
 	{
-		installStep.reset(new DownloadStep(element->FirstChild()->Value(), element->Attribute(_T("filename"))));
+		installStep.reset(new DownloadStep(element->FirstChild()->Value(), element->Attribute(_T("filename")), proxy, proxyPort));
 	}
 	else if (!_tcscmp(element->Value(), _T("copy")))
 	{

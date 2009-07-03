@@ -1,8 +1,9 @@
+#include "resource.h"
 #include <windows.h>
 #include <commctrl.h>
 #include <boost/function.hpp>
 #include "ProgressDialog.h"
-#include "resource.h"
+
 
 using namespace boost;
 

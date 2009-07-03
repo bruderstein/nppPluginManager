@@ -51,6 +51,7 @@ private:
 	NppData			_nppData;
     HWND			_HSource;
 	HWND			_hCloseButton;
+	HWND			_hSettingsButton;
 
 	/* List of plugins, both available and installed*/
 	PluginList		_pluginList;
@@ -125,9 +126,9 @@ private:
 	static UINT installThreadProc(LPVOID param);
 
 	/* Installs plugins from given list */ 
-	void startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView);
-	void installPlugins(ProgressDialog* progressDialog, PluginListView* pluginListView);
-	void removeDirectory(const tstring& directory);
+	void startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView, BOOL isUpdate);
+	void installPlugins(ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpdate);
 
-	void startGpup(const TCHAR* nppDir, const TCHAR* arguments);
+
+
 };

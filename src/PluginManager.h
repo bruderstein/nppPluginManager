@@ -30,14 +30,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Plugin.h"
 #include "tstring.h"
 
+
 /* ini file name */
-CONST TCHAR PLUGINTEMP_INI[]	= _T("\\PluginManager.ini");
+CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
+
+
+CONST TCHAR SETTINGS_GROUP[]    = _T("Settings");
+CONST TCHAR KEY_NOTIFYUPDATES[] = _T("NotifyUpdates");
+CONST TCHAR KEY_PROXY[]         = _T("Proxy");
+CONST TCHAR KEY_PROXYPORT[]     = _T("ProxyPort");
 
 
 
 
 typedef std::map<tstring, Plugin*>		PluginContainer;
-typedef std::list<Plugin*>					PluginListContainer;
+typedef std::list<Plugin*>				PluginListContainer;
 
 
 /* load and save properties from/into ini file */
@@ -50,5 +57,16 @@ void doPluginManagerDlg(void);
 
 extern HANDLE g_hModule;
 extern BOOL   g_isUnicode;
+
+struct Options
+{
+	std::string proxy;
+	long proxyPort;
+	BOOL notifyUpdates;
+};
+
+extern Options			g_options;
+
+
 
 #endif	/* PLUGIN_TEMPLATE_H */

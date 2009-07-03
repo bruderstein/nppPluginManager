@@ -1,4 +1,5 @@
 
+#include "resource.h"
 #include <windows.h>
 #include <commctrl.h>
 #include <process.h>
@@ -8,7 +9,7 @@
 #include <list>
 #include <set>
 
-#include "resource.h"
+
 #include "tinyxml.h"
 
 #include "PluginManagerDialog.h"
@@ -16,7 +17,10 @@
 #include "Plugin.h"
 #include "PluginManager.h"
 #include "ProgressDialog.h"
-
+#include "Utility.h"
+#include "SettingsDialog.h"
+#include "md5.h"
+#include "WcharMbcsConverter.h"
 
 using namespace std;
 using namespace boost;
@@ -81,14 +85,14 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 
 		case WM_SIZE:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
 			dlg->sizeTab(dlg->_tabs[TAB_AVAILABLE], LOWORD(lParam), HIWORD(lParam));
 			return TRUE;
 		}
 
 		case WM_NOTIFY:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
 
 			if (((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_AVAILABLE].hListView)
 				return dlg->_availableListView.notify(wParam, lParam);
@@ -98,7 +102,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 
 		case WM_COMMAND:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
 
 			switch(LOWORD(wParam))
 			{
@@ -107,7 +111,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 					//
 
 					ProgressDialog progress(dlg->_hInst, 
-						boost::bind(&PluginManagerDialog::startInstall, dlg, _1, &dlg->_availableListView));
+						boost::bind(&PluginManagerDialog::startInstall, dlg, _1, &dlg->_availableListView, FALSE));
 					progress.doModal(dlg->_hSelf);
 					
 					//	dlg->installPlugins(dlg->_availableListView);
@@ -126,15 +130,16 @@ struct InstallParam
 	PluginManagerDialog* pluginManagerDialog;
 	PluginListView*      pluginListView;
 	ProgressDialog*		 progressDialog;
+	BOOL                 isUpdate;
 };
 
-void PluginManagerDialog::startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView)
+void PluginManagerDialog::startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView, BOOL isUpdate)
 {
 	InstallParam *ip = new InstallParam;
 	ip->pluginListView = pluginListView;
 	ip->progressDialog = progressDialog;
 	ip->pluginManagerDialog = this;
-	
+	ip->isUpdate = isUpdate;
 
 	::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginManagerDialog::installThreadProc, (LPVOID)ip, 0, 0);
 }
@@ -145,7 +150,7 @@ UINT PluginManagerDialog::installThreadProc(LPVOID param)
 	InstallParam *ip = reinterpret_cast<InstallParam*>(param);
 	
 	PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(param);
-	ip->pluginManagerDialog->installPlugins(ip->progressDialog, ip->pluginListView);
+	ip->pluginManagerDialog->installPlugins(ip->progressDialog, ip->pluginListView, ip->isUpdate);
 
 	// clean up the parameter
 	delete ip;
@@ -153,61 +158,11 @@ UINT PluginManagerDialog::installThreadProc(LPVOID param)
 	return 0;
 }
 
-void PluginManagerDialog::startGpup(const TCHAR* nppDir, const TCHAR* arguments)
-{
-	tstring gpupArguments(arguments);
-	if (!gpupArguments.empty())
-		gpupArguments.append(_T(" "));
-
-	tstring notepadExe;
-	TCHAR* notepadCmdLine = ::GetCommandLine();
-
-	TCHAR stopChar = _T(' ');
-
-	if (*notepadCmdLine == _T('\"'))
-	{
-		++notepadCmdLine;
-		stopChar = _T('\"');
-	}
-
-	while(*notepadCmdLine && *notepadCmdLine != stopChar)
-	{
-		notepadExe.push_back(*notepadCmdLine);
-		++notepadCmdLine;
-	}
-
-	
-
-	gpupArguments.append(_T("-w \"Notepad++\" -e \""));
-	gpupArguments.append(notepadExe);
-	gpupArguments.append(_T("\""));
-	
-	tstring gpupExe(_T("\""));
-	gpupExe.append(nppDir);
-	gpupExe.append(_T("\\updater\\gpup.exe\" "));
-
-	gpupExe.append(gpupArguments);
-	STARTUPINFO startup;
-	memset(&startup, 0, sizeof(STARTUPINFO));
-
-	startup.cb = sizeof(STARTUPINFO);
-	PROCESS_INFORMATION procinfo;
-	
-    ::CreateProcess(NULL,						 // No module - using command line
-				    (TCHAR *)gpupExe.c_str(),    // command line & arguments
-						NULL,        // process security
-						NULL,        // thread security
-						FALSE,        // inherit handles flag
-						NULL,           // flags
-						NULL,        // inherit environment
-						NULL,        // inherit directory
-						&startup,    // STARTUPINFO
-						&procinfo);  // PROCESS_INFORMATION
-
-}
 
 
-void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginListView* pluginListView)
+
+
+void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade)
 {
 	
 	tstring configDir = _pluginList.getVariableHandler()->getConfigDir();
@@ -227,56 +182,17 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 	forGpupDoc->LinkEndChild(installElement);
 	
 	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
-	set<tstring> toBeInstalled;
-	list<tstring> installDueToDepends;
-
-	// Check dependencies are satisfied
-
-	// First add all selected plugins to a name map
-	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
-	while (pluginIter != selectedPlugins->end())
-	{
-		toBeInstalled.insert((*pluginIter)->getName());
-		++pluginIter;
-	}
-
-	// Now check all dependencies are in the name map
-	pluginIter = selectedPlugins->begin();
-	while(pluginIter != selectedPlugins->end())
-	{
-		if ((*pluginIter)->hasDependencies())
-		{
-			
-			list<tstring> dependencies = (*pluginIter)->getDependencies();
-			list<tstring>::iterator depIter = dependencies.begin();
-			while(depIter != dependencies.end())
-			{
-				if (toBeInstalled.count(*depIter) == 0)
-				{
-					// if not already selected to be installed, then add it to the list
-					Plugin* dependsPlugin = _pluginList.getPlugin(*depIter);
-					toBeInstalled.insert(*depIter);
-
-					selectedPlugins->push_back(dependsPlugin);
-					// Add the name to the list to show the message
-					installDueToDepends.push_back(*depIter); 
-				}
-
-				++depIter;
-			}
-		}
-		++pluginIter;
-
-	}
 	
-	if (!installDueToDepends.empty())
+	shared_ptr< list<tstring> > installDueToDepends = _pluginList.calculateDependencies(selectedPlugins);
+		
+	if (!installDueToDepends->empty())
 	{
 		tstring dependsMessage = _T("The following plugin");
-		if (installDueToDepends.size() > 1)
+		if (installDueToDepends->size() > 1)
 			dependsMessage.append(_T("s"));
 
 		dependsMessage.append(_T(" need to be installed to support your selection.\r\n\r\n"));
-		for(list<tstring>::iterator msgIter = installDueToDepends.begin(); msgIter != installDueToDepends.end(); msgIter++)
+		for(list<tstring>::iterator msgIter = installDueToDepends->begin(); msgIter != installDueToDepends->end(); msgIter++)
 		{
 			dependsMessage.append(*msgIter);
 			dependsMessage.append(_T("\r\n"));
@@ -289,8 +205,10 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 
 	}
 
-	int installSteps = 0;
-	pluginIter = selectedPlugins->begin();
+	
+
+	size_t installSteps = 0;
+	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
 	while(pluginIter != selectedPlugins->end())
 	{
 		installSteps += (*pluginIter)->getInstallStepCount();
@@ -322,6 +240,24 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 		} while(!directoryCreated);
 
 		pluginTemp.append(_T("\\"));
+		
+
+
+		if (isUpgrade)
+		{
+			/* Remove the existing file if is an upgrade
+			 * This will be done in gpup, but the copy will come afterwards, also in gpup
+			 * So, if the filename is the same as the existing plugin, gpup will delete the old
+			 * file, then copy in the new.
+			 * If the filename is different, the new one will be copied in now, then
+			 * the old file will be deleted in gpup.  This is why it is important that
+			 * replace="false" (default) on the actual plugin file copy step
+			 */
+
+			TiXmlElement* removeElement = new TiXmlElement(_T("delete"));
+			removeElement->SetAttribute(_T("file"), (*pluginIter)->getFilename().c_str());
+			installElement->LinkEndChild(removeElement);
+		}
 
 		Plugin::InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
 			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
@@ -330,8 +266,8 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 
 		switch(status)
 		{
-		    case Plugin::InstallStatus::INSTALL_SUCCESS:
-				removeDirectory(pluginTemp);
+			case Plugin::InstallStatus::INSTALL_SUCCESS:
+				Utility::removeDirectory(pluginTemp.c_str());
 				break;
 
 			case Plugin::InstallStatus::INSTALL_NEEDRESTART:
@@ -345,7 +281,7 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 				message.append(_T(" failed."));
 
 				::MessageBox(_hSelf, message.c_str(), _T("Installation Error"), MB_OK | MB_ICONERROR);
-				removeDirectory(pluginTemp);
+				Utility::removeDirectory(pluginTemp.c_str());
 				break;
 			}
 
@@ -374,7 +310,7 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 			gpupArguments.append(gpupFile);
 			gpupArguments.append(_T("\""));
 
-			startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), gpupArguments.c_str());
+			Utility::startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), gpupArguments.c_str());
 		}
 	}
 	else
@@ -384,17 +320,13 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 		int restartNow = ::MessageBox(_hSelf, _T("Notepad++ needs to be restarted for changes to take effect.  Would you like to do this now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 		if (restartNow == IDYES)
 		{
-			startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), _T(""));
+			Utility::startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), _T(""));
 		}
 	}
 	
 	
 }
 
-void PluginManagerDialog::removeDirectory(const tstring& directory)
-{
-	// TODO: implement removeDirectory using installStep?
-}
 
 
 BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -403,7 +335,7 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 	{
         case WM_INITDIALOG :
 		{
-			::SetWindowLong(hWnd, GWL_USERDATA, lParam);
+			::SetWindowLong(hWnd, GWL_USERDATA, (LONG)lParam);
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(lParam);
 
 			dlg->_tabs[TAB_UPDATES].hListView = ::GetDlgItem(hWnd, IDC_LISTUPDATES);	
@@ -456,9 +388,31 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
 
 			if (((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_UPDATES].hListView)
-				return dlg->_updatesListView.notify(wParam, lParam);
+			{
+				dlg->_updatesListView.notify(wParam, lParam);
+				return TRUE;
+			}
 			else
 				return FALSE;
+		}
+		
+		case WM_COMMAND:
+		{
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+
+			switch(LOWORD(wParam))
+			{
+				case IDC_BUTTONUPDATE:
+				{
+					ProgressDialog progress(dlg->_hInst, 
+						boost::bind(&PluginManagerDialog::startInstall, dlg, _1, &dlg->_updatesListView, TRUE));
+					progress.doModal(dlg->_hSelf);
+					
+					
+					break;
+				}
+			}
+			break;
 		}
 	}
 	return FALSE;
@@ -471,7 +425,7 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 	{
         case WM_INITDIALOG :
 		{
-			::SetWindowLong(hWnd, GWL_USERDATA, lParam);
+			::SetWindowLongPtr(hWnd, GWL_USERDATA, (LONG_PTR)lParam);
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(lParam);
 
 			dlg->_tabs[TAB_INSTALLED].hListView = ::GetDlgItem(hWnd, IDC_LISTINSTALLED);	
@@ -523,10 +477,15 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
 
 			if (((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_INSTALLED].hListView)
-				return dlg->_installedListView.notify(wParam, lParam);
+			{
+				dlg->_installedListView.notify(wParam, lParam);
+				return TRUE;
+			}
 
 			break;
 		}
+
+
 		
 
 
@@ -548,7 +507,7 @@ BOOL CALLBACK PluginManagerDialog::tabWndProc(HWND hWnd, UINT Message, WPARAM wP
 		case WM_SIZE:
 		{
 			
-			DLGHDR *dlgHdr = reinterpret_cast<DLGHDR*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			DLGHDR *dlgHdr = reinterpret_cast<DLGHDR*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
 
 
 			dlgHdr->rcDisplay.left = 0;
@@ -599,7 +558,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			_topMargin = wiCtl.rcClient.top - wiDlg.rcClient.top;
 			_tabBottomOffset = wiDlg.rcClient.bottom - wiCtl.rcClient.bottom;
 			_hCloseButton = GetDlgItem(hWnd, IDOK);
-	
+			_hSettingsButton = GetDlgItem(hWnd, IDC_SETTINGS);
 			::GetWindowInfo(_hCloseButton, &wiCtl);
 			_closeButtonRightOffset = wiDlg.rcClient.right - wiCtl.rcClient.left;
 			_closeButtonBottomOffset = wiDlg.rcClient.bottom - wiCtl.rcClient.top;
@@ -615,22 +574,11 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 		{
 			switch (wParam)
 			{
-				case IDC_DOWNLOAD:
+				case IDC_SETTINGS:
 				{
-/*
-					TCHAR pluginConfig[MAX_PATH];
-					::SendMessage(_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
-					_tcscat(pluginConfig, _T("\\PluginManagerPlugins.xml"));
-					
-					downloadManager.getUrl("http://localhost:100/plugins.xml", pluginConfig);
-					
-					_pluginList.parsePluginFile(pluginConfig);
-					TCHAR nppDirectory[MAX_PATH];
-					::SendMessage(_nppData._nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDirectory));
+					SettingsDialog settingsDlg;
 
-					_pluginList.checkInstalledPlugins(nppDirectory);
-					//_pluginListView.showList(_pluginList.getInstalledPlugins());
-*/
+					settingsDlg.doModal(_hSelf);
 					break;
 				}
 				case IDOK :
@@ -669,8 +617,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 
 void PluginManagerDialog::OnSelChanged(HWND hwndDlg) 
 { 
-    DLGHDR *pHdr = (DLGHDR *) GetWindowLong( 
-        hwndDlg, GWL_USERDATA); 
+    DLGHDR *pHdr = (DLGHDR *) GetWindowLongPtr(hwndDlg, GWL_USERDATA); 
     int iSel = TabCtrl_GetCurSel(pHdr->hwndTab); 
  
     // Destroy the current child dialog box, if any. 
@@ -764,6 +711,9 @@ void PluginManagerDialog::sizeWindow(int width, int height)
 	// Move the close button
 	::MoveWindow(_hCloseButton, width - _closeButtonRightOffset, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, TRUE);
 
+	// Move the settings button
+	::MoveWindow(_hSettingsButton, _leftMargin, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, TRUE);
+
 }
 
 
@@ -821,7 +771,15 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 	// Download the plugins.xml from the repository
 	DownloadManager downloadManager;
 	tstring contentType;
-	downloadManager.getUrl(_T("http://localhost:100/plugins.xml"), pluginsListFilename, contentType);
+	TCHAR hashBuffer[(MD5LEN * 2) + 1];
+	MD5::hash(pluginsListFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
+	string serverMD5;
+	BOOL downloadResult = downloadManager.getUrl(_T("http://localhost:100/plugins.md5.txt"), serverMD5, g_options.proxy.c_str(), g_options.proxyPort);
+	shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
+	if (downloadResult && serverMD5 != cHashBuffer.get())
+		downloadManager.getUrl(_T("http://localhost:100/plugins.xml"), pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
+	
+
 	dlg->_pluginList.init(&dlg->_nppData);	
 	// Parse it
 	dlg->_pluginList.parsePluginFile(pluginsListFilename.c_str());

@@ -5,6 +5,7 @@
 #include <strsafe.h>
 #include <windows.h>
 #include <boost/shared_ptr.hpp>
+#include <set>
 #include "InstallStep.h"
 #include "DownloadStep.h"
 #include "InstallStepFactory.h"
@@ -176,7 +177,7 @@ void PluginList::addInstallSteps(Plugin* plugin, TiXmlElement* installElement)
 		else 
 		{
 
-			shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement);
+			shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, g_options.proxy.c_str(), g_options.proxyPort);
 			if (installStep.get()) 
 				plugin->addInstallStep(installStep);
 
@@ -440,4 +441,65 @@ VariableHandler* PluginList::getVariableHandler()
 Plugin* PluginList::getPlugin(tstring name)
 {
 	return _plugins[name];
+}
+
+BOOL PluginList::isInstallOrUpgrade(const tstring& name)
+{
+	Plugin* plugin = _plugins[name];
+	if (plugin->isInstalled() && plugin->getVersion() <= plugin->getInstalledVersion())
+		return FALSE;
+	else
+		return TRUE;
+}
+
+
+
+
+shared_ptr< list<tstring> > PluginList::calculateDependencies(shared_ptr< list<Plugin*> > selectedPlugins)
+{
+	set<tstring> toBeInstalled;
+	shared_ptr< list<tstring> > installDueToDepends(new list<tstring>);
+
+
+	// First add all selected plugins to a name map
+	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
+	while (pluginIter != selectedPlugins->end())
+	{
+		toBeInstalled.insert((*pluginIter)->getName());
+		++pluginIter;
+	}
+
+	// Now check all dependencies are in the name map
+	pluginIter = selectedPlugins->begin();
+	while(pluginIter != selectedPlugins->end())
+	{
+		if ((*pluginIter)->hasDependencies())
+		{
+			
+			list<tstring> dependencies = (*pluginIter)->getDependencies();
+			list<tstring>::iterator depIter = dependencies.begin();
+			while(depIter != dependencies.end())
+			{
+				if (toBeInstalled.count(*depIter) == 0)
+				{
+					// if not already selected to be installed, then add it to the list
+					if (isInstallOrUpgrade(*depIter))
+					{
+						Plugin* dependsPlugin = getPlugin(*depIter);
+						toBeInstalled.insert(*depIter);
+
+						selectedPlugins->push_back(dependsPlugin);
+						// Add the name to the list to show the message
+						installDueToDepends->push_back(*depIter); 
+					}
+				}
+
+				++depIter;
+			}
+		}
+		++pluginIter;
+
+	}
+
+	return installDueToDepends;
 }

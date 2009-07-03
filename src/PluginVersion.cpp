@@ -2,22 +2,23 @@
 #include <string.h>
 #include <string>
 #include <shlwapi.h>
-
+#include <sstream>
 #include "PluginVersion.h"
 
 using namespace std;
 
 PluginVersion::PluginVersion(void)
 {
-	_displayString = NULL;
 	_major = _minor = _revision = _build = 0;
+	_displayString = NULL;
 }
 
 PluginVersion::PluginVersion(const char *version)
 {
 	_displayString = NULL;
-	char *str = new char[strlen(version) + 1];
-	strcpy(str, version);
+	size_t versionSize = strlen(version) + 1;
+	char *str = new char[versionSize];
+	strcpy_s(str, versionSize, version);
 	parseString(str);
 	delete[] str;
 }
@@ -27,7 +28,7 @@ PluginVersion::PluginVersion(string version)
 {
 	_displayString = NULL;
 	char *str = new char[version.size() + 1];
-	strcpy(str, version.c_str());
+	strcpy_s(str, version.size() + 1, version.c_str());
 	parseString(str);
 	delete[] str;
 	
@@ -37,7 +38,7 @@ PluginVersion::PluginVersion(tstring version)
 {
 	_displayString = NULL;
 	TCHAR *str = new TCHAR[version.size() + 1];
-	_tcscpy(str, version.c_str());
+	_tcscpy_s(str, version.size() + 1, version.c_str());
 	parseString(str);
 	delete[] str;
 	
@@ -46,8 +47,9 @@ PluginVersion::PluginVersion(tstring version)
 PluginVersion::PluginVersion(const TCHAR *version)
 {
 	_displayString = NULL;
-	TCHAR *str = new TCHAR[_tcslen(version) + 1];
-	_tcscpy(str, version);
+	size_t versionSize = _tcslen(version) + 1;
+	TCHAR *str = new TCHAR[versionSize];
+	_tcscpy_s(str, versionSize, version);
 	parseString(str);
 	delete[] str;
 	
@@ -55,12 +57,11 @@ PluginVersion::PluginVersion(const TCHAR *version)
 
 PluginVersion::PluginVersion(int major, int minor, int revision, int build)
 {
-	_displayString = NULL;
 	_major		= major;
 	_minor		= minor;
 	_revision	= revision;
 	_build		= build;
-	
+	_displayString = NULL;
 }
 
 
@@ -97,8 +98,10 @@ bool PluginVersion::operator!= (PluginVersion &rhs)
 
 PluginVersion &PluginVersion::operator=(const char *rhs)
 {
-	char *str = new char[strlen(rhs) + 1];
-	strcpy(str, rhs);
+	_displayString = NULL;
+	size_t versionSize = strlen(rhs) + 1;
+	char *str = new char[versionSize];
+	strcpy_s(str, versionSize, rhs);
 	parseString(str);
 	delete[] str;
 	return *this;
@@ -106,8 +109,10 @@ PluginVersion &PluginVersion::operator=(const char *rhs)
 
 PluginVersion &PluginVersion::operator=(const TCHAR *rhs)
 {
-	TCHAR *str = new TCHAR[_tcslen(rhs) + 1];
-	_tcscpy(str, rhs);
+	_displayString = NULL;
+	size_t versionSize = _tcslen(rhs) + 1;
+	TCHAR *str = new TCHAR[versionSize];
+	_tcscpy_s(str, versionSize, rhs);
 	parseString(str);
 	delete[] str;
 	return *this;
@@ -115,8 +120,9 @@ PluginVersion &PluginVersion::operator=(const TCHAR *rhs)
 
 PluginVersion &PluginVersion::operator=(tstring &rhs)
 {
+	_displayString = NULL;
 	TCHAR *str = new TCHAR[rhs.size() + 1];
-	_tcscpy(str, rhs.c_str());
+	_tcscpy_s(str, rhs.size() + 1, rhs.c_str());
 	parseString(str);
 	delete[] str;
 	return *this;
@@ -124,8 +130,9 @@ PluginVersion &PluginVersion::operator=(tstring &rhs)
 
 PluginVersion &PluginVersion::operator=(string &version)
 {
+	_displayString = NULL;
 	char *str = new char[version.size() + 1];
-	strcpy(str, version.c_str());
+	strcpy_s(str, version.size() + 1, version.c_str());
 	parseString(str);
 	delete[] str;
 	return *this;
@@ -139,11 +146,15 @@ void PluginVersion::parseString(const char *version)
 	if (NULL != _displayString)
 	{
 		delete[] _displayString;
+		_displayString = NULL;
 	}
 
-	char* versionCopy = new char[strlen(version) + 1];
-	strcpy(versionCopy, version);
-	char* versionPart = strtok(versionCopy, ",.");
+	size_t versionSize = strlen(version) + 1;
+	char* versionCopy = new char[versionSize];
+	strcpy_s(versionCopy, versionSize, version);
+	
+	char* context;
+	char* versionPart = strtok_s(versionCopy, ",.", &context);
 	
 	_major = _minor = _revision = _build = 0;
 
@@ -152,19 +163,19 @@ void PluginVersion::parseString(const char *version)
 		StrTrimA(versionPart, " ");
 		_major = atoi(versionPart);
 
-		versionPart = strtok(NULL, ",.");
+		versionPart = strtok_s(NULL, ",.", &context);
 		if (versionPart)
 		{
 			StrTrimA(versionPart, " ");
 			_minor = atoi(versionPart);
 
-			versionPart = strtok(NULL, ",.");
+			versionPart = strtok_s(NULL, ",.", &context);
 			if (versionPart)
 			{
 				StrTrimA(versionPart, " ");
 				_revision = atoi(versionPart);
 
-				versionPart = strtok(NULL, ",.");
+				versionPart = strtok_s(NULL, ",.", &context);
 				if (versionPart)
 				{
 					StrTrimA(versionPart, " ");
@@ -183,11 +194,16 @@ void PluginVersion::parseString(const TCHAR *version)
 	if (NULL != _displayString)
 	{
 		delete[] _displayString;
+		_displayString = NULL;
 	}
 
-	TCHAR* versionCopy = new TCHAR[_tcslen(version) + 1];
-	_tcscpy(versionCopy, version);
-	TCHAR* versionPart = _tcstok(versionCopy, _T(",."));
+
+	size_t versionSize = _tcslen(version) + 1;
+	TCHAR* versionCopy = new TCHAR[versionSize];
+	_tcscpy_s(versionCopy, versionSize, version);
+	
+	TCHAR* context;
+	TCHAR* versionPart = _tcstok_s(versionCopy, _T(",."), &context);
 	
 	_major = _minor = _revision = _build = 0;
 
@@ -196,19 +212,19 @@ void PluginVersion::parseString(const TCHAR *version)
 		StrTrim(versionPart, _T(" "));
 		_major = _ttoi(versionPart);
 
-		versionPart = _tcstok(NULL, _T(",."));
+		versionPart = _tcstok_s(NULL, _T(",."), &context);
 		if (versionPart)
 		{
 			StrTrim(versionPart, _T(" "));
 			_minor = _ttoi(versionPart);
 
-			versionPart = _tcstok(NULL, _T(",."));
+			versionPart = _tcstok_s(NULL, _T(",."), &context);
 			if (versionPart)
 			{
 				StrTrim(versionPart, _T(" "));
 				_revision = _ttoi(versionPart);
 
-				versionPart = _tcstok(NULL, _T(",."));
+				versionPart = _tcstok_s(NULL, _T(",."), &context);
 				if (versionPart)
 				{
 					StrTrim(versionPart, _T(" "));
@@ -244,10 +260,23 @@ int PluginVersion::compare(PluginVersion &lhs, PluginVersion &rhs)
 
 TCHAR* PluginVersion::getDisplayString()
 {
+	
 	if (NULL == _displayString)
 	{
-		_displayString = new TCHAR[30];
-		_sntprintf(_displayString, 30, _T("%d.%d.%d.%d"), _major, _minor, _revision, _build);
+		basic_stringstream<TCHAR> display;
+		
+		display << _major << _T(".") << _minor;
+		if (_revision + _build > 0)
+			display << _T(".") << _revision;
+
+		if (_build > 0)
+			display  << _T(".") << _build;
+		
+		size_t length = display.tellp();
+		length++;
+		_displayString = new TCHAR[length];
+		_tcscpy_s(_displayString, length, display.str().c_str());
 	}
+
 	return _displayString;
 }

@@ -1,11 +1,13 @@
 #include <string>
+#include <boost/shared_ptr.hpp>
 #define ZLIB_WINAPI
 #include "Decompress.h"
-
+#include "WcharMbcsConverter.h"
 #include "unzip.h"
 #include "tstring.h"
 
 using namespace std;
+using namespace boost;
 
 BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 {
@@ -53,9 +55,10 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 			
 			FILE *fp;
 			string outputFilename;
+
 			setString(destDir, outputFilename);
 			outputFilename.append(filename);
-			fp = fopen(outputFilename.c_str(), "wb");
+			fopen_s(&fp, outputFilename.c_str(), "wb");
 
 			do
 			{
@@ -79,17 +82,8 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 }
 
 
-void Decompress::setString(const tstring& src, string &dest)
+void Decompress::setString(const tstring &src, std::string &dest)
 {
-#ifdef _UNICODE
-	int len = src.size() * 2;
-	char *tmpBuf = new char[len];
-	
-    size_t newSize = wcstombs(tmpBuf, src.c_str(), len); 
-	tmpBuf[newSize] = '\0';
-	dest = tmpBuf;
-	delete[] tmpBuf;
-#else
-	dest = src;
-#endif
+	shared_ptr<char> cDest = WcharMbcsConverter::tchar2char(src.c_str());
+	dest = cDest.get();
 }

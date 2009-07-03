@@ -10,7 +10,7 @@
 class DownloadStep : public InstallStep
 {
 public:
-	DownloadStep(const TCHAR* url, const TCHAR* filename);
+	DownloadStep(const TCHAR* url, const TCHAR* filename, const char* proxy, long proxyPort);
 	~DownloadStep() {};
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
@@ -20,6 +20,8 @@ public:
 private:
 	tstring	_url;
 	tstring _filename;
+	std::string _proxy;
+	long _proxyPort;
 };
 
 #endif

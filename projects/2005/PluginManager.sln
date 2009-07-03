@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginManager", "PluginMana
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libinstall", "..\..\libinstall\projects\2005\libinstall.vcproj", "{F8F0B077-8778-4CB9-9B54-EC67A3D2C750}"
 EndProject
-Project("{8BC9CEB9-9B4A-11D0-8D11-00A0C91BC942}") = "NppDump.dmp", "C:\program Files\notepad++dev\NppDump.dmp", "{B0CAF870-6826-448D-A28A-91D93E129678}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -23,8 +21,6 @@ Global
 		{F8F0B077-8778-4CB9-9B54-EC67A3D2C750}.Debug|Win32.Build.0 = Debug|Win32
 		{F8F0B077-8778-4CB9-9B54-EC67A3D2C750}.Release|Win32.ActiveCfg = Release|Win32
 		{F8F0B077-8778-4CB9-9B54-EC67A3D2C750}.Release|Win32.Build.0 = Release|Win32
-		{B0CAF870-6826-448D-A28A-91D93E129678}.Debug|Win32.ActiveCfg = Debug
-		{B0CAF870-6826-448D-A28A-91D93E129678}.Release|Win32.ActiveCfg = Debug
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

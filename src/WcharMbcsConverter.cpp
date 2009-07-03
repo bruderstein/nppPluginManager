@@ -1,10 +1,10 @@
 #include <boost/shared_ptr.hpp>
 #include <windows.h>
-
+#include "WcharMbcsConverter.h"
 using namespace boost;
 
 
-shared_ptr<wchar_t> char2wchar(const char* mbStr)
+shared_ptr<wchar_t> WcharMbcsConverter::char2wchar(const char* mbStr)
 {
 	
 	shared_ptr<wchar_t> wideCharStr;
@@ -27,7 +27,7 @@ shared_ptr<wchar_t> char2wchar(const char* mbStr)
 }
 
 
-shared_ptr<char> wchar2char(const wchar_t* wcStr)
+shared_ptr<char> WcharMbcsConverter::wchar2char(const wchar_t* wcStr)
 {
 
 	shared_ptr<char> multiByteStr;
@@ -48,6 +48,28 @@ shared_ptr<char> wchar2char(const wchar_t* wcStr)
 	return multiByteStr;
 }
 
-	//static boost::shared_ptr<const TCHAR>   char2tchar(const char* mbStr);
-	//static boost::shared_ptr<const char>    tchar2char(const TCHAR* tStr);
-	
+
+shared_ptr<TCHAR> WcharMbcsConverter::char2tchar(const char* mbStr)
+{
+#ifdef _UNICODE
+	return char2wchar(mbStr);
+#else
+	int len = strlen(mbStr) + 1
+	shared_ptr<TCHAR> result(new TCHAR[len]);
+	strcpy_s(result.get(), len, mbStr);
+	return result;
+#endif
+}
+
+
+shared_ptr<char> WcharMbcsConverter::tchar2char(const TCHAR* tStr)
+{
+#ifdef _UNICODE
+	return wchar2char(tStr);
+#else
+	int len = _tcslen(tStr) + 1
+	shared_ptr<TCHAR> result(new TCHAR[len]);
+	strcpy_s(result.get(), len, tStr);
+	return result;
+#endif
+}

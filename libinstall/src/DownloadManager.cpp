@@ -4,6 +4,8 @@
 #include <boost/function.hpp>
 #include "WcharMbcsConverter.h"
 #include "curl/curl.h"
+#include "tstring.h"
+
 
 using namespace std;
 using namespace boost;
@@ -28,12 +30,20 @@ void DownloadManager::setProgressFunction(function<void(int)> progressFunction)
 	_progressFunctionSet = TRUE;
 }
 
-BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType)
+BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, const char* proxy, long proxyPort)
 {
 	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
 
-	FILE *fp = _tfopen(filename.c_str(), _T("wb"));
+	FILE *fp;
+	_tfopen_s(&fp, filename.c_str(), _T("wb"));
+
+	if (proxy && *proxy)
+	{
+		curl_easy_setopt(_curl, CURLOPT_PROXY, proxy);
+		curl_easy_setopt(_curl, CURLOPT_PROXYPORT, proxyPort);
+	}
+
 	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteCallback);
 	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, fp);
 	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
@@ -54,9 +64,55 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 		return FALSE;
 }
 
+
+
+BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const char* proxy, long proxyPort)
+{
+	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
+	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
+
+
+	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteStringCallback);
+	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, &result);
+	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
+	curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
+	curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
+	CURLcode code = curl_easy_perform(_curl);
+	
+	
+	
+	if (0 == code)
+		return TRUE;
+	else
+		return FALSE;
+}
+
+
+
 size_t DownloadManager::curlWriteCallback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
 	return fwrite(ptr, size, nmemb, reinterpret_cast<FILE*>(stream));
+}
+
+
+size_t DownloadManager::curlWriteStringCallback(void *ptr, size_t size, size_t nmemb, void *str)
+{
+	size_t pos = 0;
+	size_t total = size * nmemb;
+	char* tptr = (char*)ptr;
+
+	// Don't allow result strings over 1k
+	if (reinterpret_cast<string*>(str)->size() > 1024)
+		return 0;
+
+	while (pos < total)
+	{
+		reinterpret_cast<string*>(str)->push_back(*tptr);
+		tptr++;
+		++pos;
+	}
+	return total;
+	
 }
 
 int DownloadManager::curlProgressCallback(void *ptr, double dltotal, double dlnow, 

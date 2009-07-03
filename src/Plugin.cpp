@@ -121,7 +121,7 @@ void Plugin::addInstallStep(shared_ptr<InstallStep> step)
 }
 
 
-int Plugin::getInstallStepCount()
+size_t Plugin::getInstallStepCount()
 {
 	return _installSteps.size();
 }
@@ -181,16 +181,3 @@ const list<tstring>& Plugin::getDependencies()
 }
 
 
-void Plugin::setTstring(const char *src, tstring &dest)
-{
-#ifdef _UNICODE
-	TCHAR *tmpBuf = new TCHAR[strlen(src) + 1];
-	int len = strlen(src); 
-    size_t newSize = mbstowcs(tmpBuf, src, len); 
-	tmpBuf[newSize] = '\0';
-	dest = tmpBuf;
-	delete[] tmpBuf;
-#else
-	dest = src;
-#endif
-}

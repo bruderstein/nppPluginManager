@@ -565,9 +565,9 @@
 #define VK_NUMPAD9                      0x69
 #define IDD_TABAVAILABLE                105
 #define VK_MULTIPLY                     0x6A
-#define IDD_DIALOG2                     106
 #define IDD_PROGRESSDIALOG              106
 #define VK_ADD                          0x6B
+#define IDD_CONFIGDIALOG                107
 #define VK_SEPARATOR                    0x6C
 #define VK_SUBTRACT                     0x6D
 #define VK_DECIMAL                      0x6E
@@ -905,6 +905,7 @@
 #define IDC_BUTTONUPDATE                1001
 #define IDC_BUTTONINSTALL               1001
 #define IDC_BUTTONREMOVE                1001
+#define IDC_SETTINGS                    1001
 #define IDC_LISTUPDATES                 1009
 #define IDC_PLUGINTABCTRL               1010
 #define IDC_LISTAVAILABLE               1011
@@ -913,9 +914,13 @@
 #define IDC_EDITUPDATE                  1013
 #define IDC_EDITAVAILABLE               1013
 #define IDC_EDITINSTALLED               1013
+#define IDC_PROXYADDRESS                1013
 #define IDC_PROGRESSCURRENT             1014
 #define IDC_PROGRESSOVERALL             1015
 #define IDC_LABELCURRENT                1016
+#define IDC_PROXYPORT                   1017
+#define IDC_NOTIFY                      1018
+#define IDC_NOTIFY2                     1019
 #define CF_GDIOBJLAST                   0x03FF
 #define WM_USER                         0x0400
 #define WVR_VALIDRECTS                  0x0400
@@ -1226,9 +1231,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        107
+#define _APS_NEXT_RESOURCE_VALUE        108
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1017
+#define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

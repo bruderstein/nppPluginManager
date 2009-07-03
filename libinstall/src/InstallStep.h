@@ -29,7 +29,7 @@ public:
 		boost::function<void(const int)> stepProgress) { return STEPSTATUS_SUCCESS; };
 
 protected:
-	void setTstring(const char *src, tstring &dest);
+//	void setTstring(const char *src, tstring &dest);
 
 };
 

@@ -18,7 +18,7 @@ DirectLinkSearch::~DirectLinkSearch()
 
 shared_ptr<char> DirectLinkSearch::search(char *filename)
 {
-	int patternLength = strlen(filename);
+	size_t patternLength = strlen(filename);
     int shiftTable[256];
 
     for (int position = 0; position < 256; position++)
@@ -26,14 +26,14 @@ shared_ptr<char> DirectLinkSearch::search(char *filename)
        shiftTable[position] = patternLength;
     }
 
-	for (int position = 0; position <= patternLength; position++)
+	for (size_t position = 0; position <= patternLength; position++)
     {
        shiftTable[filename[position]] = patternLength - position - 1;
     }
 
 	int checkOffset = 0;
 	int shiftPosition;
-	long currentPosition = patternLength - 1;
+	size_t currentPosition = patternLength - 1;
 	int currentChar;
 	do 
 	{
@@ -45,7 +45,7 @@ shared_ptr<char> DirectLinkSearch::search(char *filename)
 			if (checkOffset == patternLength)
 			{
 				// Found filename
-				long realPosition = validateDirectLink(currentPosition-checkOffset + 1);
+				size_t realPosition = validateDirectLink(currentPosition-checkOffset + 1);
 				if (realPosition != LINK_NOT_VALID)
 				{
 					shared_ptr<char> buffer(new char[currentPosition - realPosition + 2]);
@@ -88,16 +88,16 @@ long DirectLinkSearch::validateDirectLink(long currentPosition)
 	char searchString2[] = "href=\"https://";
 	char validUriChars[] = ":@&=+$,;/?:";
 
-	int charListLen = strlen(validUriChars);
+	size_t charListLen = strlen(validUriChars);
 	const int LINKOFFSET = 6;
 
 	long lastNonDomain = currentPosition;
 	long minPosition = currentPosition - MAX_RESULT_SIZE;
 
-	int startSearchPos = strlen(searchString) - 1;
-	int startSearchPos2 = strlen(searchString2) - 1;
-	int searchPos = startSearchPos;
-	int searchPos2 = startSearchPos2;
+	size_t startSearchPos = strlen(searchString) - 1;
+	size_t startSearchPos2 = strlen(searchString2) - 1;
+	size_t searchPos = startSearchPos;
+	size_t searchPos2 = startSearchPos2;
 
 	bool found = false;
 

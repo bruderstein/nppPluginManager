@@ -1,6 +1,6 @@
 /*
-This file is part of Plugin Template Plugin Plugin for Notepad++
-Copyright (C)2007 Jens Lorenz <jens.plugin.npp@gmx.de>
+This file is part of Plugin Manager Plugin for Notepad++
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,24 +17,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/* include files */
+
 #include "stdafx.h"
+#include <shlwapi.h>
+#include <windows.h>
+#include <boost/shared_ptr.hpp>
+
 #include "PluginManager.h"
 #include "AboutDialog.h"
 #include "PluginManagerDialog.h"
-#include <shlwapi.h>
+#include "SettingsDialog.h"
 #include "Plugin.h"
-
+#include "Utility.h"
+#include "WcharMbcsConverter.h"
 
 /* information for notepad */
 CONST INT	nbFunc	= 2;
-CONST TCHAR	PLUGIN_NAME[] = _T("&Plugin Manager");
+CONST TCHAR	PLUGIN_NAME[] = _T("Plugin Manager");
 
 /* global values */
 HANDLE				g_hModule			= NULL;
 NppData				nppData;
 FuncItem			funcItem[nbFunc];
 BOOL				g_isUnicode;
+Options				g_options;
+SettingsDialog		g_settingsDlg;
 
 /* dialog classes */
 AboutDialog			aboutDlg;
@@ -45,6 +52,12 @@ TCHAR				configPath[MAX_PATH];
 TCHAR				iniFilePath[MAX_PATH];
 
 
+UINT startupChecks(LPVOID param); 
+
+
+
+using namespace std;
+using namespace boost;
 
 
 /* main function of dll */
@@ -63,8 +76,8 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 			funcItem[1]._pFunc = doAboutDlg;
 		    	
 			/* Fill menu names */
-			_tcscpy(funcItem[0]._itemName, _T("&Show Plugin Manager"));
-			_tcscpy(funcItem[1]._itemName, _T("&About"));
+			_tcscpy_s(funcItem[0]._itemName, 64, _T("&Show Plugin Manager"));
+			_tcscpy_s(funcItem[1]._itemName, 64, _T("&About"));
 
 			/* Set shortcuts */
 			funcItem[0]._pShKey = new ShortcutKey;
@@ -125,13 +138,20 @@ extern "C" __declspec(dllexport) FuncItem * getFuncsArray(INT *nbF)
  */
 extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 {
-	if (notifyCode->nmhdr.hwndFrom == nppData._nppHandle)
+
+	switch(notifyCode->nmhdr.code)
 	{
-		/* on this notification code you can register your plugin icon in Notepad++ toolbar */
-		if (notifyCode->nmhdr.code == NPPN_TBMODIFICATION)
-		{
-			
-		}
+		case NPPN_READY:
+			/* When Notepad++ is ready, we'll kick off a thread to 
+			 * check if there's anything left for gpup to do.
+			 * If there is, then we can invite the user if they want to 
+			 * do it now.
+			 * Eventually, we'll do the plugins.xml download in this new thread
+			 * and notify the user of any updates too.
+			 */
+			::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)startupChecks, NULL, 0, 0);
+			break;
+
 	}
 }
 
@@ -140,8 +160,10 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
  *
  *	This function is called, if a notification from Notepad occurs
  */
-extern "C" __declspec(dllexport) LRESULT messageProc(UINT Message, WPARAM wParam, LPARAM lParam)
+extern "C" __declspec(dllexport) LRESULT messageProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
+
+	
 	return TRUE;
 }
 
@@ -175,13 +197,22 @@ void loadSettings(void)
 		::CreateDirectory(configPath, NULL);
 	}
 
-	_tcscpy(iniFilePath, configPath);
-	_tcscat(iniFilePath, PLUGINTEMP_INI);
+	_tcscpy_s(iniFilePath, MAX_PATH, configPath);
+	_tcscat_s(iniFilePath, MAX_PATH, PLUGINMANAGER_INI);
 	if (PathFileExists(iniFilePath) == FALSE)
 	{
 		::CloseHandle(::CreateFile(iniFilePath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
 	}
 
+	TCHAR proxy[MAX_PATH];
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), proxy, MAX_PATH, iniFilePath);
+
+	g_options.proxy = WcharMbcsConverter::tchar2char(proxy).get();
+
+	g_options.proxyPort = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_PROXYPORT, 0, iniFilePath);
+
+	g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
+	
 }
 
 /***
@@ -193,7 +224,20 @@ void saveSettings(void)
 {
 	TCHAR	temp[16];
 
-	
+	_itot_s(g_options.proxyPort, temp, 16, 10);
+	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPORT, temp, iniFilePath);
+	if (g_options.proxy.empty())
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), iniFilePath);
+	else
+	{
+		
+		shared_ptr<TCHAR> tproxy = WcharMbcsConverter::char2tchar(g_options.proxy.c_str());
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, tproxy.get(), iniFilePath);
+	}
+
+	_itot_s(g_options.notifyUpdates, temp, 16, 10);
+	::WritePrivateProfileString(SETTINGS_GROUP, KEY_NOTIFYUPDATES, temp, iniFilePath);
+
 }
 
 /**************************************************************************
@@ -211,3 +255,42 @@ void doPluginManagerDlg()
 }
 
 
+
+UINT startupChecks(LPVOID /*param*/)
+{
+	TCHAR tConfigPath[MAX_PATH];
+	TCHAR tNppPath[MAX_PATH];
+	::SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, reinterpret_cast<LPARAM>(tConfigPath));
+	::SendMessage(nppData._nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(tNppPath));
+
+
+	tstring configPath = tConfigPath;
+	configPath.append(_T("\\PluginManagerGpup.xml"));
+	TiXmlDocument gpupDoc(configPath);
+	if (gpupDoc.LoadFile() 
+		&& gpupDoc.FirstChildElement(_T("install")) 
+		&& !gpupDoc.FirstChildElement(_T("install"))->NoChildren())
+	{
+			int mbResult = ::MessageBox(nppData._nppHandle, _T("There are still some pending actions to complete installing or removing some plugins.  Would you like to do these now (Notepad++ will be restarted)?"),
+				_T("Notepad++ Plugin Manager"), MB_YESNO | MB_ICONEXCLAMATION);
+			if (mbResult == IDYES)
+			{
+				configPath.insert(0, _T("-a \""));
+				configPath.append(_T("\""));
+				Utility::startGpup(tNppPath, configPath.c_str());
+			}
+
+	}
+	else
+	{
+		// Clean up temp directory
+		tstring tempDir = tConfigPath;
+		tempDir.append(_T("\\plugin_install_temp"));
+		Utility::removeDirectory(tempDir.c_str());
+		
+		// Remove the Gpup file (if it exists, doesn't matter if it doesn't)
+		::DeleteFile(configPath.c_str());
+	}
+
+	return 0;
+}

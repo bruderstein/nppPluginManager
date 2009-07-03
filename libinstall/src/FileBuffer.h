@@ -18,7 +18,7 @@ public:
 	~FileBuffer();
 
 	void open(const char *filename);
-	int getCharAt(long position);
+	int getCharAt(size_t position);
 	
 
 
@@ -26,10 +26,10 @@ private:
 	ifstream _file;
 	boost::shared_ptr<char> _buffer;
 
-	long _currentBufferStart;
-	long _bufferLength;
-	static const long BUFFER_SIZE      = 8192;
-	static const long REVERSE_PREFETCH =  384;
+	size_t _currentBufferStart;
+	size_t _bufferLength;
+	static const size_t BUFFER_SIZE      = 8192;
+	static const size_t REVERSE_PREFETCH =  384;
 };
 
 #endif

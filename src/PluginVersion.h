@@ -3,8 +3,8 @@
 
 #include <tchar.h>
 #include <string.h>
+#include "tstring.h"
 
-typedef std::basic_string<TCHAR>	tstring;
 
 
 class PluginVersion
@@ -43,7 +43,7 @@ private:
 	void parseString(const TCHAR *version);
 
 
-	TCHAR *_displayString;
+	TCHAR* _displayString;
 
 };
 

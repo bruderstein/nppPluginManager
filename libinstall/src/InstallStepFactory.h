@@ -12,7 +12,7 @@ class InstallStepFactory
 public:
 	InstallStepFactory(VariableHandler* handler);
 
-	boost::shared_ptr<InstallStep> create(TiXmlElement* element);
+	boost::shared_ptr<InstallStep> create(TiXmlElement* element, const char* proxy, long proxyPort);
 
 private:
 	VariableHandler* _variableHandler;

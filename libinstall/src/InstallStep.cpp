@@ -1,5 +1,5 @@
 #include "InstallStep.h"
-
+/*
 
 void InstallStep::setTstring(const char *src, tstring &dest)
 {
@@ -14,3 +14,4 @@ void InstallStep::setTstring(const char *src, tstring &dest)
 	dest = src;
 #endif
 }
+*/

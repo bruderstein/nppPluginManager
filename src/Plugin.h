@@ -52,7 +52,7 @@ public:
 
 	/* installation */
 	void			addInstallStep(boost::shared_ptr<InstallStep> step);
-	int				getInstallStepCount();
+	size_t				getInstallStepCount();
 	InstallStatus   install(tstring& basePath, TiXmlElement* forGpup, 
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress,
@@ -80,9 +80,6 @@ private:
 
 	std::map<tstring, PluginVersion>  _versionMap;
 	
-	/* TCHAR Conversion function */
-	void   setTstring(const char *src, tstring &dest);
-
 	typedef std::list<boost::shared_ptr<InstallStep> > InstallStepContainer;
 
 	InstallStepContainer	_installSteps;

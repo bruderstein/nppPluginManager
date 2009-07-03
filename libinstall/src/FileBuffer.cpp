@@ -32,10 +32,10 @@ void FileBuffer::open(const char *filename)
 	_bufferLength = _file.gcount();
 }
 
-int FileBuffer::getCharAt(long position)
+int FileBuffer::getCharAt(size_t position)
 {
-	long positionInBuffer = position - _currentBufferStart;
-	if (positionInBuffer > 0 && positionInBuffer < _bufferLength)
+	size_t positionInBuffer = position - _currentBufferStart;
+	if (positionInBuffer != 0 && positionInBuffer < _bufferLength)
 		return _buffer.get()[positionInBuffer];
 	else
 	{

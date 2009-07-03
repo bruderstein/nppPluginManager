@@ -75,7 +75,7 @@ BOOL MD5::hash(const TCHAR *filename, TCHAR *hashBuffer, int hashBufferLength)
         TCHAR *currentHashBuffer = hashBuffer;
         for (DWORD i = 0; i < cbHash; i++)
         {
-            _stprintf(currentHashBuffer, _T("%02x"), rgbHash[i]);
+            _stprintf_s(currentHashBuffer, hashBufferLength - (i * 2), _T("%02x"), rgbHash[i]);
 			currentHashBuffer += 2;
         }
         dwStatus = TRUE;
