@@ -6,4 +6,13 @@
 *.lib
 *.suo
 *.ncb
+*.ilk
+*.pch
+*.dep
+*.idb
+*.exe
+*.aps
 *.vcproj.*.user
+BuildLog.htm
+projects/2005/Debug/*.res
+projects/2005/Release/*.res
