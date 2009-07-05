@@ -1,7 +1,7 @@
-#include "resource.h"
 #include <windows.h>
 #include <commctrl.h>
 #include <boost/function.hpp>
+#include "resource.h"
 #include "ProgressDialog.h"
 
 
@@ -17,7 +17,7 @@ ProgressDialog::ProgressDialog(HINSTANCE hInst, function<void(ProgressDialog*)> 
 
 
 
-BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	switch(message)
 	{

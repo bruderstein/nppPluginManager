@@ -22,9 +22,7 @@ public:
 	InstallStep() {};
 	~InstallStep() {};
 
-	
-
-	virtual StepStatus perform(tstring &basePath, TiXmlElement* forGpup, 
+	virtual StepStatus perform(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress) { return STEPSTATUS_SUCCESS; };
 

@@ -7,24 +7,30 @@
 #include "FileBuffer.h"
 #include <boost/shared_ptr.hpp>
 
+#include <limits.h>
+
+#ifdef UNICODE
+
+#endif
+
 class DirectLinkSearch
 {
 public:
-	DirectLinkSearch(char *filename);
+	DirectLinkSearch(const TCHAR *filename);
 	~DirectLinkSearch();
 
-	boost::shared_ptr<char> search(char *filename);
+	boost::shared_ptr<TCHAR> search(const TCHAR *filename);
 
 
 private:
 	FileBuffer _file;
 
 
-	static const int LINK_NOT_VALID = -1;
+	static const size_t LINK_NOT_VALID = UINT_MAX;
 	static const int MAX_RESULT_SIZE = 384;
 
-    long validateDirectLink(long currentPosition);
-	bool findChar(int ch, const char *charList, int charListLen);
+    size_t validateDirectLink(size_t currentPosition);
+	bool findChar(TCHAR ch, const TCHAR *charList, size_t charListLen);
 
 };
 

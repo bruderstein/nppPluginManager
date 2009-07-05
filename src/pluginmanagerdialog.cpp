@@ -1,5 +1,4 @@
 
-#include "resource.h"
 #include <windows.h>
 #include <commctrl.h>
 #include <process.h>
@@ -10,6 +9,7 @@
 #include <set>
 
 
+#include "resource.h"
 #include "tinyxml.h"
 
 #include "PluginManagerDialog.h"
