@@ -1,0 +1,9 @@
+*.pdb
+*.dll
+*.obj
+*.manifest
+*.manifest.res
+*.lib
+*.suo
+*.ncb
+*.vcproj.*.user
