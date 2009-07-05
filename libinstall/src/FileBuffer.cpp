@@ -12,7 +12,7 @@ FileBuffer::FileBuffer()
 	_bufferLength = 0;
 }
 
-FileBuffer::FileBuffer(const char *filename)
+FileBuffer::FileBuffer(const TCHAR *filename)
 {
 	open(filename);	
 }
@@ -23,7 +23,7 @@ FileBuffer::~FileBuffer()
 }
 
 
-void FileBuffer::open(const char *filename)
+void FileBuffer::open(const TCHAR *filename)
 {
 	_file.open(filename);
 	_buffer.reset(new char[BUFFER_SIZE]);
@@ -32,7 +32,7 @@ void FileBuffer::open(const char *filename)
 	_bufferLength = _file.gcount();
 }
 
-int FileBuffer::getCharAt(size_t position)
+char FileBuffer::getCharAt(size_t position)
 {
 	size_t positionInBuffer = position - _currentBufferStart;
 	if (positionInBuffer != 0 && positionInBuffer < _bufferLength)
@@ -43,7 +43,7 @@ int FileBuffer::getCharAt(size_t position)
 		if (_currentBufferStart < 0) 
 			_currentBufferStart = 0;
 		
-		_file.seekg(_currentBufferStart);
+		_file.seekg((std::streamoff)_currentBufferStart);
 		_file.read(_buffer.get(), BUFFER_SIZE);
 		_bufferLength = _file.gcount();
 		positionInBuffer = position - _currentBufferStart;

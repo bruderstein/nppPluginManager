@@ -28,7 +28,7 @@ void PluginListView::init(HWND hListView, HWND hDescription, int nVersionColumns
 	initColumns();
 }
 
-LRESULT PluginListView::notify(WPARAM wParam, LPARAM lParam)
+LRESULT PluginListView::notify(WPARAM /*wParam*/, LPARAM lParam)
 {
 	switch (((LPNMHDR)lParam)->code)
     {
@@ -158,7 +158,7 @@ void PluginListView::setList(PluginListContainer &list)
 
 int PluginListView::getCurrentSelectedIndex()
 {
-	return (int)SendMessage(_hListView, LVM_GETNEXTITEM, -1, LVIS_SELECTED); 
+	return (int)SendMessage(_hListView, LVM_GETNEXTITEM, WPARAM(-1), LVIS_SELECTED); 
 }
 
 void PluginListView::setMessage(TCHAR *msg)

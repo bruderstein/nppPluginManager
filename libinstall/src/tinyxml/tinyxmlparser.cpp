@@ -24,6 +24,7 @@ distribution.
 
 #include "tinyxml.h"
 #include <ctype.h>
+#include <tchar.h>
 
 //#define DEBUG_PARSER
 
@@ -231,7 +232,7 @@ const TCHAR* TiXmlBase::GetEntity( const TCHAR* p, TCHAR* value )
 		const TCHAR* end = generic_strchr(p+3, TEXT(';'));
 		if (end && end - p <= 3 + 4)
 		{
-			int val;
+			TCHAR val;
 			if (generic_sscanf(p+3, TEXT("%x"), &val) == 1)
 			{
 				*value = val;
@@ -245,7 +246,7 @@ const TCHAR* TiXmlBase::GetEntity( const TCHAR* p, TCHAR* value )
 	{
 		if ( generic_strncmp( entity[i].str, p, entity[i].strLength ) == 0 )
 		{
-			assert( lstrlen( entity[i].str ) == entity[i].strLength );
+			assert( _tcslen( entity[i].str ) == entity[i].strLength );
 			*value = entity[i].chr;
 			return ( p + entity[i].strLength );
 		}

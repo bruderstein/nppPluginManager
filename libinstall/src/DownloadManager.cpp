@@ -52,8 +52,9 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 	CURLcode code = curl_easy_perform(_curl);
 	
 	// Get the content type
-	char *contentTypeBuffer;
-	CURLcode contentTypeCode = curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
+	
+	char *contentTypeBuffer = NULL;
+	/*CURLcode contentTypeCode =*/ curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
 	shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
 	contentType = tContentTypeBuffer.get();
 	fclose(fp);
@@ -66,7 +67,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 
 
 
-BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const char* proxy, long proxyPort)
+BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const char* /*proxy*/, long /*proxyPort*/)
 {
 	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
@@ -128,8 +129,8 @@ int DownloadManager::curlProgressCallback(void *ptr, double dltotal, double dlno
 	return 0;
 }
 
-size_t DownloadManager::curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *vContentType)
+size_t DownloadManager::curlHeaderCallback(void * /*ptr*/, size_t size, size_t nmemb, void * /*vContentType*/)
 {
-	tstring *contentType = 	reinterpret_cast<tstring *>(vContentType);
+//	tstring *contentType = 	reinterpret_cast<tstring *>(vContentType);
 	return size * nmemb;
 }

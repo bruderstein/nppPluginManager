@@ -33,7 +33,7 @@ void Plugin::setFilename(const TCHAR* filename)
 	_filename = filename;;
 }
 
-void Plugin::setFilename(tstring filename)
+void Plugin::setFilename(const tstring& filename)
 {
 	_filename = filename;
 }
@@ -43,26 +43,26 @@ void Plugin::setName(const TCHAR* name)
 	_name = name;
 }
 
-void Plugin::setName(tstring name)
+void Plugin::setName(const tstring& name)
 {
 	_name = name;
 }
 
 
-void Plugin::setVersion(PluginVersion &version)
+void Plugin::setVersion(const PluginVersion &version)
 {
 	_version = version;
 }
 
 
 
-void Plugin::setInstalledVersion(PluginVersion &version)
+void Plugin::setInstalledVersion(const PluginVersion &version)
 {
 	_installedVersion = version;
 	_isInstalled = TRUE;
 }
 
-void Plugin::setInstalledVersionFromHash(tstring &hash)
+void Plugin::setInstalledVersionFromHash(const tstring &hash)
 {
 	if (_versionMap.find(hash) != _versionMap.end())
 	{
@@ -90,13 +90,13 @@ tstring& Plugin::getName()
 
 
 
-PluginVersion Plugin::getVersion()
+PluginVersion& Plugin::getVersion()
 {
 	return _version;
 }
 
 
-PluginVersion Plugin::getInstalledVersion()
+PluginVersion& Plugin::getInstalledVersion()
 {
 	return _installedVersion;
 }
@@ -107,12 +107,12 @@ BOOL Plugin::isInstalled()
 	return _isInstalled;
 }
 
-void Plugin::addVersion(const TCHAR* hash, PluginVersion &version)
+void Plugin::addVersion(const TCHAR* hash, const PluginVersion &version)
 {
 	tstring *hashString = new tstring;
 	*hashString = hash;
 
-	_versionMap[(*hashString)] = PluginVersion(version);
+	_versionMap[(*hashString)] = version;
 }
 
 void Plugin::addInstallStep(shared_ptr<InstallStep> step)

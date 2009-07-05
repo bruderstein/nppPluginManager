@@ -29,26 +29,26 @@ public:
 
 	/* Setters */
 	void	setName			(const TCHAR* name);
-	void	setName			(tstring name);
-    void	setVersion	(PluginVersion &version);
+	void	setName			(const tstring& name);
+    void	setVersion	(const PluginVersion &version);
 	void	setDescription	(const TCHAR* description);
 	void	setFilename		(const TCHAR* filename);
-	void	setFilename		(tstring filename);
-	void	setInstalledVersion(PluginVersion &version);
-	void	setInstalledVersionFromHash(tstring &hash);
+	void	setFilename		(const tstring& filename);
+	void	setInstalledVersion(const PluginVersion &version);
+	void	setInstalledVersionFromHash(const tstring &hash);
 
 
 	/* Getters */
 	tstring&		getName();
-	PluginVersion	getVersion();
+	PluginVersion&	getVersion();
 	tstring&		getDescription();
 	tstring&		getFilename();
-	PluginVersion	getInstalledVersion();
+	PluginVersion&	getInstalledVersion();
 
 
 	/* General methods */
 	BOOL			isInstalled();
-	void			addVersion(const TCHAR* hash, PluginVersion &version);
+	void			addVersion(const TCHAR* hash, const PluginVersion &version);
 
 	/* installation */
 	void			addInstallStep(boost::shared_ptr<InstallStep> step);

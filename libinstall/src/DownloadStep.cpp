@@ -62,16 +62,13 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	}
 	else if (contentType == _T("text/html"))
 	{
-		shared_ptr<char> cFilename = WcharMbcsConverter::tchar2char(_filename.c_str());
-		shared_ptr<char> cDownloadFilename = WcharMbcsConverter::tchar2char(downloadFilename.c_str());
-	    DirectLinkSearch linkSearch(cDownloadFilename.get());
-		shared_ptr<char> realLink = linkSearch.search(cFilename.get());
+	    DirectLinkSearch linkSearch(downloadFilename.c_str());
+		shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
 		
 
 		if (realLink.get())
 		{
-			shared_ptr<TCHAR> tRealLink = WcharMbcsConverter::char2tchar(realLink.get());
-			_url = tRealLink.get();
+			_url = realLink.get();
 			return perform(basePath, forGpup, setStatus, stepProgress);
 		}
 		else

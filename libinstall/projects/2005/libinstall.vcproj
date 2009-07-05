@@ -42,13 +42,14 @@
 				AdditionalOptions="/NODEFAULTLIB:library"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\src\libcurl\include;..\..\src;..\..\src\miniunzip;..\..\src\tinyxml"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				DefaultCharIsUnsigned="true"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -62,9 +63,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="..\..\src\libcurl\libcurl.lib ..\..\src\miniunzip\zlibwapi.lib"
-				IgnoreAllDefaultLibraries="true"
-				IgnoreDefaultLibraryNames="MSVCRTD.lib;LIBCMTD.lib"
+				IgnoreAllDefaultLibraries="false"
+				IgnoreDefaultLibraryNames=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -107,11 +107,12 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
+				DefaultCharIsUnsigned="true"
 				UsePrecompiledHeader="2"
-				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
+				WarningLevel="4"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 			/>
 			<Tool

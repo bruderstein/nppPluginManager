@@ -52,6 +52,10 @@ woven in by Terry Thorsen 1/2003.
 #   include <errno.h>
 #endif
 
+#pragma warning(push)
+#pragma warning(disable:4131)
+#pragma warning(disable:4189)
+#pragma warning(disable:4245)
 
 #ifndef local
 #  define local static
@@ -1596,3 +1600,5 @@ extern int ZEXPORT unzSetOffset (file, pos)
     s->current_file_ok = (err == UNZ_OK);
     return err;
 }
+
+#pragma warning(pop)

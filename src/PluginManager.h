@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLUGIN_TEMPLATE_H
 
 #define WIN32_LEAN_AND_MEAN
-#include "SysMsg.h"
+//#include "SysMsg.h"
 #include "PluginInterface.h"
 #include <TCHAR.H>
 #include <map>

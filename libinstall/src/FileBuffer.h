@@ -4,23 +4,22 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <limits.h>
 #include <boost/shared_ptr.hpp>
+#include <tchar.h>
 
-
-#define FILEBUFFER_EOF	  -1
+#define FILEBUFFER_EOF	  CHAR_MAX
 using namespace std;
 
 class FileBuffer
 {
 public:
 	FileBuffer();
-	FileBuffer(const char *filename);
+	FileBuffer(const TCHAR *filename);
 	~FileBuffer();
 
-	void open(const char *filename);
-	int getCharAt(size_t position);
-	
-
+	void open(const TCHAR *filename);
+	char getCharAt(size_t position);
 
 private:
 	ifstream _file;

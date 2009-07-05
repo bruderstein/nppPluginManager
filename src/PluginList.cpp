@@ -1,15 +1,21 @@
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+
+#include <windows.h>
+#include <boost/shared_ptr.hpp>
+#include <set>
+
 #include "PluginList.h"
 #include "PluginManager.h"
 
 #include "tinyxml.h"
-#include <strsafe.h>
-#include <windows.h>
-#include <boost/shared_ptr.hpp>
-#include <set>
 #include "InstallStep.h"
 #include "DownloadStep.h"
 #include "InstallStepFactory.h"
 #include "md5.h"
+
+#include <strsafe.h>
+
 
 using namespace std;
 using namespace boost;
