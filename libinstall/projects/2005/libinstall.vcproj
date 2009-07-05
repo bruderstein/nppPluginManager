@@ -164,6 +164,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\DeleteStep.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\DirectLinkSearch.cpp"
 				>
 			</File>

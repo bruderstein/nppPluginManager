@@ -759,7 +759,7 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 	ListView_InsertItem(dlg->_tabs[TAB_UPDATES].hListView, &lvi);
 	ListView_InsertItem(dlg->_tabs[TAB_INSTALLED].hListView, &lvi);
 */
-	// Work out the path of the Plugins.xml destinatino (in config dir)
+	// Work out the path of the Plugins.xml destination (in config dir)
 	TCHAR pluginConfig[MAX_PATH];
 	::SendMessage(dlg->_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
 	

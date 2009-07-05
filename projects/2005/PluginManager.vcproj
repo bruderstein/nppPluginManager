@@ -366,6 +366,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\SettingsDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Common\Ccpp\stdafx.cpp"
 				>
 			</File>
