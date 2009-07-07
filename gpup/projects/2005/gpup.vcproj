@@ -40,13 +40,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\libinstall\src;..\..\src;..\..\src\tinyxml"
+				AdditionalIncludeDirectories="..\..\..\libinstall\include;..\..\src;..\..\..\tinyxml\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;TIXML_USE_STL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\..\libinstall\bin\libinstall.lib"
+				AdditionalDependencies="Ws2_32.lib ..\..\..\libinstall\bin\$(ConfigurationName)\libinstall.lib ..\..\..\TinyXml\bin\$(ConfigurationName)\TinyXml.lib ..\..\..\unzip\bin\$(ConfigurationName)\unzip.lib libcurld.lib zlibd.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -206,26 +206,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<Filter
-				Name="tinyxml"
-				>
-				<File
-					RelativePath="..\..\src\tinyxml\tinystr.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinyxml.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinyxmlerror.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinyxmlparser.cpp"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -252,34 +232,6 @@
 				RelativePath="..\..\src\tstring.h"
 				>
 			</File>
-			<Filter
-				Name="tinyxml"
-				>
-				<File
-					RelativePath="..\..\src\tinyxml\Common.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinystr.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinyxml.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="libinstall"
-				>
-				<File
-					RelativePath="..\..\..\libinstall\src\InstallStep.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\libinstall\src\InstallStepFactory.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

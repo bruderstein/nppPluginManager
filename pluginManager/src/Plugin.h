@@ -15,17 +15,19 @@
 #include "libinstall/InstallStep.h"
 
 
+enum InstallStatus {
+		INSTALL_SUCCESS,
+		INSTALL_NEEDRESTART,
+		INSTALL_FAIL
+};
+
 class Plugin
 {
 public:
 	Plugin(void);
     ~Plugin(void);
 
-	enum InstallStatus {
-		INSTALL_SUCCESS,
-		INSTALL_NEEDRESTART,
-		INSTALL_FAIL
-	};
+	
 
 	/* Setters */
 	void	setName			(const TCHAR* name);

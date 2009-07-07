@@ -8,13 +8,19 @@
 #include <string>
 #include <list>
 #include <boost/shared_ptr.hpp>
+
+#pragma warning (push)
+#pragma warning (disable : 4512) // assignment operator could not be generated
 #include <boost/bind.hpp>
+#pragma warning (pop)
+
 #include <boost/function.hpp>
 
+
 #include "Options.h"
-#include "tinyxml.h"
-#include "InstallStep.h"
-#include "InstallStepFactory.h"
+#include "tinyxml/tinyxml.h"
+#include "libinstall/InstallStep.h"
+#include "libinstall/InstallStepFactory.h"
 
 
 #define RETURN_SUCCESS				0
@@ -210,11 +216,11 @@ void startNewInstance(const tstring& exeName)
 
 }
 
-void setStatus(const TCHAR* status)
+void setStatus(const TCHAR* /*status*/)
 {
 }
 
-void stepProgress(int percentageComplete)
+void stepProgress(int /*percentageComplete*/)
 {
 }
 
@@ -234,7 +240,7 @@ BOOL processActionsFile(const tstring& actionsFile)
 			TiXmlElement *step = install->FirstChildElement();
 			while (step)
 			{
-				shared_ptr<InstallStep> installStep = installStepFactory.create(step);
+				shared_ptr<InstallStep> installStep = installStepFactory.create(step, "", 0);
 
 				installStep->perform(basePath,           // basePath
 									 &stillToComplete,   // forGpup (still can't achieve, so basically a fail)
@@ -264,6 +270,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
                      int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(hInstance);
+	UNREFERENCED_PARAMETER(nCmdShow);
 
 	Options options;
 	

@@ -22,16 +22,17 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-#include "tinyxml/tinyxml.h"
+
 
 #ifndef TIXML_USE_STL
 
+#include "tinyxml/tinyxml.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-#include "tinystr.h"
+#include "tinyxml/tinystr.h"
 
 // TiXmlString constructor, based on a C generic_string
 TiXmlString::TiXmlString (const TCHAR* instring)

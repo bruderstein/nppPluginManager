@@ -379,7 +379,7 @@ void TiXmlDocument::StreamIn( TIXML_ISTREAM * in, TIXML_STRING * tag )
 
 	while ( in->good() )
 	{
-		int tagIndex = tag->length();
+		int tagIndex = static_cast<int>(tag->length());
 		while ( in->good() && in->peek() != '>' )
 		{
 			int c = in->get();
@@ -620,7 +620,7 @@ void TiXmlElement::StreamIn (TIXML_ISTREAM * in, TIXML_STRING * tag)
 			// We should be at a "<", regardless.
 			if ( !in->good() ) return;
 			assert( in->peek() == '<' );
-			int tagIndex = tag->length();
+			int tagIndex = static_cast<int>(tag->length());
 
 			bool closingTag = false;
 			bool firstCharFound = false;

@@ -15,8 +15,12 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
 #include "StaticDialog.h"
-#include "Common.h"
+#include "SysMsg.h"
+
+#define WS_EX_LAYOUTRTL 0x00400000L
+
 
 void StaticDialog::goToCenter()
 {
@@ -32,36 +36,6 @@ void StaticDialog::goToCenter()
 
 	::SetWindowPos(_hSelf, HWND_TOP, x, y, _rc.right - _rc.left, _rc.bottom - _rc.top, SWP_SHOWWINDOW);
 }
-
-
-void StaticDialog::display(bool toShow) const 
-{
-	if (toShow) {
-		// If the user has switched from a dual monitor to a single monitor since we last
-		// displayed the dialog, then ensure that it's still visible on the single monitor.
-		RECT workAreaRect, rc;
-		::SystemParametersInfo(SPI_GETWORKAREA, 0, &workAreaRect, 0);
-		::GetWindowRect(_hSelf, &rc);
-		int newLeft = rc.left;
-		int newTop = rc.top;
-		int margin = ::GetSystemMetrics(SM_CYSMCAPTION);
-		if (newLeft > ::GetSystemMetrics(SM_CXVIRTUALSCREEN)-margin)
-			newLeft -= rc.right - workAreaRect.right;
-		if (newLeft + (rc.right - rc.left) < ::GetSystemMetrics(SM_XVIRTUALSCREEN)+margin)
-			newLeft = workAreaRect.left;
-		if (newTop > ::GetSystemMetrics(SM_CYVIRTUALSCREEN)-margin)
-			newTop -= rc.bottom - workAreaRect.bottom;
-		if (newTop + (rc.bottom - rc.top) < ::GetSystemMetrics(SM_YVIRTUALSCREEN)+margin)
-			newTop = workAreaRect.top;
-
-		if ((newLeft != rc.left) || (newTop != rc.top)) // then the virtual screen size has shrunk
-			// Remember that MoveWindow wants width/height.
-			::MoveWindow(_hSelf, newLeft, newTop, rc.right - rc.left, rc.bottom - rc.top, TRUE);
-	}
-
-	Window::display(toShow);
-}
-
 
 HGLOBAL StaticDialog::makeRTLResource(int dialogID, DLGTEMPLATE **ppMyDlgTemplate)
 {
@@ -100,9 +74,8 @@ void StaticDialog::create(int dialogID, bool isRTL)
 
 	if (!_hSelf)
 	{
-		//systemMessage(TEXT("StaticDialog"));
-		//throw int(666);
-		return;
+		//systemMessage("StaticDialog");
+		throw int(666);
 	}
 
 	::SendMessage(_hParent, NPPM_MODELESSDIALOG, MODELESSDIALOGADD, (WPARAM)_hSelf);
@@ -116,19 +89,19 @@ BOOL CALLBACK StaticDialog::dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPAR
 		{
 			StaticDialog *pStaticDlg = (StaticDialog *)(lParam);
 			pStaticDlg->_hSelf = hwnd;
-			::SetWindowLongPtr(hwnd, GWL_USERDATA, (long)lParam);
+			::SetWindowLong(hwnd, GWL_USERDATA, (long)lParam);
 			::GetWindowRect(hwnd, &(pStaticDlg->_rc));
-            pStaticDlg->run_dlgProc(message, wParam, lParam);
+            pStaticDlg->run_dlgProc(hwnd, message, wParam, lParam);
 			
 			return TRUE;
 		}
 
 		default :
 		{
-			StaticDialog *pStaticDlg = reinterpret_cast<StaticDialog *>(::GetWindowLongPtr(hwnd, GWL_USERDATA));
+			StaticDialog *pStaticDlg = reinterpret_cast<StaticDialog *>(::GetWindowLong(hwnd, GWL_USERDATA));
 			if (!pStaticDlg)
 				return FALSE;
-			return pStaticDlg->run_dlgProc(message, wParam, lParam);
+			return pStaticDlg->run_dlgProc(hwnd, message, wParam, lParam);
 		}
 	}
 }

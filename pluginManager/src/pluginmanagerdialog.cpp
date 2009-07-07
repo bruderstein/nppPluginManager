@@ -2,7 +2,12 @@
 #include <windows.h>
 #include <commctrl.h>
 #include <process.h>
+
+#pragma warning (push)
+#pragma warning (disable : 4512) // assignment operator could not be generated
 #include <boost/bind.hpp>
+#pragma warning (pop)
+
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <list>
@@ -150,7 +155,6 @@ UINT PluginManagerDialog::installThreadProc(LPVOID param)
 {
 	InstallParam *ip = reinterpret_cast<InstallParam*>(param);
 	
-	PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(param);
 	ip->pluginManagerDialog->installPlugins(ip->progressDialog, ip->pluginListView, ip->isUpdate);
 
 	// clean up the parameter
@@ -260,22 +264,22 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 			installElement->LinkEndChild(removeElement);
 		}
 
-		Plugin::InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
+		InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
 			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 			boost::bind(&ProgressDialog::stepComplete, progressDialog));
 
 		switch(status)
 		{
-			case Plugin::InstallStatus::INSTALL_SUCCESS:
+			case INSTALL_SUCCESS:
 				Utility::removeDirectory(pluginTemp.c_str());
 				break;
 
-			case Plugin::InstallStatus::INSTALL_NEEDRESTART:
+			case INSTALL_NEEDRESTART:
 				needRestart = TRUE;
 				break;
 
-			case Plugin::InstallStatus::INSTALL_FAIL:
+			case INSTALL_FAIL:
 			{
 				tstring message (_T("Installation of "));
 				message.append((*pluginIter)->getName());
@@ -535,7 +539,7 @@ BOOL CALLBACK PluginManagerDialog::tabWndProc(HWND hWnd, UINT Message, WPARAM wP
 				return ::DefWindowProc(hWnd, Message, wParam, lParam);
 			break;
 	}
-	return FALSE;
+
 }
 
 BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)

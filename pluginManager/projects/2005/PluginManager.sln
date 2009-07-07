@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unzip", "..\..\..\unzip\pro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NppPlugin", "..\..\..\NppPlugin\projects\2005\NppPlugin.vcproj", "{69CC76EB-0183-4622-929C-02E860A66A23}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpup", "..\..\..\gpup\projects\2005\gpup.vcproj", "{182656A0-B2AE-4955-9A2D-D8705FA52B27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,16 @@ Global
 		{69CC76EB-0183-4622-929C-02E860A66A23}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{69CC76EB-0183-4622-929C-02E860A66A23}.Release|Win32.ActiveCfg = Release|Win32
 		{69CC76EB-0183-4622-929C-02E860A66A23}.Release|Win32.Build.0 = Release|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Debug|Win32.ActiveCfg = Debug|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Debug|Win32.Build.0 = Debug|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Release|Any CPU.ActiveCfg = Release|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Release|Win32.ActiveCfg = Release|Win32
+		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

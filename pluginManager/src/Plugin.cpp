@@ -128,7 +128,7 @@ size_t Plugin::getInstallStepCount()
 
 
 
-Plugin::InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup, 
+InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup, 
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete)

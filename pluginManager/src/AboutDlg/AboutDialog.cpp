@@ -30,7 +30,7 @@ void AboutDialog::doDialog()
 }
 
 
-BOOL CALLBACK AboutDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+BOOL CALLBACK AboutDialog::run_dlgProc(HWND /*hWnd*/, UINT Message, WPARAM wParam, LPARAM /*lParam*/)
 {
 	switch (Message) 
 	{

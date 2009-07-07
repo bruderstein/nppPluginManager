@@ -2,10 +2,10 @@
 #include <string.h>
 #include <windows.h>
 #include <boost/function.hpp>
-#include "InstallStep.h"
-#include "DeleteStep.h"
+#include "libinstall/InstallStep.h"
+#include "libinstall/DeleteStep.h"
 
-#include "tstring.h"
+#include "libinstall/tstring.h"
 
 using namespace std;
 
@@ -15,7 +15,7 @@ DeleteStep::DeleteStep(const TCHAR *file)
 	_file = file;
 }
 
-StepStatus DeleteStep::perform(tstring &basePath, TiXmlElement* forGpup, 
+StepStatus DeleteStep::perform(tstring& /*basePath*/, TiXmlElement* forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
 							 boost::function<void(const int)> stepProgress)
 {

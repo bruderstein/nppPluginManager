@@ -50,9 +50,12 @@ BOOL MD5::hash(const TCHAR *filename, TCHAR *hashBuffer, int hashBufferLength)
         return FALSE;
     }
 
-    while (bResult = ReadFile(hFile, rgbFile, BUFSIZE, 
-		&cbRead, NULL))
+	
+    do 
     {
+		if (!ReadFile(hFile, rgbFile, BUFSIZE, &cbRead, NULL))
+			return FALSE;
+
         if (0 == cbRead)
         {
             break;
@@ -62,13 +65,9 @@ BOOL MD5::hash(const TCHAR *filename, TCHAR *hashBuffer, int hashBufferLength)
         {
             return FALSE;
         }
-    }
+	} while (bResult);
 
-    if (!bResult)
-    {
-        return FALSE;
-    }
-
+    
     cbHash = MD5LEN;
     if (CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
     {

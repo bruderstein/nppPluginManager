@@ -22,10 +22,6 @@
 #include "Window.h"
 #include "Notepad_plus_msgs.h"
 
-#include <uxtheme.h>
-
-typedef HRESULT (WINAPI * ETDTProc) (HWND, DWORD);
-
 enum PosAlign{ALIGNPOS_LEFT, ALIGNPOS_RIGHT, ALIGNPOS_TOP, ALIGNPOS_BOTTOM};
 
 struct DLGTEMPLATEEX {
@@ -47,10 +43,8 @@ class StaticDialog : public Window
 public :
 	StaticDialog() : Window() {};
 	~StaticDialog(){
-		if (isCreated()) {
-			::SetWindowLongPtr(_hSelf, GWL_USERDATA, (long)NULL);	//Prevent run_dlgProc from doing anything, since its virtual
+		if (isCreated())
 			destroy();
-		}
 	};
 	virtual void create(int dialogID, bool isRTL = false);
 
@@ -59,19 +53,6 @@ public :
 	};
 
 	void goToCenter();
-
-	void display(bool toShow = true) const;
-
-	POINT getLeftTopPoint(HWND hwnd/*, POINT & p*/) const {
-		RECT rc;
-		::GetWindowRect(hwnd, &rc);
-		POINT p;
-		p.x = rc.left;
-		p.y = rc.top;
-		::ScreenToClient(_hSelf, &p);
-		return p;
-	};
-
     void destroy() {
 		::SendMessage(_hParent, NPPM_MODELESSDIALOG, MODELESSDIALOGREMOVE, (WPARAM)_hSelf);
 		::DestroyWindow(_hSelf);
@@ -80,7 +61,7 @@ public :
 protected :
 	RECT _rc;
 	static BOOL CALLBACK dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
-	virtual BOOL CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) = 0;
+	virtual BOOL CALLBACK run_dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) = 0;
 
     void alignWith(HWND handle, HWND handle2Align, PosAlign pos, POINT & point);
 	HGLOBAL makeRTLResource(int dialogID, DLGTEMPLATE **ppMyDlgTemplate);

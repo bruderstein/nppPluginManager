@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\bin"
+			OutputDirectory="..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\tinyxml\include;..\..\..\unzip\include;..\..\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -157,6 +157,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\Decompress.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\DeleteStep.cpp"
 				>
 			</File>
 			<File

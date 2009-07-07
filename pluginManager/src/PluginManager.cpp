@@ -62,7 +62,7 @@ using namespace boost;
 /* main function of dll */
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  reasonForCall, 
-                       LPVOID lpReserved )
+                       LPVOID /*lpReserved*/ )
 {
 	g_hModule = hModule;
 
@@ -159,7 +159,7 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
  *
  *	This function is called, if a notification from Notepad occurs
  */
-extern "C" __declspec(dllexport) LRESULT messageProc(UINT message, WPARAM wParam, LPARAM lParam)
+extern "C" __declspec(dllexport) LRESULT messageProc(UINT /*message*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 
 	

@@ -42,12 +42,13 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../src;../../src/AboutDlg;../../../tinyxml/include;../../../libinstall/include;../../../NppPlugin/include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGINTEMPLATE_EXPORTS;_UNICODE;UNICODE;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGINTEMPLATE_EXPORTS;_UNICODE;UNICODE;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="4"
+				WarnAsError="false"
 				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="4"
 			/>
@@ -62,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\libinstall\bin\libinstall.lib version.lib shlwapi.lib comctl32.lib"
+				AdditionalDependencies="version.lib shlwapi.lib comctl32.lib Ws2_32.lib ..\..\..\libinstall\bin\$(ConfigurationName)\libinstall.lib ..\..\..\TinyXml\bin\$(ConfigurationName)\TinyXml.lib ..\..\..\NppPlugin\bin\$(ConfigurationName)\NppPlugin.lib ..\..\..\unzip\bin\$(ConfigurationName)\unzip.lib zlibd.lib libcurld.lib"
 				OutputFile="C:\Program Files\Notepad++DEV\plugins\PluginManager.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
@@ -141,7 +142,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="shlwapi.lib comctl32.lib"
+				AdditionalDependencies="version.lib shlwapi.lib comctl32.lib ..\..\..\libinstall\bin\$(ConfigurationName)\libinstall.lib ..\..\..\TinyXml\bin\$(ConfigurationName)\TinyXml.lib ..\..\..\NppPlugin\bin\$(ConfigurationName)\NppPlugin.lib ..\..\..\unzip\bin\$(ConfigurationName)\unzip.lib"
 				OutputFile="C:\Program files\Notepad++\plugins\PluginManager.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -186,10 +187,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\libinstall\src\DownloadManager.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\md5.h"
 				>
 			</File>
@@ -229,10 +226,6 @@
 				RelativePath="..\..\libinstall\src\VariableHandler.h"
 				>
 			</File>
-			<File
-				RelativePath=".\WcharMbcsConverter.h"
-				>
-			</File>
 			<Filter
 				Name="Dialogs"
 				>
@@ -246,6 +239,10 @@
 				</File>
 				<File
 					RelativePath="..\..\src\ProgressDialog.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\SettingsDialog.h"
 					>
 				</File>
 			</Filter>
@@ -310,6 +307,10 @@
 				</File>
 				<File
 					RelativePath="..\..\src\ProgressDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\SettingsDialog.cpp"
 					>
 				</File>
 			</Filter>
