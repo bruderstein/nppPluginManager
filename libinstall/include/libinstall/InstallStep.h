@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <boost/function.hpp>
 #include "tstring.h"
-#include "tinyxml.h"
+#include "tinyxml/tinyxml.h"
 
 
 enum StepStatus 

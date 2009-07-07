@@ -8,10 +8,10 @@
 #include "PluginList.h"
 #include "PluginManager.h"
 
-#include "tinyxml.h"
-#include "InstallStep.h"
-#include "DownloadStep.h"
-#include "InstallStepFactory.h"
+#include "tinyxml/tinyxml.h"
+#include "libinstall/InstallStep.h"
+#include "libinstall/DownloadStep.h"
+#include "libinstall/InstallStepFactory.h"
 #include "md5.h"
 
 #include <strsafe.h>
@@ -349,9 +349,11 @@ tstring PluginList::getPluginName(tstring pluginFilename)
 				return tpluginName;
 			}
 			else
+			{
+				::FreeLibrary(pluginInstance);
 				return _T("");
-
-			::FreeLibrary(pluginInstance);
+			}
+		
 		}
 		else
 		{

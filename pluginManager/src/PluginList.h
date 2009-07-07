@@ -1,10 +1,10 @@
 #pragma once
 #include <tchar.h>
-#include "PluginInterface.h"
-#include "Plugin.h"
+
 #include "PluginManager.h"
-#include "tinyxml.h"
-#include "VariableHandler.h"
+#include "libinstall/VariableHandler.h"
+#include "tinyxml/tinyxml.h"
+#include "Plugin.h"
 
 class PluginList
 {

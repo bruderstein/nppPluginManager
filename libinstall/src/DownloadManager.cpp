@@ -1,12 +1,12 @@
-#include "DownloadManager.h"
-#include "Common.h"
+
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
-#include "WcharMbcsConverter.h"
-#include "curl/curl.h"
-#include "tstring.h"
 
+#include <curl/curl.h>
 
+#include "libinstall/tstring.h"
+#include "libinstall/DownloadManager.h"
+#include "libinstall/WcharMbcsConverter.h"
 using namespace std;
 using namespace boost;
 

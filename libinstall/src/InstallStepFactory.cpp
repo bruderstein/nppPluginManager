@@ -1,10 +1,10 @@
-#include "InstallStepFactory.h"
-#include "DownloadStep.h"
-#include "CopyStep.h"
-#include "DeleteStep.h"
+#include "libinstall/InstallStepFactory.h"
+#include "libinstall/DownloadStep.h"
+#include "libinstall/CopyStep.h"
+#include "libinstall/DeleteStep.h"
 
-#include "tstring.h"
-#include "VariableHandler.h"
+#include "libinstall/tstring.h"
+#include "libinstall/VariableHandler.h"
 
 using namespace boost;
 using namespace std;

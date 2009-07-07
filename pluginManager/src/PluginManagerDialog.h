@@ -18,8 +18,8 @@
 class PluginManagerDialog : StaticDialog
 {
 public:
-	PluginManagerDialog(void) {}
-	~PluginManagerDialog(void) {}
+	PluginManagerDialog() {};
+	~PluginManagerDialog() {};
 
     void init(HINSTANCE hInst, NppData nppData)
 	{

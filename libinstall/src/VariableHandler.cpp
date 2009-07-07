@@ -1,5 +1,5 @@
-#include "VariableHandler.h"
-#include "tstring.h"
+#include "libinstall/VariableHandler.h"
+#include "libinstall/tstring.h"
 
 using namespace std;
 

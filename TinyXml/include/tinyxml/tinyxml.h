@@ -37,7 +37,7 @@ distribution.
 #include <string.h>
 #include <assert.h>
 #include <windows.h>
-#include "Common.h"
+#include "tinyxml/Common.h"
 
 // Help out windows:
 #if defined( _DEBUG ) && !defined( DEBUG )

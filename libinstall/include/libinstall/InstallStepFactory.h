@@ -3,7 +3,7 @@
 #include <boost/shared_ptr.hpp>
 #include "InstallStep.h"
 #include "VariableHandler.h"
-#include "tinyxml.h"
+#include "tinyxml/tinyxml.h"
 
 
 

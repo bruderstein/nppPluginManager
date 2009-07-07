@@ -2,7 +2,7 @@
 
 #include <TCHAR.H>
 #include <string>
-#include "curl/curl.h"
+#include <curl/curl.h>
 #include "tstring.h"
 #include <boost/function.hpp>
 

@@ -10,10 +10,11 @@
 
 
 #include "resource.h"
-#include "tinyxml.h"
+
+#include "tinyxml/tinyxml.h"
+#include "libinstall/DownloadManager.h"
 
 #include "PluginManagerDialog.h"
-#include "DownloadManager.h"
 #include "Plugin.h"
 #include "PluginManager.h"
 #include "ProgressDialog.h"

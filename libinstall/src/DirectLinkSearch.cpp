@@ -2,8 +2,9 @@
 #include <tchar.h>
 #include <string>
 #include <iostream>
-#include "DirectLinkSearch.h"
 #include <boost/shared_ptr.hpp>
+
+#include "libinstall/DirectLinkSearch.h"
 
 // Copied over from winnt.h, in order to avoid dependency to windows just for this.
 #ifndef TEXT

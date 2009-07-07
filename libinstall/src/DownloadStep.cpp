@@ -3,14 +3,13 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
-#include "DownloadStep.h"
-#include "DownloadManager.h"
-#include "Decompress.h"
-#include "tstring.h"
-#include "Common.h"
-#include "InstallStep.h"
-#include "WcharMbcsConverter.h"
-#include "DirectLinkSearch.h"
+#include "libinstall/DownloadStep.h"
+#include "libinstall/DownloadManager.h"
+#include "libinstall/Decompress.h"
+#include "libinstall/tstring.h"
+#include "libinstall/InstallStep.h"
+#include "libinstall/WcharMbcsConverter.h"
+#include "libinstall/DirectLinkSearch.h"
 
 using namespace std;
 using namespace boost;

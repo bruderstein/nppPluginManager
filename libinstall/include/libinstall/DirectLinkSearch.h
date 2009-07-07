@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "FileBuffer.h"
+#include "libinstall/FileBuffer.h"
 #include <boost/shared_ptr.hpp>
 
 #include <limits.h>

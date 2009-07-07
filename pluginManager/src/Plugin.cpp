@@ -4,7 +4,7 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 
-#include "tinyxml.h"
+#include "tinyxml/tinyxml.h"
 
 using namespace std;
 using namespace boost;

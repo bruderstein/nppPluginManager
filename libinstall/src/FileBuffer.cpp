@@ -1,7 +1,7 @@
 #include <string>
 #include <iostream>
 #include <boost/shared_ptr.hpp>
-#include "FileBuffer.h"
+#include "libinstall/FileBuffer.h"
 
 using namespace std;
 using namespace boost;

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="libinstall"
-	ProjectGUID="{F8F0B077-8778-4CB9-9B54-EC67A3D2C750}"
-	RootNamespace="libinstall"
+	Name="unzip"
+	ProjectGUID="{E3DCABE9-3953-4A81-8B71-DEF9AD21753B}"
+	RootNamespace="unzip"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="..\..\bin"
+			OutputDirectory="..\..\bin\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -40,15 +40,14 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\tinyxml\include;..\..\..\unzip\include;..\..\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="..\..\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				DefaultCharIsUnsigned="true"
 				UsePrecompiledHeader="0"
-				WarningLevel="4"
-				Detect64BitPortabilityProblems="false"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -62,8 +61,6 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				IgnoreAllDefaultLibraries="false"
-				IgnoreDefaultLibraryNames=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -106,12 +103,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
-				DefaultCharIsUnsigned="true"
-				UsePrecompiledHeader="2"
-				WarningLevel="4"
-				Detect64BitPortabilityProblems="false"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -152,39 +148,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\src\CopyStep.cpp"
+				RelativePath="..\..\src\ioapi.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\Decompress.cpp"
+				RelativePath="..\..\src\iowin32.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\DirectLinkSearch.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\DownloadManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\DownloadStep.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\FileBuffer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\InstallStepFactory.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\VariableHandler.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\WcharMbcsConverter.cpp"
+				RelativePath="..\..\src\unzip.c"
 				>
 			</File>
 		</Filter>
@@ -194,51 +166,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\include\libinstall\CopyStep.h"
+				RelativePath="..\..\src\ioapi.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\libinstall\Decompress.h"
+				RelativePath="..\..\src\iowin32.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\libinstall\DeleteStep.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\DirectLinkSearch.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\DownloadManager.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\DownloadStep.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\FileBuffer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\InstallStep.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\InstallStepFactory.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\tstring.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\VariableHandler.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\libinstall\WcharMbcsConverter.h"
+				RelativePath="..\..\src\unzip.h"
 				>
 			</File>
 		</Filter>
@@ -248,6 +184,10 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<File
+			RelativePath=".\ReadMe.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

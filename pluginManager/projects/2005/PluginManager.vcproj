@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../libinstall/src;../../src;../../src/AboutDlg;../../../Common/Ccpp;../../libinstall/src/libcurl/include;../../src/tinyxml;&quot;..\..\..\notepad-plus\PowerEditor\src\MISC\PluginsManager&quot;;&quot;..\..\..\notepad-plus\scintilla\include&quot;"
+				AdditionalIncludeDirectories="../../src;../../src/AboutDlg;../../../tinyxml/include;../../../libinstall/include;../../../NppPlugin/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGINTEMPLATE_EXPORTS;_UNICODE;UNICODE;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -186,10 +186,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\src\Common.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\libinstall\src\DownloadManager.h"
 				>
 			</File>
@@ -238,34 +234,6 @@
 				>
 			</File>
 			<Filter
-				Name="Common"
-				>
-				<File
-					RelativePath="..\..\..\Common\Ccpp\Notepad_plus_msgs.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\Common\Ccpp\PluginInterface.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\Common\Ccpp\StaticDialog.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\Common\Ccpp\stdafx.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\Common\Ccpp\SysMsg.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\Common\Ccpp\Window.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Dialogs"
 				>
 				<File
@@ -278,50 +246,6 @@
 				</File>
 				<File
 					RelativePath="..\..\src\ProgressDialog.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="curl"
-				>
-				<File
-					RelativePath="..\..\src\libcurl\include\curl\curl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\libcurl\include\curl\curlver.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\libcurl\include\curl\easy.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\libcurl\include\curl\mprintf.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\libcurl\include\curl\multi.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\libcurl\include\curl\stdcheaders.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\libcurl\include\curl\types.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="TinyXML"
-				>
-				<File
-					RelativePath="..\..\src\tinyxml\tinystr.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinyxml.h"
 					>
 				</File>
 			</Filter>
@@ -374,10 +298,6 @@
 				>
 			</File>
 			<Filter
-				Name="Common"
-				>
-			</Filter>
-			<Filter
 				Name="Dialogs"
 				>
 				<File
@@ -390,26 +310,6 @@
 				</File>
 				<File
 					RelativePath="..\..\src\ProgressDialog.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="TinyXML"
-				>
-				<File
-					RelativePath="..\..\src\tinyxml\tinystr.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinyxml.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinyxmlerror.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\tinyxml\tinyxmlparser.cpp"
 					>
 				</File>
 			</Filter>

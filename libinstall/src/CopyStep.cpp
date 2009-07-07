@@ -2,10 +2,10 @@
 #include <string.h>
 #include <windows.h>
 #include <boost/function.hpp>
-#include "InstallStep.h"
-#include "CopyStep.h"
+#include "libinstall/InstallStep.h"
+#include "libinstall/CopyStep.h"
 
-#include "tstring.h"
+#include "libinstall/tstring.h"
 
 using namespace std;
 

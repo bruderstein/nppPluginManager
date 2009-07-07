@@ -37,7 +37,7 @@
 	#define generic_strncpy wcsncpy
 	#define generic_stricmp wcsicmp
 	#define generic_strncmp wcsncmp
-	#define generic_strnicmp _wcsnicmp
+	#define generic_strnicmp wcsnicmp
 	#define generic_strncat wcsncat
 	#define generic_strchr wcschr
 	#define generic_atoi _wtoi
@@ -79,7 +79,12 @@ void folderBrowser(HWND parent, int outputCtrlID, const TCHAR *defaultStr = NULL
 
 // Set a call back with the handle after init to set the path.
 // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/shellcc/platform/shell/reference/callbackfunctions/browsecallbackproc.asp
-int __stdcall BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM, LPARAM pData);
+static int __stdcall BrowseCallbackProc(HWND hwnd, UINT uMsg, LPARAM, LPARAM pData)
+{
+	if (uMsg == BFFM_INITIALIZED)
+		::SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
+	return 0;
+};
 
 void systemMessage(const TCHAR *title);
 //DWORD ShortToLongPathName(LPCTSTR lpszShortPath, LPTSTR lpszLongPath, DWORD cchBuffer);
@@ -126,10 +131,6 @@ protected:
 	size_t _multiByteAllocLen;
 	wchar_t *_wideCharStr;
 	size_t _wideCharAllocLen;
-
-private:
-	// Since there's no public ctor, we need to void the default assignment operator.
-	WcharMbcsConvertor& operator= (const WcharMbcsConvertor&);
 	
 };
 

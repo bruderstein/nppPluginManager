@@ -1,10 +1,11 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
-#define ZLIB_WINAPI
-#include "Decompress.h"
-#include "WcharMbcsConverter.h"
+#include "libinstall/Decompress.h"
+#include "libinstall/WcharMbcsConverter.h"
+#include "libinstall/tstring.h"
+
 #include "unzip.h"
-#include "tstring.h"
+
 
 using namespace std;
 using namespace boost;

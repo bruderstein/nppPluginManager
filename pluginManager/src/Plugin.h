@@ -10,9 +10,9 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include "tstring.h"
-#include "tinyxml.h"
+#include "tinyxml/tinyxml.h"
 #include "PluginVersion.h"
-#include "InstallStep.h"
+#include "libinstall/InstallStep.h"
 
 
 class Plugin

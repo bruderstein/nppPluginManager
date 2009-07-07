@@ -1,6 +1,6 @@
 #include <boost/shared_ptr.hpp>
 #include <windows.h>
-#include "WcharMbcsConverter.h"
+#include "libinstall/WcharMbcsConverter.h"
 
 using namespace boost;
 
