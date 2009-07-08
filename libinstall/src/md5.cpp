@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <Wincrypt.h>
 #include <tchar.h>
-#include "md5.h"
+#include "libinstall/md5.h"
 
 
 

@@ -49,14 +49,23 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
 	curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
 	curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
+	curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1);
 	CURLcode code = curl_easy_perform(_curl);
 	
 	// Get the content type
 	
 	char *contentTypeBuffer = NULL;
-	/*CURLcode contentTypeCode =*/ curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
-	shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
-	contentType = tContentTypeBuffer.get();
+	curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
+	if (contentTypeBuffer && *contentTypeBuffer)
+	{
+		shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
+		
+		contentType = tContentTypeBuffer.get();
+		tstring::size_type pos = contentType.find(_T(';'));
+		if (pos != tstring::npos)
+			contentType.erase(pos);
+	}
+
 	fclose(fp);
 	
 	if (0 == code)
@@ -67,22 +76,29 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 
 
 
-BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const char* /*proxy*/, long /*proxyPort*/)
+BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const char* proxy, long proxyPort)
 {
 	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
 
+	if (proxy && *proxy)
+	{
+		curl_easy_setopt(_curl, CURLOPT_PROXY, proxy);
+		curl_easy_setopt(_curl, CURLOPT_PROXYPORT, proxyPort);
+	}
 
+	
 	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteStringCallback);
 	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, &result);
 	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
 	curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
 	curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
+	curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1);
 	CURLcode code = curl_easy_perform(_curl);
 	
 	
 	
-	if (0 == code)
+	if (CURLE_OK == code)
 		return TRUE;
 	else
 		return FALSE;

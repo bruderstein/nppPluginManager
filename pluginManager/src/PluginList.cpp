@@ -12,7 +12,7 @@
 #include "libinstall/InstallStep.h"
 #include "libinstall/DownloadStep.h"
 #include "libinstall/InstallStepFactory.h"
-#include "md5.h"
+#include "libinstall/md5.h"
 
 #include <strsafe.h>
 

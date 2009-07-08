@@ -50,29 +50,34 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 
 	tstring contentType;
-	downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxy.c_str(), _proxyPort);
 
-	if (contentType == _T("application/zip") 
-		|| contentType == _T("application/octet-stream"))
+	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxy.c_str(), _proxyPort))
 	{
-		// Attempt to unzip file into basePath
-		Decompress::unzip(downloadFilename, basePath);
-		
-	}
-	else if (contentType == _T("text/html"))
-	{
-	    DirectLinkSearch linkSearch(downloadFilename.c_str());
-		shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
-		
-
-		if (realLink.get())
+		if (contentType == _T("application/zip") 
+			|| contentType == _T("application/octet-stream"))
 		{
-			_url = realLink.get();
-			return perform(basePath, forGpup, setStatus, stepProgress);
+			// Attempt to unzip file into basePath
+			if (Decompress::unzip(downloadFilename, basePath))
+				return STEPSTATUS_SUCCESS;
+			else
+				return STEPSTATUS_FAIL;
+			
 		}
-		else
-			return STEPSTATUS_FAIL;
+		else if (contentType == _T("text/html"))
+		{
+			DirectLinkSearch linkSearch(downloadFilename.c_str());
+			shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
+			
+
+			if (realLink.get())
+			{
+				_url = realLink.get();
+				return perform(basePath, forGpup, setStatus, stepProgress);
+			}
+			else
+				return STEPSTATUS_FAIL;
+		}
 	}
-	
-	return STEPSTATUS_SUCCESS;
+
+	return STEPSTATUS_FAIL;
 }

@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\..\tinyxml\include;..\..\..\unzip\include;..\..\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOUNCRYPT;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -164,6 +164,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\DeleteStep.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\DirectLinkSearch.cpp"
 				>
 			</File>
@@ -181,6 +185,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\InstallStepFactory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\md5.cpp"
 				>
 			</File>
 			<File
@@ -231,6 +239,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\libinstall\InstallStepFactory.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\libinstall\md5.h"
 				>
 			</File>
 			<File

@@ -25,7 +25,7 @@
 #include "ProgressDialog.h"
 #include "Utility.h"
 #include "SettingsDialog.h"
-#include "md5.h"
+#include "libinstall/md5.h"
 #include "WcharMbcsConverter.h"
 
 using namespace std;
@@ -229,6 +229,7 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 	int pluginCount = 1;
 	
 	BOOL needRestart = FALSE;
+	BOOL somethingInstalled = FALSE;
 
 	TCHAR pluginCountChar[10];
 
@@ -273,10 +274,12 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 		{
 			case INSTALL_SUCCESS:
 				Utility::removeDirectory(pluginTemp.c_str());
+				somethingInstalled = TRUE;
 				break;
 
 			case INSTALL_NEEDRESTART:
 				needRestart = TRUE;
+				somethingInstalled = TRUE;
 				break;
 
 			case INSTALL_FAIL:
@@ -318,7 +321,7 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 			Utility::startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), gpupArguments.c_str());
 		}
 	}
-	else
+	else if (somethingInstalled)
 	{
 		delete forGpupDoc;
 
@@ -327,6 +330,10 @@ void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginL
 		{
 			Utility::startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), _T(""));
 		}
+	}
+	else
+	{
+		delete forGpupDoc;
 	}
 	
 	
@@ -764,7 +771,7 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 	ListView_InsertItem(dlg->_tabs[TAB_UPDATES].hListView, &lvi);
 	ListView_InsertItem(dlg->_tabs[TAB_INSTALLED].hListView, &lvi);
 */
-	// Work out the path of the Plugins.xml destinatino (in config dir)
+	// Work out the path of the Plugins.xml destination (in config dir)
 	TCHAR pluginConfig[MAX_PATH];
 	::SendMessage(dlg->_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
 	
