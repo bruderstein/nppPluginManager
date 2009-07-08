@@ -14,5 +14,7 @@
 *.aps
 *.vcproj.*.user
 BuildLog.htm
-projects/2005/Debug/*.res
-projects/2005/Release/*.res
+pluginManager/projects/2005/debug/
+pluginManager/projects/2005/Release/
+gpup/projects/2005/Debug/
+gpup/projects/2005/Release/
