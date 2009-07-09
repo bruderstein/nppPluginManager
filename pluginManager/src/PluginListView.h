@@ -21,11 +21,16 @@ public:
 	
 	void	init(HWND hListView, HWND hDescription, int nVersionColumns, VERSIONCOLUMN columns[]);
 	void	setList(PluginListContainer &list);
+
+	void    removeSelected();
+	void    selectAll();
+	void    selectNone();
+
 	void	setMessage(TCHAR *msg);
 	LRESULT notify(WPARAM wParam, LPARAM lParam);
 	Plugin* getCurrentPlugin();
 	boost::shared_ptr< std::list<Plugin*> > getSelectedPlugins();
-
+	BOOL    empty();
 	
 
 private:
@@ -35,11 +40,6 @@ private:
 
 	/* Actual list container */
 	PluginListContainer _list;
-
-
-	/* Private methods */
-	void	initColumns(void);
-	int		getCurrentSelectedIndex();
 
 
 	int _nVersionColumns;
@@ -52,6 +52,13 @@ private:
 
 	LISTMODE	_listMode;
 	TCHAR*		_message;
+
+
+	/* Private methods */
+	void	initColumns(void);
+	int		getCurrentSelectedIndex();
+	void    setAllCheckState(BOOL checked);
+	static int CALLBACK itemComparer(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 };
 
 

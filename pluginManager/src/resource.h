@@ -32,8 +32,6 @@
 #define SORT_KOREAN_KSC                 0x0
 #define SORT_HUNGARIAN_DEFAULT          0x0
 #define SORT_GEORGIAN_TRADITIONAL       0x0
-//#define CREATEPROCESS_MANIFEST_RESOURCE_ID 1
-//#define MINIMUM_RESERVED_MANIFEST_RESOURCE_ID 1
 #define SW_SHOWNORMAL                   1
 #define SW_NORMAL                       1
 #define SHOW_OPENWINDOW                 1
@@ -101,7 +99,6 @@
 #define VFFF_ISSHAREDFILE               0x0001
 #define VFF_CURNEDEST                   0x0001
 #define VIFF_FORCEINSTALL               0x0001
-//#define ISOLATIONAWARE_MANIFEST_RESOURCE_ID 2
 #define SW_SHOWMINIMIZED                2
 #define SHOW_ICONWINDOW                 2
 #define SW_OTHERZOOM                    2
@@ -161,7 +158,6 @@
 #define SORT_CHINESE_PRC                0x2
 #define VFF_FILEINUSE                   0x0002
 #define VIFF_DONTDELETEOLD              0x0002
-//#define ISOLATIONAWARE_NOSTATICIMPORT_MANIFEST_RESOURCE_ID 3
 #define SW_SHOWMAXIMIZED                3
 #define SW_MAXIMIZE                     3
 #define SHOW_FULLSCREEN                 3
@@ -349,7 +345,6 @@
 #define LANG_ICELANDIC                  0x0f
 #define SUBLANG_ARABIC_BAHRAIN          0x0f
 #define SUBLANG_SPANISH_PARAGUAY        0x0f
-//#define MAXIMUM_RESERVED_MANIFEST_RESOURCE_ID 16
 #define VK_SHIFT                        0x10
 #define WM_CLOSE                        0x0010
 #define HTBOTTOMLEFT                    16
@@ -402,7 +397,6 @@
 #define WM_ENDSESSION                   0x0016
 #define LANG_PORTUGUESE                 0x16
 #define VK_JUNJA                        0x17
-//#define RT_MANIFEST                     24
 #define VK_FINAL                        0x18
 #define WM_SHOWWINDOW                   0x0018
 #define LANG_ROMANIAN                   0x18
@@ -552,12 +546,12 @@
 #define VK_NUMPAD3                      0x63
 #define VK_NUMPAD4                      0x64
 #define VS_USER_DEFINED                 100
-#define IDD_PLUGINMANAGER_DLG           101
 #define VK_NUMPAD5                      0x65
 #define LANG_DIVEHI                     0x65
+#define IDD_PLUGINMANAGER_DLG           101
+#define VK_NUMPAD6                      0x66
 #define IDD_DIALOG1                     102
 #define IDD_ABOUT_DLG                   102
-#define VK_NUMPAD6                      0x66
 #define VK_NUMPAD7                      0x67
 #define IDD_TABINSTALLED                103
 #define VK_NUMPAD8                      0x68
@@ -569,6 +563,7 @@
 #define VK_ADD                          0x6B
 #define IDD_CONFIGDIALOG                107
 #define VK_SEPARATOR                    0x6C
+#define IDD_UPDATESNOTIFY               108
 #define VK_SUBTRACT                     0x6D
 #define VK_DECIMAL                      0x6E
 #define VK_DIVIDE                       0x6F
@@ -776,7 +771,7 @@
 #define WM_SYSKEYUP                     0x0105
 #define WM_SYSCHAR                      0x0106
 #define WM_SYSDEADCHAR                  0x0107
-//#define WM_KEYLAST                      0x0108
+#define WM_KEYLAST                      0x0108
 #define WM_IME_STARTCOMPOSITION         0x010D
 #define WM_IME_ENDCOMPOSITION           0x010E
 #define WM_IME_COMPOSITION              0x010F
@@ -831,7 +826,6 @@
 #define WM_XBUTTONDOWN                  0x020B
 #define WM_XBUTTONUP                    0x020C
 #define WM_XBUTTONDBLCLK                0x020D
-//#define WM_MOUSELAST                    0x020D
 #define WM_PARENTNOTIFY                 0x0210
 #define WM_ENTERMENULOOP                0x0211
 #define WM_EXITMENULOOP                 0x0212
@@ -906,6 +900,7 @@
 #define IDC_BUTTONINSTALL               1001
 #define IDC_BUTTONREMOVE                1001
 #define IDC_SETTINGS                    1001
+#define IDC_UPDATE                      1001
 #define IDC_LISTUPDATES                 1009
 #define IDC_PLUGINTABCTRL               1010
 #define IDC_LISTAVAILABLE               1011
@@ -921,6 +916,8 @@
 #define IDC_PROXYPORT                   1017
 #define IDC_NOTIFY                      1018
 #define IDC_NOTIFY2                     1019
+#define IDC_IGNORE                      1020
+#define IDC_BUTTON3                     1021
 #define CF_GDIOBJLAST                   0x03FF
 #define WM_USER                         0x0400
 #define WVR_VALIDRECTS                  0x0400
@@ -1085,7 +1082,7 @@
 #define scr8                            0x0497
 #define ctl1                            0x04A0
 #define ctlLast                         0x04ff
-//#define _WIN32_WINNT                    0x0500
+#define _WIN32_WINNT                    0x0500
 #define WINVER                          0x0501
 #define _WIN32_IE                       0x0501
 #define FILEOPENORD                     1536
@@ -1136,21 +1133,15 @@
 #define IDTIMEOUT                       32000
 #define OCR_NORMAL                      32512
 #define OIC_SAMPLE                      32512
-//#define IDI_APPLICATION                 32512
 #define OCR_IBEAM                       32513
 #define OIC_HAND                        32513
-//#define IDI_HAND                        32513
 #define OCR_WAIT                        32514
 #define OIC_QUES                        32514
-//#define IDI_QUESTION                    32514
 #define OCR_CROSS                       32515
 #define OIC_BANG                        32515
-//#define IDI_EXCLAMATION                 32515
 #define OCR_UP                          32516
 #define OIC_NOTE                        32516
-//#define IDI_ASTERISK                    32516
 #define OIC_WINLOGO                     32517
-//#define IDI_WINLOGO                     32517
 #define OCR_SIZE                        32640
 #define OCR_ICON                        32641
 #define OCR_SIZENWSE                    32642
@@ -1223,17 +1214,14 @@
 #define SC_MONITORPOWER                 0xF170
 #define SC_CONTEXTHELP                  0xF180
 #define LVS_TYPESTYLEMASK               0xfc00
-//#define HTERROR                         -2
-//#define PWR_FAIL                        -1
-//#define HTTRANSPARENT                   -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        108
+#define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

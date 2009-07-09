@@ -72,15 +72,30 @@ LRESULT PluginListView::notify(WPARAM /*wParam*/, LPARAM lParam)
 
 		case NM_CLICK:
 		{
-			Plugin* plugin = getCurrentPlugin();
-			if (NULL != plugin)
+			if (_hDescription)
 			{
-				TCHAR *description = (TCHAR*)plugin->getDescription().c_str();
-				::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(description));
-			} 
-			else
-				::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(_T("")));
+				Plugin* plugin = getCurrentPlugin();
+				if (NULL == plugin && lParam)
+				{
+					LPNMITEMACTIVATE itemActivate = reinterpret_cast<LPNMITEMACTIVATE>(lParam);
+					if (itemActivate->iItem >= 0)
+					{
+						LVITEM item;
+						item.iItem = itemActivate->iItem;
+						ListView_GetItem(_hListView, &item);
+						plugin = reinterpret_cast<Plugin*>(item.lParam);
+					}
+				}
 
+				if (NULL != plugin)
+				{
+					TCHAR *description = (TCHAR*)plugin->getDescription().c_str();
+					::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(description));
+				} 
+				else
+					::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(_T("")));
+			}
+			break;
 		}
 	}
 
@@ -153,6 +168,7 @@ void PluginListView::setList(PluginListContainer &list)
 		++iter;
 	}
 
+	ListView_SortItems(_hListView, PluginListView::itemComparer, NULL);
 	
 }
 
@@ -211,8 +227,9 @@ shared_ptr< list<Plugin*> > PluginListView::getSelectedPlugins()
 
 	shared_ptr< list<Plugin*> > selectedList(new list<Plugin*>());
 
+	UINT size = ListView_GetItemCount(_hListView);
 
-	for (UINT position = 0; position < _list.size(); position++)
+	for (UINT position = 0; position < size; position++)
 	{
 		item.iItem = position;
 		ListView_GetItem(_hListView, &item);
@@ -223,4 +240,49 @@ shared_ptr< list<Plugin*> > PluginListView::getSelectedPlugins()
 
 	return selectedList;
 
+}
+
+
+void PluginListView::removeSelected()
+{
+	int size = ListView_GetItemCount(_hListView);
+	
+	for (int position = size - 1; position >= 0; position--)
+	{
+		if (ListView_GetCheckState(_hListView, position))
+			ListView_DeleteItem(_hListView, position);
+	}
+
+}
+
+
+void PluginListView::setAllCheckState(BOOL checked)
+{
+	int size = ListView_GetItemCount(_hListView);
+	
+	for (int position = 0; position < size; position++)
+	{
+		ListView_SetCheckState(_hListView, position, checked);
+	}
+
+}
+
+void PluginListView::selectAll()
+{
+	setAllCheckState(TRUE);
+}
+
+void PluginListView::selectNone()
+{
+	setAllCheckState(FALSE);
+}
+
+BOOL PluginListView::empty()
+{
+	return (ListView_GetItemCount(_hListView) == 0);
+}
+
+int CALLBACK PluginListView::itemComparer(LPARAM lParam1, LPARAM lParam2, LPARAM /*lParamSort*/)
+{
+	return _tcscmp(reinterpret_cast<Plugin*>(lParam1)->getName().c_str(), reinterpret_cast<Plugin*>(lParam2)->getName().c_str());
 }

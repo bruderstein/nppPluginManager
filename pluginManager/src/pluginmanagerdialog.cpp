@@ -32,15 +32,19 @@ using namespace std;
 using namespace boost;
 
 
+PluginManagerDialog::PluginManagerDialog()
+{
+	_pluginList = NULL;
+}
+
 void PluginManagerDialog::doDialog()
 {
 	if (!isCreated())
 	{
         create(IDD_PLUGINMANAGER_DLG);
-		//_pluginListView.init(GetDlgItem(_hSelf, IDC_PLUGINLIST));
-//		setupTabControl();
-		
+
 	}
+
 	goToCenter();
 }
 
@@ -117,7 +121,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 					//
 
 					ProgressDialog progress(dlg->_hInst, 
-						boost::bind(&PluginManagerDialog::startInstall, dlg, _1, &dlg->_availableListView, FALSE));
+						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_availableListView, FALSE));
 					progress.doModal(dlg->_hSelf);
 					
 					//	dlg->installPlugins(dlg->_availableListView);
@@ -131,213 +135,12 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 	return FALSE;
 }
 
-struct InstallParam
-{
-	PluginManagerDialog* pluginManagerDialog;
-	PluginListView*      pluginListView;
-	ProgressDialog*		 progressDialog;
-	BOOL                 isUpdate;
-};
-
-void PluginManagerDialog::startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView, BOOL isUpdate)
-{
-	InstallParam *ip = new InstallParam;
-	ip->pluginListView = pluginListView;
-	ip->progressDialog = progressDialog;
-	ip->pluginManagerDialog = this;
-	ip->isUpdate = isUpdate;
-
-	::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginManagerDialog::installThreadProc, (LPVOID)ip, 0, 0);
-}
-
-
-UINT PluginManagerDialog::installThreadProc(LPVOID param)
-{
-	InstallParam *ip = reinterpret_cast<InstallParam*>(param);
-	
-	ip->pluginManagerDialog->installPlugins(ip->progressDialog, ip->pluginListView, ip->isUpdate);
-
-	// clean up the parameter
-	delete ip;
-
-	return 0;
-}
 
 
 
 
 
-void PluginManagerDialog::installPlugins(ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade)
-{
-	
-	tstring configDir = _pluginList.getVariableHandler()->getConfigDir();
-	
-	tstring basePath(configDir);
 
-	basePath.append(_T("\\plugin_install_temp"));
-
-	// Create the temp directory if it doesn't exist already
-	::CreateDirectory(basePath.c_str(), NULL);
-	basePath.append(_T("\\plugin"));
-	
-
-
-	TiXmlDocument* forGpupDoc = new TiXmlDocument();
-	TiXmlElement* installElement = new TiXmlElement(_T("install"));
-	forGpupDoc->LinkEndChild(installElement);
-	
-	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
-	
-	shared_ptr< list<tstring> > installDueToDepends = _pluginList.calculateDependencies(selectedPlugins);
-		
-	if (!installDueToDepends->empty())
-	{
-		tstring dependsMessage = _T("The following plugin");
-		if (installDueToDepends->size() > 1)
-			dependsMessage.append(_T("s"));
-
-		dependsMessage.append(_T(" need to be installed to support your selection.\r\n\r\n"));
-		for(list<tstring>::iterator msgIter = installDueToDepends->begin(); msgIter != installDueToDepends->end(); msgIter++)
-		{
-			dependsMessage.append(*msgIter);
-			dependsMessage.append(_T("\r\n"));
-		}
-
-		dependsMessage.append(_T("\r\nThey will be installed automatically."));
-
-
-		::MessageBox(_hSelf, dependsMessage.c_str(), _T("Plugin Manager"), MB_OK | MB_ICONINFORMATION);
-
-	}
-
-	
-
-	size_t installSteps = 0;
-	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
-	while(pluginIter != selectedPlugins->end())
-	{
-		installSteps += (*pluginIter)->getInstallStepCount();
-		++pluginIter;
-	}
-
-	progressDialog->setStepCount(installSteps);
-
-	pluginIter = selectedPlugins->begin();
-
-
-	tstring pluginTemp;
-	int pluginCount = 1;
-	
-	BOOL needRestart = FALSE;
-	BOOL somethingInstalled = FALSE;
-
-	TCHAR pluginCountChar[10];
-
-	while(pluginIter != selectedPlugins->end())
-	{
-		BOOL directoryCreated = FALSE;
-		do 
-		{
-			pluginTemp = basePath;
-			_itot_s(pluginCount, pluginCountChar, 10, 10);
-			pluginTemp.append(pluginCountChar);
-			directoryCreated = ::CreateDirectory(pluginTemp.c_str(), NULL);
-			++pluginCount;
-		} while(!directoryCreated);
-
-		pluginTemp.append(_T("\\"));
-		
-
-
-		if (isUpgrade)
-		{
-			/* Remove the existing file if is an upgrade
-			 * This will be done in gpup, but the copy will come afterwards, also in gpup
-			 * So, if the filename is the same as the existing plugin, gpup will delete the old
-			 * file, then copy in the new.
-			 * If the filename is different, the new one will be copied in now, then
-			 * the old file will be deleted in gpup.  This is why it is important that
-			 * replace="false" (default) on the actual plugin file copy step
-			 */
-
-			TiXmlElement* removeElement = new TiXmlElement(_T("delete"));
-			removeElement->SetAttribute(_T("file"), (*pluginIter)->getFilename().c_str());
-			installElement->LinkEndChild(removeElement);
-		}
-
-		InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
-			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
-			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
-			boost::bind(&ProgressDialog::stepComplete, progressDialog));
-
-		switch(status)
-		{
-			case INSTALL_SUCCESS:
-				Utility::removeDirectory(pluginTemp.c_str());
-				somethingInstalled = TRUE;
-				break;
-
-			case INSTALL_NEEDRESTART:
-				needRestart = TRUE;
-				somethingInstalled = TRUE;
-				break;
-
-			case INSTALL_FAIL:
-			{
-				tstring message (_T("Installation of "));
-				message.append((*pluginIter)->getName());
-				message.append(_T(" failed."));
-
-				::MessageBox(_hSelf, message.c_str(), _T("Installation Error"), MB_OK | MB_ICONERROR);
-				Utility::removeDirectory(pluginTemp.c_str());
-				break;
-			}
-
-		}
-
-		++pluginIter;
-	}
-	
-	
-	progressDialog->close(); 
-
-
-	if (needRestart)
-	{
-		tstring gpupFile(configDir);
-		gpupFile.append(_T("\\PluginManagerGpup.xml"));
-
-		forGpupDoc->SaveFile(gpupFile.c_str());
-		delete forGpupDoc;
-
-		int restartNow = ::MessageBox(_hSelf, _T("Some installation steps still need to be completed.  Notepad++ needs to be restarted in order to complete these steps.  If you restart later, the steps will not be completed.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
-		if (restartNow == IDYES)
-		{
-			
-			tstring gpupArguments(_T("-a \""));
-			gpupArguments.append(gpupFile);
-			gpupArguments.append(_T("\""));
-
-			Utility::startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), gpupArguments.c_str());
-		}
-	}
-	else if (somethingInstalled)
-	{
-		delete forGpupDoc;
-
-		int restartNow = ::MessageBox(_hSelf, _T("Notepad++ needs to be restarted for changes to take effect.  Would you like to do this now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
-		if (restartNow == IDYES)
-		{
-			Utility::startGpup(_pluginList.getVariableHandler()->getNppDir().c_str(), _T(""));
-		}
-	}
-	else
-	{
-		delete forGpupDoc;
-	}
-	
-	
-}
 
 
 
@@ -417,7 +220,7 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 				case IDC_BUTTONUPDATE:
 				{
 					ProgressDialog progress(dlg->_hInst, 
-						boost::bind(&PluginManagerDialog::startInstall, dlg, _1, &dlg->_updatesListView, TRUE));
+						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_updatesListView, TRUE));
 					progress.doModal(dlg->_hSelf);
 					
 					
@@ -494,6 +297,26 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 				return TRUE;
 			}
 
+			break;
+		}
+
+
+		case WM_COMMAND:
+		{
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+
+			switch(LOWORD(wParam))
+			{
+				case IDC_BUTTONREMOVE:
+				{
+					ProgressDialog progress(dlg->_hInst, 
+						boost::bind(&PluginList::startRemove, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView));
+					progress.doModal(dlg->_hSelf);
+					
+					
+					break;
+				}
+			}
 			break;
 		}
 
@@ -761,65 +584,50 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 {
 	PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog *>(pvoid);
 
-	/*LVITEM lvi;
-	lvi.mask = LVIF_TEXT;
-	lvi.cchTextMax = 30;
-	lvi.pszText = _T("Please wait while plugin list is downloaded...");
-	lvi.iItem = 0;
-	lvi.iSubItem = 0;
-    ListView_InsertItem(dlg->_tabs[TAB_AVAILABLE].hListView, &lvi);
-	ListView_InsertItem(dlg->_tabs[TAB_UPDATES].hListView, &lvi);
-	ListView_InsertItem(dlg->_tabs[TAB_INSTALLED].hListView, &lvi);
-*/
-	// Work out the path of the Plugins.xml destination (in config dir)
-	TCHAR pluginConfig[MAX_PATH];
-	::SendMessage(dlg->_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
-	
-	tstring pluginsListFilename(pluginConfig);
-	pluginsListFilename.append(_T("\\PluginManagerPlugins.xml"));
-		
-	
+	if (!dlg->_pluginList)
+	{
+		dlg->_pluginList = new PluginList();
+		dlg->_pluginList->downloadList();
+	}
 
-	// Download the plugins.xml from the repository
-	DownloadManager downloadManager;
-	tstring contentType;
-	TCHAR hashBuffer[(MD5LEN * 2) + 1];
-	MD5::hash(pluginsListFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
-	string serverMD5;
-	BOOL downloadResult = downloadManager.getUrl(_T("http://localhost:100/plugins.md5.txt"), serverMD5, g_options.proxy.c_str(), g_options.proxyPort);
-	shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
-	if (downloadResult && serverMD5 != cHashBuffer.get())
-		downloadManager.getUrl(_T("http://localhost:100/plugins.xml"), pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
-	
-
-	dlg->_pluginList.init(&dlg->_nppData);	
-	// Parse it
-	dlg->_pluginList.parsePluginFile(pluginsListFilename.c_str());
-	
-	// Check for what is installed
-	TCHAR nppDirectory[MAX_PATH];
-	::SendMessage(dlg->_nppData._nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDirectory));
-	dlg->_pluginList.checkInstalledPlugins(nppDirectory);
 
 	// Show the lists
-	PluginListContainer availablePlugins = dlg->_pluginList.getAvailablePlugins();
+	PluginListContainer availablePlugins = dlg->_pluginList->getAvailablePlugins();
 	if (availablePlugins.empty())
 		dlg->_availableListView.setMessage(_T("No new plugins available"));
 	else
 		dlg->_availableListView.setList(availablePlugins);
 
-	PluginListContainer installedPlugins = dlg->_pluginList.getInstalledPlugins();
+
+	PluginListContainer installedPlugins = dlg->_pluginList->getInstalledPlugins();
 
 	if (installedPlugins.empty())
 		dlg->_installedListView.setMessage(_T("There are no known installed plugins"));
 	else
 		dlg->_installedListView.setList(installedPlugins);
 	
-	PluginListContainer updatesPlugins = dlg->_pluginList.getUpdateablePlugins();
+
+	PluginListContainer updatesPlugins = dlg->_pluginList->getUpdateablePlugins();
+	
 	if (updatesPlugins.empty())
 		dlg->_updatesListView.setMessage(_T("There are no plugins with updates available"));
 	else
+	{
 		dlg->_updatesListView.setList(updatesPlugins);
+		dlg->_updatesListView.selectAll();
+	}
 
 	_endthread();
+}
+
+
+void PluginManagerDialog::init(HINSTANCE hInst, NppData nppData)
+{
+	_nppData = nppData;
+	Window::init(hInst, nppData._nppHandle);	
+}
+
+void PluginManagerDialog::setPluginList(PluginList* pluginList)
+{
+	_pluginList = pluginList;
 }

@@ -6,6 +6,7 @@
 #include "tstring.h"
 #include <boost/function.hpp>
 
+
 class DownloadManager
 {
 public:

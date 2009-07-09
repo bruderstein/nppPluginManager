@@ -242,11 +242,32 @@ BOOL processActionsFile(const tstring& actionsFile)
 			{
 				shared_ptr<InstallStep> installStep = installStepFactory.create(step, "", 0);
 
-				installStep->perform(basePath,           // basePath
-									 &stillToComplete,   // forGpup (still can't achieve, so basically a fail)
-									 boost::bind(&setStatus, _1),     // status update function
-									 boost::bind(&stepProgress, _1)); // step progress function
-			
+
+				StepStatus stepStatus;
+				stepStatus = installStep->perform(basePath,           // basePath
+												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
+												boost::bind(&setStatus, _1),     // status update function
+												boost::bind(&stepProgress, _1)); // step progress function
+
+
+				// If it said it needed to do it in GPUP, then maybe N++ hasn't quite
+				// finished quitting yet.
+
+				int retryCount = 0;
+				while (stepStatus == STEPSTATUS_NEEDGPUP && retryCount < 6)
+				{
+					::Sleep(500);
+					++retryCount;
+					stepStatus = installStep->perform(basePath,           // basePath
+												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
+												boost::bind(&setStatus, _1),     // status update function
+												boost::bind(&stepProgress, _1)); // step progress function
+
+
+				}
+
+				
+
 				step = (TiXmlElement*) install->IterateChildren(step);
 			}
 
@@ -285,7 +306,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 						   _T(" gpup.exe -w <window name> -e <exe name> [-a <actions file>]"), _T("Plugin Update"), MB_OK | MB_ICONERROR);
 		return RETURN_INVALID_PARAMETERS;
 	}
-
 
 	BOOL allClosed = closeMainProgram(options);
 

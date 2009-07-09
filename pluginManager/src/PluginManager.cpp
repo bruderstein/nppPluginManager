@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PluginManager.h"
 #include "AboutDialog.h"
 #include "PluginManagerDialog.h"
+#include "NotifyUpdatesDialog.h"
 #include "SettingsDialog.h"
 #include "Plugin.h"
 #include "Utility.h"
@@ -38,13 +39,22 @@ CONST TCHAR	PLUGIN_NAME[] = _T("Plugin Manager");
 HANDLE				g_hModule			= NULL;
 NppData				nppData;
 FuncItem			funcItem[nbFunc];
-BOOL				g_isUnicode;
+
+#ifdef _UNICODE
+BOOL				g_isUnicode			= TRUE;
+#else
+BOOL				g_isUnicode			= FALSE;
+#endif
+
 Options				g_options;
 SettingsDialog		g_settingsDlg;
+PluginList          *g_pluginList       = NULL;
+
 
 /* dialog classes */
 AboutDialog			aboutDlg;
 PluginManagerDialog	pluginManagerDlg;
+NotifyUpdatesDialog notifyUpdatesDlg;
 
 /* settings */
 TCHAR				configPath[MAX_PATH];
@@ -116,6 +126,8 @@ extern "C" __declspec(dllexport) void setInfo(NppData notpadPlusData)
 	/* initial dialogs */
 	//TemplateDlg.init((HINSTANCE)g_hModule, nppData, &pluginProp);
 	aboutDlg.init((HINSTANCE)g_hModule, nppData);
+
+	::MessageBox(NULL, _T("Init"), _T("INIT"), 0);
 	pluginManagerDlg.init((HINSTANCE)g_hModule, nppData);
 }
 
@@ -167,17 +179,12 @@ extern "C" __declspec(dllexport) LRESULT messageProc(UINT /*message*/, WPARAM /*
 }
 
 
-
+#ifdef _UNICODE
 extern "C" __declspec(dllexport) BOOL isUnicode()
 {
-	#ifdef _UNICODE
-	g_isUnicode = TRUE;
-	#else
-	g_isUnicode = FALSE;
-	#endif
-
 	return g_isUnicode;
 }
+#endif
 
 
 
@@ -290,6 +297,22 @@ UINT startupChecks(LPVOID /*param*/)
 		// Remove the Gpup file (if it exists, doesn't matter if it doesn't)
 		::DeleteFile(configPath.c_str());
 	}
+
+
+	if (g_options.notifyUpdates)
+	{
+		g_pluginList = new PluginList();
+		g_pluginList->init(&nppData);
+		pluginManagerDlg.setPluginList(g_pluginList);
+
+		g_pluginList->downloadList();
+		if (!g_pluginList->getUpdateablePlugins().empty())
+		{
+			notifyUpdatesDlg.init((HINSTANCE)g_hModule, nppData, g_pluginList);
+			notifyUpdatesDlg.doModal();
+		}
+	}
+
 
 	return 0;
 }

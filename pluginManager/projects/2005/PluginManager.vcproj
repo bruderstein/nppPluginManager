@@ -230,6 +230,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\NotifyUpdatesDialog.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\PluginManagerDialog.h"
 					>
 				</File>
@@ -295,6 +299,10 @@
 				>
 				<File
 					RelativePath="..\..\src\AboutDlg\AboutDialog.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\NotifyUpdatesDialog.cpp"
 					>
 				</File>
 				<File

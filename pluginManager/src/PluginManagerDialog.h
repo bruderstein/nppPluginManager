@@ -18,14 +18,11 @@
 class PluginManagerDialog : StaticDialog
 {
 public:
-	PluginManagerDialog() {};
+	PluginManagerDialog();
 	~PluginManagerDialog() {};
 
-    void init(HINSTANCE hInst, NppData nppData)
-	{
-		_nppData = nppData;
-		Window::init(hInst, nppData._nppHandle);
-	};
+    void init(HINSTANCE hInst, NppData nppData);
+	void setPluginList(PluginList* pluginList);
 
    	void doDialog();
 
@@ -54,7 +51,7 @@ private:
 	HWND			_hSettingsButton;
 
 	/* List of plugins, both available and installed*/
-	PluginList		_pluginList;
+	PluginList*		_pluginList;
 
 	/* ListView controller objects */
 	PluginListView  _installedListView;
@@ -127,7 +124,7 @@ private:
 
 	/* Installs plugins from given list */ 
 	void startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView, BOOL isUpdate);
-	void installPlugins(ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpdate);
+
 
 
 
