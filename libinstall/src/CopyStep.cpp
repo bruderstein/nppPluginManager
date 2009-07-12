@@ -1,31 +1,53 @@
+/*
+This file is part of Plugin Manager Plugin for Notepad++
+
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 #include <tchar.h>
 #include <string.h>
 #include <windows.h>
+#include <shlwapi.h>
+#include <list>
 #include <boost/function.hpp>
 #include "libinstall/InstallStep.h"
 #include "libinstall/CopyStep.h"
 #include "libinstall/DownloadManager.h"
 #include "libinstall/md5.h"
 #include "libinstall/tstring.h"
-
+#include "libinstall/DirectoryUtil.h"
 using namespace std;
 
 
-CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, BOOL attemptReplace, BOOL validate, const char* proxy, long proxyPort)
+CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, BOOL attemptReplace, BOOL validate, BOOL backup, const char* proxy, const long proxyPort)
 {
 	_from = from;
 	_to = to;
 	_failIfExists = !attemptReplace;
-	_validate = validate;
-	_proxy = proxy;
-	_proxyPort = proxyPort;
+	_validate	= validate;
+	_backup		= backup;
+	_proxy		= proxy;
+	_proxyPort	= proxyPort;
 }
 
 ValidateStatus CopyStep::Validate(tstring& file)
 {
 	DownloadManager download;
-	TCHAR localMD5[MD5::HASH_LENGTH + 1];
-	MD5::hash(file.c_str(), localMD5, MD5::HASH_LENGTH + 1);
+	TCHAR localMD5[(MD5::HASH_LENGTH * 2) + 1];
+	MD5::hash(file.c_str(), localMD5, (MD5::HASH_LENGTH * 2) + 1);
 	tstring validateUrl = VALIDATE_BASEURL;
 	validateUrl.append(localMD5);
 	string validateResult;
@@ -48,7 +70,8 @@ ValidateStatus CopyStep::Validate(tstring& file)
 
 StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
-							 boost::function<void(const int)> stepProgress)
+							 boost::function<void(const int)> stepProgress,
+							 const HWND windowParent)
 {
 	StepStatus status = STEPSTATUS_SUCCESS;
 
@@ -64,6 +87,14 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	tstring fromDir;
 
 	tstring toPath = _to;
+	
+	// Check destination directory exists
+	if (!::PathFileExists(_to.c_str()))
+	{
+		DirectoryUtil::createDirectories(_to.c_str());
+	}
+	
+
 	toPath.append(_T("\\"));
 	
 	tstring::size_type backSlash = fromPath.find_last_of(_T("\\"));
@@ -108,7 +139,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 							msg.append(foundData.cFileName);
 							msg.append(_T("' needed to install or update a plugin.  Do you want to copy this file anyway (not recommended)?"));
 							
-							int userChoice = ::MessageBox(NULL, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
+							int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
 							
 							if (userChoice == IDYES)
 							{
@@ -129,7 +160,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 							msg.append(foundData.cFileName);
 							msg.append(_T("' has been identified as unstable, incorrect or dangerous.  It is NOT recommended you install this file.  Do you want to install this file anyway?"));
 							
-							int userChoice = ::MessageBox(NULL, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
+							int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
 							
 							if (userChoice == IDYES)
 							{
@@ -150,18 +181,52 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 			else 
 				copy = true;
 
-			if (copy && !::CopyFile(src.c_str(), dest.c_str(), _failIfExists))
+			if (copy)
 			{
-				status = STEPSTATUS_NEEDGPUP;
-				// Add file to forGpup doc
-				
-				TiXmlElement* copy = new TiXmlElement(_T("copy"));
-				
-				copy->SetAttribute(_T("from"), src.c_str());
-				copy->SetAttribute(_T("to"), _to.c_str());
-				copy->SetAttribute(_T("replace"), _T("true"));
-				forGpup->LinkEndChild(copy);
+				if (_backup && ::PathFileExists(dest.c_str()))
+				{
+					tstring baseBackupPath(dest);
+					baseBackupPath.append(_T(".backup"));
+					tstring backupPath(baseBackupPath);
+					int counter = 1;
+					TCHAR buf[10];
 
+					// Keep checking the paths - if there's more than 500, tough.
+					while(::PathFileExists(backupPath.c_str()) && counter < 500)
+					{
+						++counter;
+						_itot_s(counter, buf, 10, 10);
+						backupPath = baseBackupPath;
+						backupPath.append(buf);
+					}
+
+					// If there's 500 backups, give it a silly name.
+					if (counter >= 500)
+					{
+						backupPath = baseBackupPath;
+						backupPath.append(_T("_too_many_backups"));
+					}
+
+					::CopyFile(dest.c_str(), backupPath.c_str(), FALSE);
+
+				}
+
+				if (!::CopyFile(src.c_str(), dest.c_str(), _failIfExists))
+				{
+					status = STEPSTATUS_NEEDGPUP;
+					// Add file to forGpup doc
+					
+					TiXmlElement* copy = new TiXmlElement(_T("copy"));
+					
+					copy->SetAttribute(_T("from"), src.c_str());
+					copy->SetAttribute(_T("to"), _to.c_str());
+					copy->SetAttribute(_T("replace"), _T("true"));
+					if (_backup)
+						copy->SetAttribute(_T("backup"), _T("true"));
+					
+					forGpup->LinkEndChild(copy);
+
+				}
 			}
 		} while(status != STEPSTATUS_FAIL && ::FindNextFile(hFindFile, &foundData));
 	}

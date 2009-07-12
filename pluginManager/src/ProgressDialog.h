@@ -36,6 +36,8 @@ private:
 
 	boost::function<void(ProgressDialog*)> _startFunction;
 
+
+	void goToCenter();
 };
 
 #endif

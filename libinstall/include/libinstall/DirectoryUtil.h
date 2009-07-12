@@ -1,6 +1,5 @@
 /*
-This file is part of GPUP, which is part of Plugin Manager 
-Plugin for Notepad++
+This file is part of Plugin Manager Plugin for Notepad++
 
 Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
 
@@ -18,11 +17,21 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-// stdafx.cpp : source file that includes just the standard includes
-// gpup.pch will be the pre-compiled header
-// stdafx.obj will contain the pre-compiled type information
 
-#include "stdafx.h"
+#ifndef _DIRECTORYUTIL_H
+#define _DIRECTORYUTIL_H
 
-// TODO: reference any additional headers you need in STDAFX.H
-// and not in this file
+#include <tchar.h>
+
+// Copied from windows.h to avoid dependency
+typedef int BOOL;
+
+class DirectoryUtil
+{
+public:
+	static BOOL createDirectories(const TCHAR* dir);
+	
+
+};
+
+#endif

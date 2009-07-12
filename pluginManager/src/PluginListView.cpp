@@ -1,3 +1,22 @@
+/*
+This file is part of Plugin Manager Plugin for Notepad++
+
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 
 #include "PluginListView.h"
 #include "PluginList.h"
@@ -45,13 +64,19 @@ LRESULT PluginListView::notify(WPARAM /*wParam*/, LPARAM lParam)
 				{
 					case 0:
 					{
-						// need plugin object get tchars to be clever
+						
 						
 						plvdi->item.pszText = const_cast<TCHAR*>(plugin->getName().c_str());
 						break;
 					}
+					case 1:
+					{
+						plvdi->item.pszText = const_cast<TCHAR*>(plugin->getCategory().c_str());
+						break;
+					}
+
 					default:
-						switch(_columns[plvdi->item.iSubItem - 1])
+						switch(_columns[plvdi->item.iSubItem - 2])
 						{
 							case VERSION_INSTALLED:
 								plvdi->item.pszText = plugin->getInstalledVersion().getDisplayString();
@@ -71,31 +96,28 @@ LRESULT PluginListView::notify(WPARAM /*wParam*/, LPARAM lParam)
 		}
 
 		case NM_CLICK:
-		{
-			if (_hDescription)
+			if (_hDescription && lParam)
 			{
-				Plugin* plugin = getCurrentPlugin();
-				if (NULL == plugin && lParam)
-				{
-					LPNMITEMACTIVATE itemActivate = reinterpret_cast<LPNMITEMACTIVATE>(lParam);
-					if (itemActivate->iItem >= 0)
-					{
-						LVITEM item;
-						item.iItem = itemActivate->iItem;
-						ListView_GetItem(_hListView, &item);
-						plugin = reinterpret_cast<Plugin*>(item.lParam);
-					}
-				}
 
-				if (NULL != plugin)
+				LPNMITEMACTIVATE itemActivate = reinterpret_cast<LPNMITEMACTIVATE>(lParam);
+				if (itemActivate->iItem >= 0)
 				{
-					TCHAR *description = (TCHAR*)plugin->getDescription().c_str();
-					::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(description));
-				} 
-				else
-					::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(_T("")));
+					ListView_SetItemState(_hListView, getCurrentSelectedIndex(), 0, LVIS_SELECTED);
+					ListView_SetItemState(_hListView, itemActivate->iItem, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+				}
+			
 			}
 			break;
+		
+		case LVN_ITEMCHANGED:
+		{
+			LPNMLISTVIEW pnmv = reinterpret_cast<LPNMLISTVIEW>(lParam);
+			if (pnmv->uNewState & LVIS_SELECTED)
+			{
+				Plugin* plugin = reinterpret_cast<Plugin*>(pnmv->lParam);
+				if (plugin && _hDescription)
+					::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(plugin->getDescription().c_str()));
+			}
 		}
 	}
 
@@ -111,13 +133,20 @@ void PluginListView::initColumns(void)
 	col.fmt			= LVCFMT_LEFT;
 	col.iSubItem	= 0;
 	col.cx			= 250;
-	col.pszText = _T("Plugin");
+	col.pszText		= _T("Plugin");
 	ListView_InsertColumn(_hListView, 0, &col);
+	
+	col.iSubItem	= 1;
+	col.pszText	    = _T("Category");
+	col.cx			= 60;
+	ListView_InsertColumn(_hListView, 1, &col);
 
 	col.fmt			= LVCFMT_RIGHT;
+	int columnOffset = 2;
+
 	for(int index = 0; index < _nVersionColumns; index++)
 	{
-		col.iSubItem	= index + 1;
+		col.iSubItem	= index + columnOffset;
 		col.cx			= 110;
 		switch(_columns[index])
 		{
@@ -130,7 +159,7 @@ void PluginListView::initColumns(void)
 				break;
 		}
 
-		ListView_InsertColumn(_hListView, index + 1, &col);
+		ListView_InsertColumn(_hListView, index + columnOffset, &col);
 	}
 	
 	ListView_SetExtendedListViewStyle(_hListView, LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
@@ -221,11 +250,17 @@ Plugin* PluginListView::getCurrentPlugin()
 
 shared_ptr< list<Plugin*> > PluginListView::getSelectedPlugins()
 {
-	LVITEM item;
 	
-	item.mask = LVIF_PARAM;
+	shared_ptr< list<Plugin*> > selectedList;
+	
+	if (_listMode == LISTMODE_MESSAGE)
+		return selectedList;
 
-	shared_ptr< list<Plugin*> > selectedList(new list<Plugin*>());
+	LVITEM item;
+	item.mask = LVIF_PARAM;
+	
+	selectedList.reset(new list<Plugin*>());
+
 
 	UINT size = ListView_GetItemCount(_hListView);
 

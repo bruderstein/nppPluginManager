@@ -918,6 +918,8 @@
 #define IDC_NOTIFY2                     1019
 #define IDC_IGNORE                      1020
 #define IDC_BUTTON3                     1021
+#define IDC_REINSTALL                   1021
+#define IDC_BUTTON2                     1022
 #define CF_GDIOBJLAST                   0x03FF
 #define WM_USER                         0x0400
 #define WVR_VALIDRECTS                  0x0400
@@ -1221,7 +1223,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        109
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1023
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

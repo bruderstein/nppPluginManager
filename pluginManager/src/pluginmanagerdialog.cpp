@@ -1,4 +1,22 @@
+/*
+This file is part of Plugin Manager Plugin for Notepad++
 
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 #include <windows.h>
 #include <commctrl.h>
 #include <process.h>
@@ -245,10 +263,10 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 
 			dlg->_tabs[TAB_INSTALLED].hListView = ::GetDlgItem(hWnd, IDC_LISTINSTALLED);	
 			dlg->_tabs[TAB_INSTALLED].hDescription = ::GetDlgItem(hWnd, IDC_EDITINSTALLED);
-			dlg->_tabs[TAB_INSTALLED].nButtons = 1;
-			dlg->_tabs[TAB_INSTALLED].pButtons = new BUTTON[1];
+			dlg->_tabs[TAB_INSTALLED].nButtons = 2;
+			dlg->_tabs[TAB_INSTALLED].pButtons = new BUTTON[2];
 			dlg->_tabs[TAB_INSTALLED].pButtons[0].hWnd = ::GetDlgItem(hWnd, IDC_BUTTONREMOVE);
-			
+			dlg->_tabs[TAB_INSTALLED].pButtons[1].hWnd = ::GetDlgItem(hWnd, IDC_REINSTALL);
 			WINDOWINFO wiTab;
 			::GetWindowInfo(hWnd, &wiTab);
 
@@ -259,7 +277,15 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 			dlg->_tabs[TAB_INSTALLED].pButtons[0].rightOffset = wiTab.rcClient.right - wiObject.rcClient.left;
 			dlg->_tabs[TAB_INSTALLED].pButtons[0].width = wiObject.rcClient.right - wiObject.rcClient.left;
 			dlg->_tabs[TAB_INSTALLED].pButtons[0].height = wiObject.rcClient.bottom - wiObject.rcClient.top;
+
+
+			::GetWindowInfo(dlg->_tabs[TAB_INSTALLED].pButtons[1].hWnd, &wiObject);
 			
+			dlg->_tabs[TAB_INSTALLED].pButtons[1].rightOffset = wiTab.rcClient.right - wiObject.rcClient.left;
+			dlg->_tabs[TAB_INSTALLED].pButtons[1].width = wiObject.rcClient.right - wiObject.rcClient.left;
+			dlg->_tabs[TAB_INSTALLED].pButtons[1].height = wiObject.rcClient.bottom - wiObject.rcClient.top;
+			
+
 			::GetWindowInfo(dlg->_tabs[TAB_INSTALLED].hListView, &wiObject);
 			dlg->_tabs[TAB_INSTALLED].listViewBottomOffset = wiTab.rcClient.bottom - wiObject.rcClient.bottom;
 
@@ -312,8 +338,14 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 					ProgressDialog progress(dlg->_hInst, 
 						boost::bind(&PluginList::startRemove, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView));
 					progress.doModal(dlg->_hSelf);
-					
-					
+					break;
+				}
+
+				case IDC_REINSTALL:
+				{
+					ProgressDialog progress(dlg->_hInst, 
+						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, TRUE));
+					progress.doModal(dlg->_hSelf);
 					break;
 				}
 			}
@@ -414,7 +446,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 					SettingsDialog settingsDlg;
 
 					settingsDlg.doModal(_hSelf);
-					break;
+					return TRUE;
 				}
 				case IDOK :
 				case IDCANCEL :
@@ -587,7 +619,18 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 	if (!dlg->_pluginList)
 	{
 		dlg->_pluginList = new PluginList();
+		dlg->_pluginList->init(&dlg->_nppData);
 		dlg->_pluginList->downloadList();
+	}
+	else
+	{
+		if (!dlg->_pluginList->listsAvailable())
+		{
+			dlg->_availableListView.setMessage(_T("Still downloading plugin list..."));
+			dlg->_updatesListView.setMessage(_T("Still downloading plugin list..."));
+			dlg->_installedListView.setMessage(_T("Still downloading plugin list..."));
+			dlg->_pluginList->waitForListsAvailable();
+		}
 	}
 
 

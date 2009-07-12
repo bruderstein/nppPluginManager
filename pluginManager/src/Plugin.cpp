@@ -1,3 +1,23 @@
+/*
+This file is part of Plugin Manager Plugin for Notepad++
+
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
 #include "Plugin.h"
 #include <tchar.h>
 #include <string>
@@ -13,6 +33,7 @@ using namespace boost;
 Plugin::Plugin(void)
 {
 	_isInstalled = FALSE;
+	_detailsAdded = FALSE;
 }
 
 Plugin::~Plugin(void)
@@ -48,10 +69,29 @@ void Plugin::setName(const tstring& name)
 	_name = name;
 }
 
+void Plugin::setAuthor(const TCHAR* author)
+{
+	_author = author;
+}
+
+void Plugin::setCategory(const TCHAR* category)
+{
+	_category = category;
+}
 
 void Plugin::setVersion(const PluginVersion &version)
 {
 	_version = version;
+}
+
+void Plugin::setHomepage(const TCHAR* homepage)
+{
+	_homepage = homepage;
+}
+
+void Plugin::setSourceUrl(const TCHAR* sourceUrl)
+{
+	_sourceUrl = sourceUrl;
 }
 
 
@@ -75,6 +115,27 @@ void Plugin::setInstalledVersionFromHash(const tstring &hash)
 
 tstring& Plugin::getDescription()
 {
+	if (!_detailsAdded)
+	{		
+		if (!_author.empty())
+		{
+			_description.append(_T("\r\nAuthor: "));
+			_description.append(_author);
+		}
+		if (!_sourceUrl.empty())
+		{
+			_description.append(_T("\r\nSource: "));
+			_description.append(_sourceUrl);
+		}
+		if (!_homepage.empty())
+		{
+			_description.append(_T("\r\nHomepage: "));
+			_description.append(_homepage);
+		}
+
+		_detailsAdded = TRUE;
+	}
+
 	return _description;
 }
 
@@ -102,6 +163,16 @@ PluginVersion& Plugin::getInstalledVersion()
 }
 
 	
+tstring& Plugin::getAuthor()
+{
+	return _author;
+}
+
+tstring& Plugin::getCategory()
+{
+	return _category;
+}
+
 BOOL Plugin::isInstalled()
 {
 	return _isInstalled;
@@ -131,7 +202,8 @@ size_t Plugin::getInstallStepCount()
 InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup, 
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
-									  boost::function<void()> stepComplete)
+									  boost::function<void()> stepComplete,
+									  const HWND windowParent)
 {
 	InstallStatus status = INSTALL_SUCCESS;
 
@@ -143,7 +215,7 @@ InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 	while (stepIterator != _installSteps.end())
 	{
 		
-		stepStatus = (*stepIterator)->perform(basePath, forGpup, setStatus, stepProgress);
+		stepStatus = (*stepIterator)->perform(basePath, forGpup, setStatus, stepProgress, windowParent);
 
 		switch(stepStatus)
 		{

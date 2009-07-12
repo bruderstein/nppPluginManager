@@ -89,11 +89,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 			_tcscpy_s(funcItem[1]._itemName, 64, _T("&About"));
 
 			/* Set shortcuts */
-			funcItem[0]._pShKey = new ShortcutKey;
-			funcItem[0]._pShKey->_isAlt		= true;
-			funcItem[0]._pShKey->_isCtrl	= true;
-			funcItem[0]._pShKey->_isShift	= true;
-			funcItem[0]._pShKey->_key		= 'T';
+			funcItem[0]._pShKey = NULL;
 			funcItem[1]._pShKey = NULL;
 			break;
 		}	
@@ -127,7 +123,6 @@ extern "C" __declspec(dllexport) void setInfo(NppData notpadPlusData)
 	//TemplateDlg.init((HINSTANCE)g_hModule, nppData, &pluginProp);
 	aboutDlg.init((HINSTANCE)g_hModule, nppData);
 
-	::MessageBox(NULL, _T("Init"), _T("INIT"), 0);
 	pluginManagerDlg.init((HINSTANCE)g_hModule, nppData);
 }
 
@@ -283,7 +278,7 @@ UINT startupChecks(LPVOID /*param*/)
 			{
 				configPath.insert(0, _T("-a \""));
 				configPath.append(_T("\""));
-				Utility::startGpup(tNppPath, configPath.c_str());
+				Utility::startGpup(nppData._nppHandle, tNppPath, configPath.c_str());
 			}
 
 	}
@@ -309,7 +304,10 @@ UINT startupChecks(LPVOID /*param*/)
 		if (!g_pluginList->getUpdateablePlugins().empty())
 		{
 			notifyUpdatesDlg.init((HINSTANCE)g_hModule, nppData, g_pluginList);
-			notifyUpdatesDlg.doModal();
+			
+			// Check if there updates that we are not ignoring
+			if (notifyUpdatesDlg.updatesAvailable())
+				notifyUpdatesDlg.doModal();
 		}
 	}
 

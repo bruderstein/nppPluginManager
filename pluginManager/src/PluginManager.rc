@@ -33,6 +33,7 @@ BEGIN
     CONTROL         "",IDC_LISTINSTALLED,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,378,175
     EDITTEXT        IDC_EDITINSTALLED,7,185,378,46,ES_MULTILINE | ES_READONLY | WS_VSCROLL
     PUSHBUTTON      "Remove",IDC_BUTTONREMOVE,325,237,50,14
+    PUSHBUTTON      "Reinstall",IDC_REINSTALL,266,237,50,14
 END
 
 IDD_TABUPDATES DIALOGEX 0, 0, 392, 266
@@ -77,16 +78,16 @@ BEGIN
     CONTROL         "Notify of plugin updates at startup",IDC_NOTIFY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,59,54,127,10
 END
 
-IDD_UPDATESNOTIFY DIALOGEX 0, 0, 310, 122
+IDD_UPDATESNOTIFY DIALOGEX 0, 0, 402, 122
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Notepad++ Plugin Manager"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_LISTUPDATES,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,21,296,68
+    CONTROL         "",IDC_LISTUPDATES,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,21,388,68
     LTEXT           "The following plugin updates are available:",IDC_STATIC,7,7,137,8
     PUSHBUTTON      "Update Selected",IDC_UPDATE,7,101,99,14
-    PUSHBUTTON      "Ignore Selected Updates",IDC_IGNORE,129,101,100,14
-    PUSHBUTTON      "Cancel",IDCANCEL,253,101,50,14
+    PUSHBUTTON      "Ignore Selected Updates",IDC_IGNORE,154,101,100,14
+    PUSHBUTTON      "Cancel",IDCANCEL,295,101,100,14
 END
 
 
@@ -141,12 +142,53 @@ BEGIN
     IDD_UPDATESNOTIFY, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 303
+        RIGHTMARGIN, 395
         TOPMARGIN, 7
         BOTTOMMARGIN, 115
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,8,0,0
+ PRODUCTVERSION 0,8,0,0
+ FILEFLAGSMASK 0x37L
+#ifdef _DEBUG
+ FILEFLAGS 0x21L
+#else
+ FILEFLAGS 0x20L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x0L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080904b0"
+        BEGIN
+            VALUE "Comments", "Source code at git://github.com/davegb3/nppPluginManager.git"
+            VALUE "CompanyName", "Dave Brotherstone.  davegb@pobox.com"
+            VALUE "FileDescription", "Plugin Manager for Notepad++.  A free (GPL) plugin management plugin"
+            VALUE "FileVersion", "0, 8, 0, 0"
+            VALUE "InternalName", "PluginManager"
+            VALUE "LegalCopyright", "Copyright (C) 2009 Dave Brotherstone"
+            VALUE "OriginalFilename", "PluginManager.dll"
+            VALUE "ProductName", "PluginManager"
+            VALUE "ProductVersion", "0, 8, 0, 0"
+            VALUE "SpecialBuild", "UNICODE"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x809, 1200
+    END
+END
 
 #endif    // English (U.K.) resources
 /////////////////////////////////////////////////////////////////////////////
@@ -166,14 +208,14 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SOUTH_AFRICA
 // Dialog
 //
 
-IDD_PLUGINMANAGER_DLG DIALOGEX 0, 0, 346, 281
+IDD_PLUGINMANAGER_DLG DIALOGEX 0, 0, 429, 255
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_THICKFRAME
 CAPTION "Plugin Manager"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Close",IDOK,290,260,50,14
-    PUSHBUTTON      "Settings",IDC_SETTINGS,1,261,50,14
-    CONTROL         "",IDC_PLUGINTABCTRL,"SysTabControl32",0x0,1,1,340,253
+    DEFPUSHBUTTON   "Close",IDOK,378,235,50,14
+    PUSHBUTTON      "Settings",IDC_SETTINGS,1,235,50,14
+    CONTROL         "",IDC_PLUGINTABCTRL,"SysTabControl32",0x0,0,1,428,226
 END
 
 IDD_ABOUT_DLG DIALOGEX 0, 0, 186, 74
@@ -199,8 +241,8 @@ GUIDELINES DESIGNINFO
 BEGIN
     IDD_PLUGINMANAGER_DLG, DIALOG
     BEGIN
-        RIGHTMARGIN, 345
-        BOTTOMMARGIN, 275
+        RIGHTMARGIN, 428
+        BOTTOMMARGIN, 249
     END
 
     IDD_ABOUT_DLG, DIALOG

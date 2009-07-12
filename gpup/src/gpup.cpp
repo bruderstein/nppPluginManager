@@ -1,5 +1,23 @@
-// gpup.cpp : Defines the entry point for the application.
-//
+/*
+This file is part of GPUP, which is part of Plugin Manager 
+Plugin for Notepad++
+
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 
 #include "stdafx.h"
 #include "gpup.h"
@@ -247,7 +265,8 @@ BOOL processActionsFile(const tstring& actionsFile)
 				stepStatus = installStep->perform(basePath,           // basePath
 												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
 												boost::bind(&setStatus, _1),     // status update function
-												boost::bind(&stepProgress, _1)); // step progress function
+												boost::bind(&stepProgress, _1),
+												NULL); // step progress function
 
 
 				// If it said it needed to do it in GPUP, then maybe N++ hasn't quite
@@ -261,7 +280,8 @@ BOOL processActionsFile(const tstring& actionsFile)
 					stepStatus = installStep->perform(basePath,           // basePath
 												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
 												boost::bind(&setStatus, _1),     // status update function
-												boost::bind(&stepProgress, _1)); // step progress function
+												boost::bind(&stepProgress, _1), // step progress function
+												NULL); 
 
 
 				}

@@ -1,9 +1,30 @@
+/*
+This file is part of Plugin Manager Plugin for Notepad++
+
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 
 #include <windows.h>
-#include <boost/shared_ptr.hpp>
 #include <set>
+#include <shlwapi.h>
+#include <boost/shared_ptr.hpp>
+
 
 #include "PluginList.h"
 #include "PluginManager.h"
@@ -28,6 +49,12 @@ typedef BOOL (__cdecl * PFUNCISUNICODE)();
 PluginList::PluginList(void)
 {
 	_variableHandler = NULL;
+	_hListsAvailableEvent = CreateEvent(
+			NULL,				//   LPSECURITY_ATTRIBUTES
+			TRUE,				//   bManualReset
+			FALSE,				//   Initial state
+			NULL);              //   Event name
+
 }
 
 PluginList::~PluginList(void)
@@ -145,7 +172,26 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 				}
 			}
 
+			
+			TiXmlElement *authorElement = pluginNode->FirstChildElement(_T("author"));
+			if (authorElement && authorElement->FirstChild())
+				plugin->setAuthor(authorElement->FirstChild()->Value());
 
+			TiXmlElement *sourceElement = pluginNode->FirstChildElement(_T("sourceUrl"));
+			if (sourceElement && sourceElement->FirstChild())
+				plugin->setSourceUrl(sourceElement->FirstChild()->Value());
+
+
+			TiXmlElement *homepageElement = pluginNode->FirstChildElement(_T("homepage"));
+			if (homepageElement && homepageElement->FirstChild())
+				plugin->setHomepage(homepageElement->FirstChild()->Value());
+
+
+			TiXmlElement *categoryElement = pluginNode->FirstChildElement(_T("category"));
+			if (categoryElement && categoryElement->FirstChild())
+				plugin->setCategory(categoryElement->FirstChild()->Value());
+			else
+				plugin->setCategory(_T("Others"));
 			
 
 			if (available)
@@ -266,36 +312,8 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 					plugin->setName(pluginName);
 					plugin->setFilename(pluginFilename);
 					setInstalledVersion(pluginFilename, plugin);
-					/*
-					TCHAR hashBuffer[(MD5LEN * 2) + 1];
-					tstring plugintext = _T("");
-					plugintext.append(_T("<plugin name=\""));
-					plugintext.append(pluginName);
-					plugintext.append(_T("\"><unicodeVersion>"));
-					plugintext.append(plugin->getInstalledVersion().getDisplayString());
-					plugintext.append(_T("</unicodeVersion>"));
-					plugintext.append(_T("<ansiVersion>"));
-					plugintext.append(plugin->getInstalledVersion().getDisplayString());
-					plugintext.append(_T("</ansiVersion>"));
-
-					if (plugin->getInstalledVersion() == PluginVersion(0,0,0,0))
-					{
-						plugintext.append(_T("<versions><version number=\"1.0.0.0\" md5=\""));
-						MD5::hash(pluginFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
-						plugintext.append(hashBuffer);
-						plugintext.append(_T("\"/></versions>"));
-					}
-					plugintext.append(_T("<sourceURL></sourceURL>"));
 					
-					plugintext.append(_T("<install><download></download><ansi></ansi><unicode></unicode></install>\r\n"));
-
-
-					plugintext.append(_T("</plugin>"));
-					char *dest = new char[plugintext.size() + 1];
-					wcstombs(dest, plugintext.c_str(), plugintext.size() + 1);
-					::SendMessage(_nppData->_scintillaMainHandle, SCI_INSERTTEXT, 0, reinterpret_cast<LPARAM>(dest));
-					*/
-					plugin->setDescription(_T("Unknown plugin"));
+					plugin->setDescription(_T("Unknown plugin - please let us know about this plugin on the forums"));
 
 					_installedPlugins.push_back(plugin);
 				}
@@ -411,10 +429,11 @@ BOOL PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 		{
 			TCHAR *fileVersion;
 			UINT fileVersionLength;
-			::VerQueryValue(buffer, subBlock, reinterpret_cast<LPVOID *>(&fileVersion), &fileVersionLength);
-
-			plugin->setInstalledVersion(PluginVersion(fileVersion));
-			
+			if(::VerQueryValue(buffer, subBlock, reinterpret_cast<LPVOID *>(&fileVersion), &fileVersionLength))
+			{	
+				if (fileVersion)
+					plugin->setInstalledVersion(PluginVersion(fileVersion));
+			}
 		}
 	}
 	else
@@ -425,6 +444,20 @@ BOOL PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 	return TRUE;
 
 
+}
+
+void PluginList::waitForListsAvailable()
+{
+	::WaitForSingleObject(_hListsAvailableEvent, INFINITE);
+}
+
+BOOL PluginList::listsAvailable()
+{
+	DWORD result = ::WaitForSingleObject(_hListsAvailableEvent, 0);
+	if (result == WAIT_OBJECT_0)
+		return TRUE;
+	else
+		return FALSE;
 }
 
 
@@ -531,10 +564,10 @@ void PluginList::downloadList()
 	TCHAR hashBuffer[(MD5LEN * 2) + 1];
 	MD5::hash(pluginsListFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
 	string serverMD5;
-	BOOL downloadResult = downloadManager.getUrl(_T("http://localhost:100/plugins.md5.txt"), serverMD5, g_options.proxy.c_str(), g_options.proxyPort);
+	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, g_options.proxy.c_str(), g_options.proxyPort);
 	shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
 	if (downloadResult && serverMD5 != cHashBuffer.get())
-		downloadManager.getUrl(_T("http://localhost:100/plugins.xml"), pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
+		downloadManager.getUrl(PLUGINS_URL, pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
 	
 	// Parse it
 	parsePluginFile(pluginsListFilename.c_str());
@@ -545,12 +578,36 @@ void PluginList::downloadList()
 
 	checkInstalledPlugins(nppDirectory);
 
+	::SetEvent(_hListsAvailableEvent);
+	
 }
 
+TiXmlDocument* PluginList::getGpupDocument(const TCHAR* filename)
+{
+	TiXmlDocument* forGpupDoc = new TiXmlDocument();
+	TiXmlElement* installElement = NULL;
 
+	// Load gpup doc if it already exists
+	if (::PathFileExists(filename))
+	{
+		forGpupDoc->LoadFile(filename);
+		installElement = forGpupDoc->FirstChildElement(_T("install"));
+	}
+
+	// If install element not there, then create it
+	if (!installElement)
+	{
+		installElement = new TiXmlElement(_T("install"));
+		forGpupDoc->LinkEndChild(installElement);
+	}
+
+	return forGpupDoc;
+}
 
 void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade)
 {
+	
+
 	tstring configDir = _variableHandler->getConfigDir();
 	
 	tstring basePath(configDir);
@@ -561,14 +618,22 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	::CreateDirectory(basePath.c_str(), NULL);
 	basePath.append(_T("\\plugin"));
 	
+	tstring gpupFile(configDir);
+	gpupFile.append(_T("\\PluginManagerGpup.xml"));
 
+	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str()); 
+	TiXmlElement* installElement = forGpupDoc->FirstChildElement(_T("install"));
 
-	TiXmlDocument* forGpupDoc = new TiXmlDocument();
-	TiXmlElement* installElement = new TiXmlElement(_T("install"));
-	forGpupDoc->LinkEndChild(installElement);
-	
 	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 	
+	if (selectedPlugins.get() == NULL)
+	{
+		delete forGpupDoc;
+		progressDialog->close();
+		return;
+	}
+
+
 	shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
 		
 	if (!installDueToDepends->empty())
@@ -649,7 +714,8 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
 			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
-			boost::bind(&ProgressDialog::stepComplete, progressDialog));
+			boost::bind(&ProgressDialog::stepComplete, progressDialog),
+			hMessageBoxParent);
 
 		switch(status)
 		{
@@ -685,8 +751,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 	if (needRestart)
 	{
-		tstring gpupFile(configDir);
-		gpupFile.append(_T("\\PluginManagerGpup.xml"));
+		
 
 		forGpupDoc->SaveFile(gpupFile.c_str());
 		delete forGpupDoc;
@@ -699,7 +764,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			gpupArguments.append(gpupFile);
 			gpupArguments.append(_T("\""));
 
-			Utility::startGpup(_variableHandler->getNppDir().c_str(), gpupArguments.c_str());
+			Utility::startGpup(hMessageBoxParent, _variableHandler->getNppDir().c_str(), gpupArguments.c_str());
 		}
 	}
 	else if (somethingInstalled)
@@ -709,7 +774,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		int restartNow = ::MessageBox(hMessageBoxParent, _T("Notepad++ needs to be restarted for changes to take effect.  Would you like to do this now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 		if (restartNow == IDYES)
 		{
-			Utility::startGpup(_variableHandler->getNppDir().c_str(), _T(""));
+			Utility::startGpup(hMessageBoxParent, _variableHandler->getNppDir().c_str(), _T(""));
 		}
 	}
 	else
@@ -726,13 +791,21 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	
 	tstring basePath(configDir);
 
-
-	TiXmlDocument* forGpupDoc = new TiXmlDocument();
-	TiXmlElement* installElement = new TiXmlElement(_T("install"));
-	forGpupDoc->LinkEndChild(installElement);
+	tstring gpupFile(configDir);
+	gpupFile.append(_T("\\PluginManagerGpup.xml"));
 	
+	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str());
+	TiXmlElement*  installElement = forGpupDoc->FirstChildElement(_T("install"));
+
 	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 		
+
+	if (selectedPlugins.get() == NULL)
+	{
+		delete forGpupDoc;
+		progressDialog->close();
+		return;
+	}
 
 	size_t removeSteps = selectedPlugins->size();
 	progressDialog->setStepCount(removeSteps);
@@ -748,8 +821,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	}
 
 
-	tstring gpupFile(configDir);
-	gpupFile.append(_T("\\PluginManagerGpup.xml"));
+	
 
 	forGpupDoc->SaveFile(gpupFile.c_str());
 	delete forGpupDoc;
@@ -762,7 +834,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 		gpupArguments.append(gpupFile);
 		gpupArguments.append(_T("\""));
 
-		Utility::startGpup(_variableHandler->getNppDir().c_str(), gpupArguments.c_str());
+		Utility::startGpup(hMessageBoxParent, _variableHandler->getNppDir().c_str(), gpupArguments.c_str());
 	}
 	else
 	{

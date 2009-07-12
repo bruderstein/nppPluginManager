@@ -1,3 +1,22 @@
+/*
+This file is part of Plugin Manager Plugin for Notepad++
+
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 #pragma once
 #include <tchar.h>
 
@@ -50,6 +69,11 @@ public:
 							  ProgressDialog* progressDialog, 
 							  PluginListView *pluginListView);
 
+	/* Waits until the list has been downloaded and processed */
+	void waitForListsAvailable();
+
+	/* Returns true if the lists have been downloaded and processed already */
+	BOOL listsAvailable();
 
 private:
 	/* Plugin name map */
@@ -61,18 +85,29 @@ private:
 	PluginListContainer		_availablePlugins;
 
 
+	/* Event for list being available */
+	HANDLE		_hListsAvailableEvent;
+	
+	/* Notepad++ handles */
+	NppData*    _nppData;
+
+	/* Object that knows variable definitions - e.g. $PLUGINDIR$ */
+	VariableHandler* _variableHandler;
 
 
     void        addInstallSteps(Plugin* plugin, TiXmlElement* installElement);
 	BOOL		setInstalledVersion(tstring filename, Plugin* plugin);
 	tstring		getPluginName(tstring filename);
 	
+
+	TiXmlDocument* getGpupDocument(const TCHAR* filename);
+
 	void installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade);
 	void removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView);
+
 
 	static UINT installThreadProc(LPVOID param);
 	static UINT removeThreadProc(LPVOID param);
 
-	VariableHandler* _variableHandler;
-	NppData*         _nppData;
+	
 };

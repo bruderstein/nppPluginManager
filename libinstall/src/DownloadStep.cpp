@@ -27,7 +27,7 @@ DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename, const char* 
 
 StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup, 
 								 boost::function<void(const TCHAR*)> setStatus,
-								 boost::function<void(const int)> stepProgress)
+								 boost::function<void(const int)> stepProgress, const HWND windowParent)
 {
 	DownloadManager downloadManager;
 
@@ -72,7 +72,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 			if (realLink.get())
 			{
 				_url = realLink.get();
-				return perform(basePath, forGpup, setStatus, stepProgress);
+				return perform(basePath, forGpup, setStatus, stepProgress, windowParent);
 			}
 			else
 				return STEPSTATUS_FAIL;

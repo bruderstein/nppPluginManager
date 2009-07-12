@@ -1,6 +1,6 @@
 /*
-This file is part of tPluginProp Plugin for Notepad++
-Copyright (C)2007 Jens Lorenz <jens.plugin.npp@gmx.de>
+This file is part of Plugin Manager Plugin for Notepad++
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,6 +30,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Plugin.h"
 #include "tstring.h"
 
+
+#define PLUGINS_MD5_URL     _T("http://npppm.brotherstone.co.uk/plugins.md5.txt")
+#define PLUGINS_URL         _T("http://npppm.brotherstone.co.uk/plugins.xml")
 
 /* ini file name */
 CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");

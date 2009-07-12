@@ -1,3 +1,23 @@
+/*
+This file is part of Plugin Manager Plugin for Notepad++
+
+Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
 #include <windows.h>
 #include <commctrl.h>
 #include <boost/function.hpp>
@@ -28,7 +48,7 @@ BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wPara
 			_hStatus		  = ::GetDlgItem(hWnd, IDC_LABELCURRENT);
 			_hSelf			  = hWnd;
 			::SendMessage(_hProgressCurrent, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
-			
+			goToCenter();
 			_startFunction(this);
 
 			return TRUE;
@@ -56,6 +76,24 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		}
 	}
 
+}
+
+void ProgressDialog::goToCenter()
+{
+    RECT rc;
+	HWND hParent = ::GetParent(_hSelf);
+	::GetClientRect(hParent, &rc);
+    POINT center;
+    center.x = rc.left + (rc.right - rc.left)/2;
+    center.y = rc.top + (rc.bottom - rc.top)/2;
+    ::ClientToScreen(hParent, &center);
+	
+	RECT wrc;
+	::GetWindowRect(_hSelf, &wrc);
+	int x = center.x - (wrc.right - wrc.left)/2;
+	int y = center.y - (wrc.bottom - wrc.top)/2;
+
+	::SetWindowPos(_hSelf, HWND_TOP, x, y, wrc.right - wrc.left, wrc.bottom - wrc.top, SWP_SHOWWINDOW);
 }
 
 

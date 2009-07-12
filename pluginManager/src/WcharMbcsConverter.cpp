@@ -54,7 +54,7 @@ shared_ptr<TCHAR> WcharMbcsConverter::char2tchar(const char* mbStr)
 #ifdef _UNICODE
 	return char2wchar(mbStr);
 #else
-	int len = strlen(mbStr) + 1
+	int len = strlen(mbStr) + 1;
 	shared_ptr<TCHAR> result(new TCHAR[len]);
 	strcpy_s(result.get(), len, mbStr);
 	return result;
@@ -67,7 +67,7 @@ shared_ptr<char> WcharMbcsConverter::tchar2char(const TCHAR* tStr)
 #ifdef _UNICODE
 	return wchar2char(tStr);
 #else
-	int len = _tcslen(tStr) + 1
+	int len = _tcslen(tStr) + 1;
 	shared_ptr<TCHAR> result(new TCHAR[len]);
 	strcpy_s(result.get(), len, tStr);
 	return result;
