@@ -31,8 +31,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tstring.h"
 
 
+
+#ifdef _DEBUG
+#define PLUGINS_MD5_URL     _T("http://localhost:100/plugins.md5.txt")
+#define PLUGINS_URL         _T("http://localhost:100/plugins.xml")
+#else
 #define PLUGINS_MD5_URL     _T("http://npppm.brotherstone.co.uk/plugins.md5.txt")
 #define PLUGINS_URL         _T("http://npppm.brotherstone.co.uk/plugins.xml")
+#endif
 
 /* ini file name */
 CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");

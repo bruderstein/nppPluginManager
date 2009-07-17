@@ -79,6 +79,21 @@ void PluginList::init(NppData *nppData)
 }
 
 
+void PluginList::addPluginNames(TiXmlElement* pluginNamesElement)
+{
+	TiXmlElement *pluginNameNode = pluginNamesElement->FirstChildElement();
+
+	while(pluginNameNode)
+	{
+		if (pluginNameNode->Attribute(_T("md5")) && pluginNameNode->Attribute(_T("name")))
+		{
+			_pluginRealNames[pluginNameNode->Attribute(_T("md5"))] = pluginNameNode->Attribute(_T("name"));
+		}
+
+		pluginNameNode = (TiXmlElement*)pluginNamesElement->IterateChildren(pluginNameNode);
+	}
+}
+
 
 BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 {
@@ -97,107 +112,113 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 	TiXmlNode *pluginsDoc = doc.FirstChildElement(_T("plugins"));
 	if (pluginsDoc)
 	{
-		TiXmlElement *pluginNode = pluginsDoc->FirstChildElement(_T("plugin"));
+		TiXmlElement *pluginNode = pluginsDoc->FirstChildElement();
 		Plugin *plugin;
 
 		while(pluginNode)
 		{
-			plugin = new Plugin();
-
-			plugin->setName(pluginNode->Attribute(_T("name")));
-			 
-			BOOL available = FALSE;
-
-			if (g_isUnicode)
+			if (!strcmp(pluginNode->Value(), _T("pluginNames")))
 			{
-				TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("unicodeVersion"));
-				if (versionUrlElement && versionUrlElement->FirstChild())
-				{
-					plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
-					available = TRUE;
-				}
+				addPluginNames(pluginNode);
 			}
-			else 
+			else if (!strcmp(pluginNode->Value(), _T("plugin")))
 			{
-				TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("ansiVersion"));
-				if (versionUrlElement && versionUrlElement->FirstChild())
+				plugin = new Plugin();
+
+				plugin->setName(pluginNode->Attribute(_T("name")));
+				 
+				BOOL available = FALSE;
+
+				if (g_isUnicode)
 				{
-					plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
-					available = TRUE;
-				}
-
-			}
-
-			TiXmlElement *descriptionUrlElement = pluginNode->FirstChildElement(_T("description"));
-			if (descriptionUrlElement && descriptionUrlElement->FirstChild())
-				plugin->setDescription(descriptionUrlElement->FirstChild()->Value());
-
-			TiXmlElement *filenameUrlElement = pluginNode->FirstChildElement(_T("filename"));
-			if (filenameUrlElement && filenameUrlElement->FirstChild())
-				plugin->setFilename(filenameUrlElement->FirstChild()->Value());
-			
-			TiXmlElement *versionsUrlElement = pluginNode->FirstChildElement(_T("versions"));
-			
-			if (versionsUrlElement)
-			{
-				TiXmlElement *versionUrlElement = versionsUrlElement->FirstChildElement(_T("version"));
-				while(versionUrlElement)
-				{
-					plugin->addVersion(versionUrlElement->Attribute(_T("md5")), PluginVersion(versionUrlElement->Attribute(_T("number"))));
-					versionUrlElement = (TiXmlElement *)versionsUrlElement->IterateChildren(versionUrlElement);
-				}
-			}
-
-			TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
-			
-			addInstallSteps(plugin, installElement);
-			
-			
-
-			TiXmlElement *dependencies = pluginNode->FirstChildElement(_T("dependencies"));
-			if (dependencies && !dependencies->NoChildren())
-			{
-				TiXmlElement *dependency = dependencies->FirstChildElement();
-				while (dependency)
-				{
-					// If dependency is another plugin (currently the only supported dependency)
-					if (!_tcscmp(dependency->Value(), _T("plugin")))
+					TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("unicodeVersion"));
+					if (versionUrlElement && versionUrlElement->FirstChild())
 					{
-						const TCHAR* dependencyName = dependency->Attribute(_T("name"));
-						if (dependencyName)
-							plugin->addDependency(dependencyName);
+						plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
+						available = TRUE;
+					}
+				}
+				else 
+				{
+					TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("ansiVersion"));
+					if (versionUrlElement && versionUrlElement->FirstChild())
+					{
+						plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
+						available = TRUE;
 					}
 
-					dependency = reinterpret_cast<TiXmlElement*>(dependencies->IterateChildren(dependency));
 				}
+
+				TiXmlElement *descriptionUrlElement = pluginNode->FirstChildElement(_T("description"));
+				if (descriptionUrlElement && descriptionUrlElement->FirstChild())
+					plugin->setDescription(descriptionUrlElement->FirstChild()->Value());
+
+				TiXmlElement *filenameUrlElement = pluginNode->FirstChildElement(_T("filename"));
+				if (filenameUrlElement && filenameUrlElement->FirstChild())
+					plugin->setFilename(filenameUrlElement->FirstChild()->Value());
+				
+				TiXmlElement *versionsUrlElement = pluginNode->FirstChildElement(_T("versions"));
+				
+				if (versionsUrlElement)
+				{
+					TiXmlElement *versionUrlElement = versionsUrlElement->FirstChildElement(_T("version"));
+					while(versionUrlElement)
+					{
+						plugin->addVersion(versionUrlElement->Attribute(_T("md5")), PluginVersion(versionUrlElement->Attribute(_T("number"))));
+						versionUrlElement = (TiXmlElement *)versionsUrlElement->IterateChildren(versionUrlElement);
+					}
+				}
+
+				TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
+				
+				addInstallSteps(plugin, installElement);
+				
+				
+
+				TiXmlElement *dependencies = pluginNode->FirstChildElement(_T("dependencies"));
+				if (dependencies && !dependencies->NoChildren())
+				{
+					TiXmlElement *dependency = dependencies->FirstChildElement();
+					while (dependency)
+					{
+						// If dependency is another plugin (currently the only supported dependency)
+						if (!_tcscmp(dependency->Value(), _T("plugin")))
+						{
+							const TCHAR* dependencyName = dependency->Attribute(_T("name"));
+							if (dependencyName)
+								plugin->addDependency(dependencyName);
+						}
+
+						dependency = reinterpret_cast<TiXmlElement*>(dependencies->IterateChildren(dependency));
+					}
+				}
+
+				
+				TiXmlElement *authorElement = pluginNode->FirstChildElement(_T("author"));
+				if (authorElement && authorElement->FirstChild())
+					plugin->setAuthor(authorElement->FirstChild()->Value());
+
+				TiXmlElement *sourceElement = pluginNode->FirstChildElement(_T("sourceUrl"));
+				if (sourceElement && sourceElement->FirstChild())
+					plugin->setSourceUrl(sourceElement->FirstChild()->Value());
+
+
+				TiXmlElement *homepageElement = pluginNode->FirstChildElement(_T("homepage"));
+				if (homepageElement && homepageElement->FirstChild())
+					plugin->setHomepage(homepageElement->FirstChild()->Value());
+
+
+				TiXmlElement *categoryElement = pluginNode->FirstChildElement(_T("category"));
+				if (categoryElement && categoryElement->FirstChild())
+					plugin->setCategory(categoryElement->FirstChild()->Value());
+				else
+					plugin->setCategory(_T("Others"));
+				
+
+				if (available)
+					_plugins[plugin->getName()] = plugin;
+				
 			}
-
-			
-			TiXmlElement *authorElement = pluginNode->FirstChildElement(_T("author"));
-			if (authorElement && authorElement->FirstChild())
-				plugin->setAuthor(authorElement->FirstChild()->Value());
-
-			TiXmlElement *sourceElement = pluginNode->FirstChildElement(_T("sourceUrl"));
-			if (sourceElement && sourceElement->FirstChild())
-				plugin->setSourceUrl(sourceElement->FirstChild()->Value());
-
-
-			TiXmlElement *homepageElement = pluginNode->FirstChildElement(_T("homepage"));
-			if (homepageElement && homepageElement->FirstChild())
-				plugin->setHomepage(homepageElement->FirstChild()->Value());
-
-
-			TiXmlElement *categoryElement = pluginNode->FirstChildElement(_T("category"));
-			if (categoryElement && categoryElement->FirstChild())
-				plugin->setCategory(categoryElement->FirstChild()->Value());
-			else
-				plugin->setCategory(_T("Others"));
-			
-
-			if (available)
-				_plugins[plugin->getName()] = plugin;
-			
-	
 
 			pluginNode = (TiXmlElement *)pluginsDoc->IterateChildren(pluginNode);
 		}
@@ -282,10 +303,35 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 			{
 			PluginContainer::iterator knownPlugin = _plugins.find(pluginName);
 
+				if (knownPlugin == _plugins.end())
+				{
+					// plugin name is not known, so see if we recognise the hash
+					// i.e. is it export plugin which renames itself 
+					// (or some other plugin that does the same thing)
+					TCHAR hash[(MD5::HASH_LENGTH * 2) + 1];
+					if (MD5::hash(pluginFilename.c_str(), hash, (MD5::HASH_LENGTH * 2) + 1))
+					{
+						tstring hashString(hash);
+						map<tstring, tstring>::iterator realNameIter = _pluginRealNames.find(hashString);
+						if (realNameIter != _pluginRealNames.end())
+						{
+							knownPlugin = _plugins.find(realNameIter->second);
+						}
+					}
+				}
+
+				// Check if plugin known now
 				if (knownPlugin != _plugins.end())
 				{
-		
 					Plugin* plugin = knownPlugin->second;
+					
+					// If the plugin is already installed, then make a copy for the list
+					if (plugin->isInstalled())
+					{
+						plugin = new Plugin(*plugin);
+					}
+					
+
 					plugin->setFilename(pluginFilename);
 
 					setInstalledVersion(pluginFilename, plugin);
@@ -307,7 +353,7 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 				}
 				else
 				{
-					// plugin is not known, so just fill in the details we know
+					// Plugin is still not known, so create an empty stub for it
 					Plugin* plugin = new Plugin();
 					plugin->setName(pluginName);
 					plugin->setFilename(pluginFilename);

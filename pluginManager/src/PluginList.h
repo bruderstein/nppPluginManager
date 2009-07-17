@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 #include <tchar.h>
-
+#include <map>
 #include "PluginManager.h"
 #include "libinstall/VariableHandler.h"
 #include "tinyxml/tinyxml.h"
@@ -79,6 +79,9 @@ private:
 	/* Plugin name map */
 	PluginContainer _plugins;
 
+	/* Hashes to real names, for plugins that dynamically report their names */
+	std::map<tstring, tstring> _pluginRealNames;
+
 	/* Lists of plugins */
 	PluginListContainer		_installedPlugins;
 	PluginListContainer	    _updateablePlugins;
@@ -104,7 +107,7 @@ private:
 
 	void installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade);
 	void removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView);
-
+	void addPluginNames(TiXmlElement* pluginNamesElement);
 
 	static UINT installThreadProc(LPVOID param);
 	static UINT removeThreadProc(LPVOID param);
