@@ -14,6 +14,11 @@
 #define IDI_SMALL				108
 #define IDC_GPUP			109
 #define IDC_MYICON				2
+#define IDD_PROGRESSDIALOG              101
+#define IDC_PROGRESSBAR                 1001
+#define IDC_CURRENTLABEL                1002
+#define IDC_CURRENTSTATUS               1002
+
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1
 #endif
