@@ -154,6 +154,7 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 			 * do it now.
 			 * Eventually, we'll do the plugins.xml download in this new thread
 			 * and notify the user of any updates too.
+			 Guess what, we do now.
 			 */
 			::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)startupChecks, NULL, 0, 0);
 			break;

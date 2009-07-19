@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <tchar.h>
 #include "tstring.h"
 
+class VariableHandler;
+
 #define VALIDATE_BASEURL          _T("http://npppm.brotherstone.co.uk/validate.php?md5=")
 #define VALIDATE_RESULT_OK        "ok"
 #define VALIDATE_RESULT_UNKNOWN   "unknown"
@@ -38,12 +40,18 @@ enum ValidateStatus
 	VALIDATE_BANNED
 };
 
+enum ToDestination
+{
+	TO_DIRECTORY,
+	TO_FILE
+};
+
 
 
 class CopyStep : public InstallStep
 {
 public:
-	CopyStep(const TCHAR* from, const TCHAR* to, BOOL attemptReplace, BOOL validate,
+	CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate,
 		BOOL backup, const char* proxy, const long proxyPort);
 
 	~CopyStep() {};
@@ -52,6 +60,8 @@ public:
 		 boost::function<void(const TCHAR*)> setStatus,
 	     boost::function<void(const int)> stepProgress, const HWND windowParent);
 
+	void replaceVariables(VariableHandler *variableHandler);
+
 private:
 	
 	ValidateStatus Validate(tstring& file);
@@ -59,7 +69,10 @@ private:
 
 	tstring	_from;
 	tstring _to;
-	
+	tstring _toFile;
+
+	ToDestination _toDestination;
+
 	std::string _proxy;
 	long    _proxyPort;
 	

@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 
+#include "libinstall/VariableHandler.h"
 #include "tinyxml/tinyxml.h"
 
 using namespace std;
@@ -203,7 +204,8 @@ InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
-									  const HWND windowParent)
+									  const HWND windowParent,
+									  VariableHandler* variableHandler)
 {
 	InstallStatus status = INSTALL_SUCCESS;
 
@@ -214,7 +216,11 @@ InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 
 	while (stepIterator != _installSteps.end())
 	{
-		
+		variableHandler->setVariable(_T("PLUGINFILENAME"), getFilename().c_str());
+
+		if (variableHandler)
+			(*stepIterator)->replaceVariables(variableHandler);
+
 		stepStatus = (*stepIterator)->perform(basePath, forGpup, setStatus, stepProgress, windowParent);
 
 		switch(stepStatus)

@@ -75,7 +75,12 @@ void PluginList::init(NppData *nppData)
 	_tcscpy_s(pluginDir, MAX_PATH, nppDir);
 	_tcscat_s(pluginDir, MAX_PATH, _T("\\plugins"));
 	
-	_variableHandler = new VariableHandler(nppDir, pluginDir, configDir);
+	_variableHandler = new VariableHandler();
+	_variableHandler->setVariable(_T("NPPDIR"), nppDir);
+	_variableHandler->setVariable(_T("PLUGINDIR"), pluginDir);
+	_variableHandler->setVariable(_T("CONFIGDIR"), configDir);
+
+	
 }
 
 
@@ -117,11 +122,11 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 
 		while(pluginNode)
 		{
-			if (!strcmp(pluginNode->Value(), _T("pluginNames")))
+			if (!_tcscmp(pluginNode->Value(), _T("pluginNames")))
 			{
 				addPluginNames(pluginNode);
 			}
-			else if (!strcmp(pluginNode->Value(), _T("plugin")))
+			else if (!_tcscmp(pluginNode->Value(), _T("plugin")))
 			{
 				plugin = new Plugin();
 
@@ -301,7 +306,7 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 			
 			if (pluginOK)
 			{
-			PluginContainer::iterator knownPlugin = _plugins.find(pluginName);
+				PluginContainer::iterator knownPlugin = _plugins.find(pluginName);
 
 				if (knownPlugin == _plugins.end())
 				{
@@ -332,7 +337,7 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 					}
 					
 
-					plugin->setFilename(pluginFilename);
+					plugin->setFilename(foundData.cFileName);
 
 					setInstalledVersion(pluginFilename, plugin);
 					
@@ -356,7 +361,7 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 					// Plugin is still not known, so create an empty stub for it
 					Plugin* plugin = new Plugin();
 					plugin->setName(pluginName);
-					plugin->setFilename(pluginFilename);
+					plugin->setFilename(foundData.cFileName);
 					setInstalledVersion(pluginFilename, plugin);
 					
 					plugin->setDescription(_T("Unknown plugin - please let us know about this plugin on the forums"));
@@ -654,7 +659,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 {
 	
 
-	tstring configDir = _variableHandler->getConfigDir();
+	tstring configDir = _variableHandler->getVariable(_T("CONFIGDIR"));
 	
 	tstring basePath(configDir);
 
@@ -735,7 +740,17 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			pluginTemp.append(pluginCountChar);
 			directoryCreated = ::CreateDirectory(pluginTemp.c_str(), NULL);
 			++pluginCount;
-		} while(!directoryCreated);
+		} while(!directoryCreated && pluginCount < 500);
+
+		// Check if there's been no luck creating the temp directory
+		// Assume there's either no space or no permission
+		if (pluginCount >= 500)
+		{
+			::MessageBox(hMessageBoxParent, _T("Error creating temporary directory for plugin download.  Ensure you have permission to your plugin config directory."), _T("Plugin Manager"), MB_ICONERROR);
+			// nothing to clean up, any created temp directories will be cleaned up if necessary on next launch, once any successful installs have happened
+			return;
+		}
+
 
 		pluginTemp.append(_T("\\"));
 		
@@ -753,7 +768,12 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			 */
 
 			TiXmlElement* removeElement = new TiXmlElement(_T("delete"));
-			removeElement->SetAttribute(_T("file"), (*pluginIter)->getFilename().c_str());
+			
+			tstring fullFilename = _variableHandler->getVariable(_T("PLUGINDIR"));
+			fullFilename.push_back(_T('\\'));
+			fullFilename.append((*pluginIter)->getFilename());
+
+			removeElement->SetAttribute(_T("file"), fullFilename.c_str());
 			installElement->LinkEndChild(removeElement);
 		}
 
@@ -761,7 +781,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 			boost::bind(&ProgressDialog::stepComplete, progressDialog),
-			hMessageBoxParent);
+			hMessageBoxParent, _variableHandler);
 
 		switch(status)
 		{
@@ -810,7 +830,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			gpupArguments.append(gpupFile);
 			gpupArguments.append(_T("\""));
 
-			Utility::startGpup(hMessageBoxParent, _variableHandler->getNppDir().c_str(), gpupArguments.c_str());
+			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str());
 		}
 	}
 	else if (somethingInstalled)
@@ -820,7 +840,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		int restartNow = ::MessageBox(hMessageBoxParent, _T("Notepad++ needs to be restarted for changes to take effect.  Would you like to do this now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 		if (restartNow == IDYES)
 		{
-			Utility::startGpup(hMessageBoxParent, _variableHandler->getNppDir().c_str(), _T(""));
+			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), _T(""));
 		}
 	}
 	else
@@ -833,7 +853,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView)
 {
 	
-	tstring configDir = _variableHandler->getConfigDir();
+	tstring configDir = _variableHandler->getVariable(_T("CONFIGDIR"));
 	
 	tstring basePath(configDir);
 
@@ -880,7 +900,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 		gpupArguments.append(gpupFile);
 		gpupArguments.append(_T("\""));
 
-		Utility::startGpup(hMessageBoxParent, _variableHandler->getNppDir().c_str(), gpupArguments.c_str());
+		Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str());
 	}
 	else
 	{

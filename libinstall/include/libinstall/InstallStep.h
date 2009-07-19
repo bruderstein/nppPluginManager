@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tstring.h"
 #include "tinyxml/tinyxml.h"
 
+class VariableHandler;
+
 
 enum StepStatus 
 {
@@ -45,6 +47,8 @@ public:
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress,
 		const HWND /*windowParent */) { return STEPSTATUS_SUCCESS; };
+
+	virtual void replaceVariables(VariableHandler* /*variableHandler*/) { };
 
 protected:
 //	void setTstring(const char *src, tstring &dest);

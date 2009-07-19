@@ -19,43 +19,53 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "libinstall/VariableHandler.h"
 #include "libinstall/tstring.h"
+#include <map>
 
 using namespace std;
 
 
-VariableHandler::VariableHandler(const TCHAR *nppDir, const TCHAR *pluginDir, const TCHAR *configDir)
-	 : _nppDir(nppDir), 
-	   _pluginDir(pluginDir),
-	   _configDir(configDir),
-	   VAR_NPPDIR(_T("$NPPDIR$")),
-	   VAR_PLUGINDIR(_T("$PLUGINDIR$")),
-	   VAR_CONFIGDIR(_T("$CONFIGDIR$"))
+VariableHandler::VariableHandler() 
 {
+	_variables = new map<tstring, tstring>();
 }
 
+void VariableHandler::setVariable(const TCHAR *variableName, const TCHAR *value)
+{
+	tstring tVariableName = variableName;
+	(*_variables)[tVariableName] = value;
+	
+}
 
 void VariableHandler::replaceVariables(tstring &source)
 {
-	tstring::size_type p = source.find(VAR_PLUGINDIR);
-	if (p != tstring::npos)
-		source.replace(p, VAR_PLUGINDIR.size(), _pluginDir);
+	tstring::size_type startPos, endPos;
+	startPos = 0;
+	endPos = tstring::npos;
 
-	p = source.find(VAR_NPPDIR);
-	if (p != string::npos)
-		source.replace(p, VAR_NPPDIR.size(), _nppDir);
+	do 
+	{
+		startPos = source.find(_T('$'), startPos);
+		if (startPos != tstring::npos)
+			endPos = source.find(_T('$'), startPos + 1);
 
-	p = source.find(VAR_CONFIGDIR);
-	if (p != string::npos)
-		source.replace(p, VAR_CONFIGDIR.size(), _configDir);
+		if (endPos != tstring::npos)
+		{
+			tstring varValue = (*_variables)[source.substr(startPos + 1, endPos - startPos - 1)];
+			source.replace(startPos, endPos - startPos + 1, varValue);
+			startPos = startPos + varValue.size();
+			endPos = tstring::npos;
+		}
+
+	} while(startPos != tstring::npos);
+
+	
+
 }
 
-const tstring& VariableHandler::getConfigDir()
+
+const tstring& VariableHandler::getVariable(const TCHAR* variableName)
 {
-	return _configDir;
+	return (*_variables)[tstring(variableName)];
 }
 
-const tstring& VariableHandler::getNppDir()
-{
-	return _nppDir;
-}
 	

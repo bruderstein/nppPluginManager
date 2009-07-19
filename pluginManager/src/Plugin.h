@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PluginVersion.h"
 #include "libinstall/InstallStep.h"
 
+class VariableHandler;
 
 enum InstallStatus {
 		INSTALL_SUCCESS,
@@ -83,7 +84,8 @@ public:
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress,
 		boost::function<void()> stepComplete,
-		const HWND windowParent);
+		const HWND windowParent,
+		VariableHandler* variableHandler);
 
 
 	/* dependencies */

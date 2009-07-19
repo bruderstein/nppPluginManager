@@ -47,6 +47,8 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, const 
 	{
 		const TCHAR *tFrom = element->Attribute(_T("from"));
 		const TCHAR *tTo = element->Attribute(_T("to"));
+		const TCHAR *tToFile = element->Attribute(_T("toFile"));
+
 		const TCHAR *tReplace = element->Attribute(_T("replace"));
 		const TCHAR *tValidate = element->Attribute(_T("validate"));
 		const TCHAR *tBackup = element->Attribute(_T("backup"));
@@ -65,21 +67,17 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, const 
 			backup = TRUE;
 
 
-		tstring from;
-		tstring to;
-		if (tFrom)
-			from = tFrom;
-		if (tTo)
-			to = tTo;
+	
 
-
+/*
 		if (_variableHandler)
 		{
 			_variableHandler->replaceVariables(from);
 			_variableHandler->replaceVariables(to);
 		}
+*/
 
-		installStep.reset(new CopyStep(from.c_str(), to.c_str(), attemptReplace, validate, backup, proxy, proxyPort));
+		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, backup, proxy, proxyPort));
 	}
 	else if (!_tcscmp(element->Value(), _T("delete")))
 	{

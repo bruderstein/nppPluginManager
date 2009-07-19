@@ -21,24 +21,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _VARIABLEHANDLER_H
 
 #include "tstring.h"
+#include <map>
 
 class VariableHandler
 {
 public:
-	VariableHandler(const TCHAR* nppDir, const TCHAR* pluginDir, const TCHAR* configDir);
+	VariableHandler();
 		
+	void setVariable(const TCHAR* variableName, const TCHAR* value);
 	void replaceVariables(tstring &source);
 
-	const tstring& getConfigDir();
-	const tstring& getNppDir();
+	const tstring& getVariable(const TCHAR* variableName);
+
 
 private:
-	tstring _nppDir;
-	tstring _pluginDir;
-	tstring _configDir;
-	tstring VAR_NPPDIR;
-	tstring VAR_PLUGINDIR;
-	tstring VAR_CONFIGDIR;
+	std::map<tstring, tstring> *_variables;
+
 };
 
 

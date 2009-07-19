@@ -46,7 +46,7 @@ void NotifyUpdatesDialog::init(HINSTANCE hInst, NppData nppData, PluginList* plu
 
 	_updateList = _pluginList->getUpdateablePlugins();
 			
-	tstring pluginConfigFilename(_pluginList->getVariableHandler()->getConfigDir());
+	tstring pluginConfigFilename(_pluginList->getVariableHandler()->getVariable(_T("CONFIGDIR")));
 	pluginConfigFilename.append(_T("\\PluginManager.ini"));
 				
 	PluginListContainer::iterator iter = _updateList.begin();
@@ -97,7 +97,7 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 				case IDC_IGNORE:
 					{
 						shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
-						tstring pluginConfigFilename(_pluginList->getVariableHandler()->getConfigDir());
+						tstring pluginConfigFilename(_pluginList->getVariableHandler()->getVariable(_T("CONFIGDIR")));
 						pluginConfigFilename.append(_T("\\PluginManager.ini"));
 						
 						list<Plugin*>::iterator iter = selectedPlugins->begin();

@@ -29,18 +29,45 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/md5.h"
 #include "libinstall/tstring.h"
 #include "libinstall/DirectoryUtil.h"
+#include "libinstall/VariableHandler.h"
+
 using namespace std;
 
 
-CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, BOOL attemptReplace, BOOL validate, BOOL backup, const char* proxy, const long proxyPort)
+CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace, BOOL validate, BOOL backup, const char* proxy, const long proxyPort)
 {
 	_from = from;
-	_to = to;
+	if (to)
+	{
+		_toDestination = TO_DIRECTORY;
+		_to = to;
+	}
+
+	if (toFile)
+	{
+		_toFile = toFile;
+		_toDestination = TO_FILE;
+	}
+
 	_failIfExists = !attemptReplace;
 	_validate	= validate;
 	_backup		= backup;
 	_proxy		= proxy;
 	_proxyPort	= proxyPort;
+}
+
+void CopyStep::replaceVariables(VariableHandler *variableHandler)
+{
+	if (variableHandler)
+	{
+		variableHandler->replaceVariables(_from);
+		
+		if (_toDestination == TO_DIRECTORY)
+			variableHandler->replaceVariables(_to);
+		else if (_toDestination == TO_FILE)
+			variableHandler->replaceVariables(_toFile);
+	}
+
 }
 
 ValidateStatus CopyStep::Validate(tstring& file)
@@ -79,23 +106,33 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	
 	fromPath.append(_from);
 	
-	tstring statusString = _T("Copying ");
-	statusString.append(_from);
+	tstring statusString = _T("Copying files...");
 	setStatus(statusString.c_str());
 
 
 	tstring fromDir;
 
-	tstring toPath = _to;
+
+	tstring toPath;
 	
-	// Check destination directory exists
-	if (!::PathFileExists(_to.c_str()))
+	
+	if (_toDestination == TO_DIRECTORY)
 	{
-		DirectoryUtil::createDirectories(_to.c_str());
-	}
+		toPath = _to;
+	
+		// Check destination directory exists
+		if (!::PathFileExists(_to.c_str()))
+		{
+			DirectoryUtil::createDirectories(_to.c_str());
+		}
 	
 
-	toPath.append(_T("\\"));
+		toPath.append(_T("\\"));
+	}
+	else
+	{
+		toPath = _toFile;
+	}
 	
 	tstring::size_type backSlash = fromPath.find_last_of(_T("\\"));
 	if (backSlash != tstring::npos)
@@ -120,7 +157,21 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		do 
 		{
 			dest = toPath;
-			dest.append(foundData.cFileName);
+			if (_toDestination == TO_DIRECTORY)
+				dest.append(foundData.cFileName);
+			else if (_toDestination == TO_FILE && dest[dest.size() - 1] == _T('\\'))	
+				dest.append(foundData.cFileName);
+			else if (_toDestination == TO_FILE && ::PathIsDirectory(dest.c_str()))
+			{
+				dest.append(_T("\\"));
+				dest.append(foundData.cFileName);
+			}
+			
+			statusString = _T("Copying ");
+			statusString.append(foundData.cFileName);
+			setStatus(statusString.c_str());
+
+
 			src = fromDir;
 			src.append(foundData.cFileName);
 			copy = false;
@@ -219,7 +270,12 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 					TiXmlElement* copy = new TiXmlElement(_T("copy"));
 					
 					copy->SetAttribute(_T("from"), src.c_str());
-					copy->SetAttribute(_T("to"), _to.c_str());
+					
+					if (_toDestination == TO_DIRECTORY)
+						copy->SetAttribute(_T("to"), _to.c_str());
+					else if (_toDestination == TO_FILE)
+						copy->SetAttribute(_T("toFile"), _toFile.c_str());
+
 					copy->SetAttribute(_T("replace"), _T("true"));
 					if (_backup)
 						copy->SetAttribute(_T("backup"), _T("true"));
