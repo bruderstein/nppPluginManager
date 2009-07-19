@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tinyxml/tinyxml.h"
 #include "libinstall/InstallStep.h"
 #include "libinstall/InstallStepFactory.h"
-
+#include "ProgressDialog.h"
 
 #define RETURN_SUCCESS				0
 #define RETURN_INVALID_PARAMETERS   1
@@ -50,8 +50,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define MAX_WRITE_ATTEMPTS			10
 
 // Global Variables:
-HINSTANCE hInst;								// current instance
-
+HINSTANCE	   hInst;								// current instance
+ProgressDialog *g_progressDialog;
 
 
 using namespace std;
@@ -185,31 +185,8 @@ BOOL closeMainProgram(Options &options)
 
 		h = ::FindWindowEx(NULL, NULL, options.getWindowName().c_str(), NULL);
 	}
-/*
-	int attempts = 0;
-	HANDLE hExe = INVALID_HANDLE_VALUE;
 
-	while (hExe == INVALID_HANDLE_VALUE && attempts < MAX_WRITE_ATTEMPTS)
-	{
-		hExe = ::CreateFile(options.getExeName().c_str(), 
-			GENERIC_READ | GENERIC_WRITE, // Desired Access
-			0,						      // Share more
-			NULL,						  // Security Attributes
-			OPEN_EXISTING,				  // Creation Disposition
-			0,							  // Flags and attributes
-			NULL);						  // Template filename
-
-		++attempts;
-
-		if (hExe == INVALID_HANDLE_VALUE)
-			Sleep(100);
-	}
-	if (hExe == INVALID_HANDLE_VALUE)
-		return FALSE;
-	else
-	*/
-
-		return TRUE;
+	return TRUE;
 }
 
 void startNewInstance(const tstring& exeName)
@@ -234,17 +211,33 @@ void startNewInstance(const tstring& exeName)
 
 }
 
-void setStatus(const TCHAR* /*status*/)
+
+
+
+void showProgressDialog(int stepCount)
 {
+	g_progressDialog = new ProgressDialog(hInst);
+	g_progressDialog->doDialog(stepCount);
+
+	
+	
+}
+
+void setStatus(const TCHAR* status)
+{
+	g_progressDialog->setStatus(status);
 }
 
 void stepProgress(int /*percentageComplete*/)
 {
+	
 }
 
 
 BOOL processActionsFile(const tstring& actionsFile)
 {
+	::MessageBox(NULL, _T("GPUP"), _T("GPUP"), 0);
+
 	TiXmlDocument xmlDocument(actionsFile.c_str());
 	if (xmlDocument.LoadFile())
 	{
@@ -254,8 +247,20 @@ BOOL processActionsFile(const tstring& actionsFile)
 
 		if (install && !install->NoChildren())
 		{
+			
 			InstallStepFactory installStepFactory(NULL);
 			TiXmlElement *step = install->FirstChildElement();
+			int stepCount = 0;
+			while (step)
+			{
+				stepCount++;
+				step = static_cast<TiXmlElement*>(install->IterateChildren(step));
+			} 
+
+			showProgressDialog(stepCount);
+
+
+			step = install->FirstChildElement();
 			while (step)
 			{
 				shared_ptr<InstallStep> installStep = installStepFactory.create(step, "", 0);
@@ -284,9 +289,10 @@ BOOL processActionsFile(const tstring& actionsFile)
 												NULL); 
 
 
+
 				}
 
-				
+				g_progressDialog->stepComplete();				
 
 				step = (TiXmlElement*) install->IterateChildren(step);
 			}
@@ -313,6 +319,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(hInstance);
 	UNREFERENCED_PARAMETER(nCmdShow);
+
+
+	hInst = hInstance;
 
 	Options options;
 	

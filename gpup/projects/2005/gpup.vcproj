@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="shlwapi.lib Ws2_32.lib ..\..\..\libinstall\bin\$(ConfigurationName)\libinstall.lib ..\..\..\TinyXml\bin\$(ConfigurationName)\TinyXml.lib ..\..\..\unzip\bin\$(ConfigurationName)\unzip.lib libcurld.lib zlibd.lib"
+				AdditionalDependencies="comctl32.lib shlwapi.lib Ws2_32.lib ..\..\..\libinstall\bin\$(ConfigurationName)\libinstall.lib ..\..\..\TinyXml\bin\$(ConfigurationName)\TinyXml.lib ..\..\..\unzip\bin\$(ConfigurationName)\unzip.lib libcurld.lib zlibd.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -341,6 +341,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ProgressDialog.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -391,6 +395,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ProgressDialog.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\Resource.h"
 				>
 			</File>
@@ -410,6 +418,10 @@
 			>
 			<File
 				RelativePath="..\..\res\gpup.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\gpup.rc"
 				>
 			</File>
 			<File
