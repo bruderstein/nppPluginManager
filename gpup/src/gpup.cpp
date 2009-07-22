@@ -236,7 +236,7 @@ void stepProgress(int /*percentageComplete*/)
 
 BOOL processActionsFile(const tstring& actionsFile)
 {
-	::MessageBox(NULL, _T("GPUP"), _T("GPUP"), 0);
+
 
 	TiXmlDocument xmlDocument(actionsFile.c_str());
 	if (xmlDocument.LoadFile())
@@ -278,7 +278,7 @@ BOOL processActionsFile(const tstring& actionsFile)
 				// finished quitting yet.
 
 				int retryCount = 0;
-				while (stepStatus == STEPSTATUS_NEEDGPUP && retryCount < 6)
+				while (stepStatus == STEPSTATUS_NEEDGPUP && retryCount < 20)
 				{
 					::Sleep(500);
 					++retryCount;
