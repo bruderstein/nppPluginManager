@@ -40,6 +40,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLUGINS_URL         _T("http://npppm.brotherstone.co.uk/plugins.xml")
 #endif
 
+// Note that this version string is deliberately not wide.  DownloadManager expects it in 
+// multibyte format - anything else can do _T(VERSION_STRING)
+#define VERSION_STRING			"0.9"
+
 /* ini file name */
 CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
 

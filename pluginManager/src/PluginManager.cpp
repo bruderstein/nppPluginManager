@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Plugin.h"
 #include "Utility.h"
 #include "WcharMbcsConverter.h"
+#include "libinstall/DownloadManager.h"
 
 /* information for notepad */
 CONST INT	nbFunc	= 2;
@@ -91,6 +92,8 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 			/* Set shortcuts */
 			funcItem[0]._pShKey = NULL;
 			funcItem[1]._pShKey = NULL;
+
+			DownloadManager::setUserAgent(_T("Notepad++/Plugin-Manager;v") _T(VERSION_STRING));
 			break;
 		}	
 		case DLL_PROCESS_DETACH:

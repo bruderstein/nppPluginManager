@@ -659,6 +659,47 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 {
 	
 
+	// Check if Plugin Manager has an update, and the list is not only updating this plugin
+	// If not, then the user *really* ought to do that first, as the XML may have changed
+	// or, the URL for the XML may have changed
+
+	tstring pluginManagerName = _T("Plugin Manager");
+	
+	Plugin* pluginManagerPlugin = getPlugin(pluginManagerName);
+
+	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+
+	if (pluginManagerPlugin && pluginManagerPlugin->getInstalledVersion() < pluginManagerPlugin->getVersion())
+	{
+		// So there IS an upgrade to plugin manager, so check that it's the only thing in the list
+		if (selectedPlugins->size() != 1 || (*(selectedPlugins->begin()))->getName() != _T("Plugin Manager"))
+		{
+			int updatePM = ::MessageBox(hMessageBoxParent, _T("An update is available to Plugin Manager.  ")
+				                            _T("It is *strongly* advised that the Plugin Manager is updated ")
+											_T("before any other plugin is installed or updated.  Would you ")
+											_T("like to update the Plugin Manager now?"), _T("Plugin Manager"), 
+											MB_ICONWARNING | MB_YESNOCANCEL);
+
+			switch(updatePM)
+			{
+				case IDYES:
+					selectedPlugins->clear();
+					selectedPlugins->push_back(pluginManagerPlugin);
+					isUpgrade = TRUE;
+					break;
+
+				case IDNO:
+					break;
+
+				case IDCANCEL:
+					progressDialog->close();
+					return;
+
+			}
+		}
+	}
+
+
 	tstring configDir = _variableHandler->getVariable(_T("CONFIGDIR"));
 	
 	tstring basePath(configDir);
@@ -675,7 +716,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str()); 
 	TiXmlElement* installElement = forGpupDoc->FirstChildElement(_T("install"));
 
-	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+	
 	
 	if (selectedPlugins.get() == NULL)
 	{

@@ -36,6 +36,7 @@ public:
 
 	void setProgressFunction(boost::function<void(int)> progressFunction);
 
+	static void setUserAgent(const TCHAR* userAgent);
 
 	static size_t curlWriteCallback(void *ptr, size_t size, size_t nmemb, void *stream);
 	static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *stream);
@@ -47,4 +48,5 @@ private:
 	CURL	*_curl;
 	boost::function<void(int)> _progressFunction;
 	BOOL					   _progressFunctionSet;
+	static std::string		   _userAgent;
 };

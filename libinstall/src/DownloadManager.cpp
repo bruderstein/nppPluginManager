@@ -10,18 +10,27 @@
 using namespace std;
 using namespace boost;
 
+string DownloadManager::_userAgent("Plugin-Manager");
 
 DownloadManager::DownloadManager(void)
 {
 	curl_global_init(CURL_GLOBAL_ALL);
 	_curl = curl_easy_init();
-	curl_easy_setopt(_curl, CURLOPT_USERAGENT, "Notepad++/Plugin-Manager");
+	curl_easy_setopt(_curl, CURLOPT_USERAGENT, DownloadManager::_userAgent.c_str());
+
 	_progressFunctionSet = FALSE;
 }
 
 DownloadManager::~DownloadManager(void)
 {
 	curl_easy_cleanup(_curl);
+}
+
+
+void DownloadManager::setUserAgent(const TCHAR* userAgent)
+{
+	shared_ptr<char> ua = WcharMbcsConverter::tchar2char(userAgent);
+	_userAgent = ua.get();
 }
 
 void DownloadManager::setProgressFunction(function<void(int)> progressFunction)
