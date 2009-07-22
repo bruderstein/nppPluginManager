@@ -933,6 +933,8 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	forGpupDoc->SaveFile(gpupFile.c_str());
 	delete forGpupDoc;
 
+	progressDialog->close();
+
 	int restartNow = ::MessageBox(hMessageBoxParent, _T("Notepad++ needs to be restarted in order to complete the removal.  If you restart later, the steps will not be completed.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 	if (restartNow == IDYES)
 	{
