@@ -1,0 +1,254 @@
+<html><head><title>Plugin Manager for Notepad++</title></head>
+<body>
+<h2>Plugin Manager</h2>
+<hr/>
+<a href="#features">Features</a>&nbsp;&nbsp;
+<a href="#download">Download</a>&nbsp;&nbsp;
+<a href="#install">Installation</a>&nbsp;&nbsp;
+<a href="#XML">XML File documentation</a>&nbsp;&nbsp;
+<a href="#developer">Plugin Developers</a>&nbsp;&nbsp;
+<a href="#changes">Submitting changes</a>&nbsp;&nbsp;
+<a href="#credits">Credits</a>&nbsp;&nbsp;
+
+<hr/>
+<br/><br/>
+Plugin Manager is a plugin for Notepad++ that allows you to install, update and remove plugins 
+from Notepad++.  A centrally hosted XML file holds the list of plugins, that the plugin manager 
+downloads and processes against the list of installed plugins.
+<br/><br/>
+<a name="features"></a>
+<h3>Features</h3>
+
+<ul>
+ <li>Install, Update and Remove all existing plugins</li>
+ <li>Notify when an installed plugin has an update available, and allow the user to update directly</li>
+ <li>Calculate dependencies between plugins, any plugin can depend on another plugin, which 
+     will be installed automatically if the user installs the initial plugin</li>
+ <li>Install all supplemental files as well as the plugin file itself (e.g. config, doc, extra libraries)</li>
+ <li>Automatic installation of the correct version (ANSI/Unicode) for your Notepad++</li>
+ <li>Validation of DLLs copied, against a central list of valid files.  This slightly mitigates the risk of automatically downloading updates.</li>
+ <li>Only plugins that are compatible with your Notepad++ are shown</li>
+ <li>Plugins can be put into categories - a suggestion was made of "Official, Common and Others".  
+     Currently all plugins are in the "Others" category, as I think there needs to be some 
+	 agreement as to what determines an "Official" plugin and which plugins are "Common".</li>
+ <li>Plugin Manager is able to update itself, and will notify the user when an update is available</li>
+ <li>Proxies are supported, just change the setting</li>
+ <li>Updates can be ignored, and the user will not be alerted to that update again, until 
+     a further new version of that plugin is released.</li> 
+ <li>The local plugin list file is only downloaded when something has changed - the MD5sum of the
+ file is compared to the server's version, and if it is different, then a new copy is downloaded.</li>
+</ul>
+<br/><br/>
+So, I hope you find this plugin useful, and it gives a bit more exposure to plugins, and makes
+it easier to install some of the bigger plugins.
+<br/><br/>
+I'm still adding to the list of plugins, but if you don't see your plugin in the list, let me know
+and I'll make sure it goes in.  
+
+<br/><br/>
+<a name="install"></a>
+<h3>Installation</h3>
+To install the plugin manager, simply download (links below) the .zip, and place the PluginManager.dll 
+file in the Notepad++ plugins directory, and the gpup.exe in the updater directory under your 
+Notepad++ program directory.  
+<br/><br/>
+In fact, if you prefer, you can just add the PluginManager.dll to the plugins directory, then 
+do a reinstall of Plugin Manager from the plugin itself, which will place the file in the right place!
+
+<br/><br/>
+<a name="download"></a>
+<h3>Download links</h3>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_UNI.zip</a>
+<br/>
+ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_ANSI.zip</a>
+<br/>
+Source code is on github: <a href="http://github.com/davegb3/nppPluginManager">http://github.com/davegb3/nppPluginManager</a>
+<br/>
+MD5 Sums:
+<br/>
+bed480f315a3ed35f506323a2d1ba7c9 *PluginManager_0.8_ANSI.zip
+<br/>
+8ea385d2217d4adeaff0449ea16badfb *PluginManager_0.8_UNI.zip
+<hr/>
+<a name="XML"></a>
+<h3>XML File Structure and Features</h3>
+The XML file is currently hosted on my own server, which will probably change to somewhere on SourceForge soon.
+<br/><br/>
+The XML file consists of &lt;plugin&gt; elements, each with a name attribute, containing the information about each plugin.  
+The name attribute must match (include case) the name provided by the plugins getName() function, i.e.
+that which appears in the Plugins menu in Notepad++.
+<br/><br/>
+The following elements can then be contained within the plugin element(all are optional)
+<ul>
+ <li><b>unicodeVersion</b>: The version number of the latest Unicode version.  If this element is not 
+ present, then the plugin will not be shown to Unicode users</li>
+ <li><b>ansiVersion</b>: The version number of the latest ANSI version.  If this element is not present,
+ then the plugin will not be shown to ANSI users</li>
+ <li><b>description</b>: A description of the plugin, which appears in the box below the list</li>
+ <li><b>author</b>: The authors name (and optionally email address etc), which is also displayed below the list</li>
+ <li><b>homepage</b>: The home page / web site of the plugin, also displayed in the box below the list</li>
+ <li><b>sourceUrl</b>: The URL of the source of the plugin</li>
+ <li><b>install</b>: This is the set of install steps.
+ <br/>The steps can be contained in &lt;ansi&gt; or &lt;unicode&gt; elements, which means 
+ that the steps are only performed for the relevant version.  A step which is not inside a unicode
+ or ansi element will be performed for both.  Steps are run in the order in which they are listed
+ in the XML.
+ <br/>The steps that are available at the moment are:
+ <ul>
+		<li><b>download</b>:  This downloads from the URL contained within the elment. A zip file 
+		is automatically unzipped to a temporary location.
+		<br/>If the URL points to an HTML page which contains a direct link (like the old SourceForge
+		download system... guess when I wrote this!) then the direct link can be searched for, and will
+		be followed.  To do this, just add a filename attribute to the download element, containing the 
+		filename that the direct link ends in.</li>
+		<li><b>copy</b>:  This copies files from the temporary unzipped location to a destination
+		directory.  A destination directory must start with a variable, either $PLUGINDIR$, $CONFIGDIR$
+		or $NPPDIR$ which refer to the plugins directory, plugin config directory and the Notepad++ directory
+		respectively.  Directories that do not exist will automatically be created.  The <b>from</b> attribute
+		can be wildcarded, and the <b>to</b> attribute <i>must</i> be a directory.
+		<br/>
+		If <b>validate=&quot;true&quot;</b> is included in the copy, then the file's MD5sum is 
+		checked against a known list of valid files at the server - an &quot;ok&quot; response lets
+		it continue, and &quot;unknown&quot; response means the user is prompted that the file is
+		unknown, and should not be copied.  The user can copy the file anyway, if they want. A 
+		&quot;banned&quot; response means that the user is prompted that this file has been marked as
+		dangerous or unstable, so should not be copied.  They can still choose to copy the file if they
+		wish.
+		<br/>
+		If <b>backup=&quot;true&quot;</b> is include in the copy element, then if the destination
+		file exists, it will be backed up to the same filename with &quot;.backup&quot; appended.  If
+		the backup file exists, it will be backed up to a &quot;.backup2&quot; file, and so on.  This is 
+		normally used for config files, such that user's config is not lost, but a &quot;good&quot; config 
+		can be installed.</li>
+</ul>
+</li>
+<li><b>versions</b>:  A collection of <b>version</b> elements that identify a version if the 
+DLL does not report a version (or reports an incorrect version). Each <b>version</b> element contains 
+a <b>number</b> attribute, which is the correct version number, and an <b>md5</b> attribute which
+is the md5sum of the file. Optionally a <b>comment</b> attribute can be included to name the version 
+(e.g. ANSI, UNICODE etc), which can help with maintaining the XML file.
+</li>
+<br/><br/>
+Here's an example plugin definition, using f0dder's switcher plugin to switch between related files,
+such s .h and .cpp :
+<pre>
+&lt;plugin name=&quot;switcher&quot;&gt;
+		&lt;unicodeVersion&gt;1.0&lt;/unicodeVersion&gt;
+		&lt;ansiVersion&gt;1.0&lt;/ansiVersion&gt;
+		&lt;homepage&gt;http://f0dder.dcmembers.com/npp_plugins/&lt;/homepage&gt;
+		&lt;description&gt;Switcher: a plugin to switch between 'associated' files. Currently it handles switching between asm&amp;lt;&amp;gt;inc, cpp&amp;lt;&amp;gt;h, cc&amp;lt;&amp;gt;h and c&amp;lt;&amp;gt;h. Useful when assigned to a hotkey.&lt;/description&gt;
+		&lt;author&gt;f0dder&lt;/author&gt;
+		&lt;versions&gt;
+			&lt;version number=&quot;1.0&quot; md5=&quot;301c72341ba758b3cdfc8a56d576c7f0&quot; comment=&quot;ansi&quot;/&gt;
+			&lt;version number=&quot;1.0&quot; md5=&quot;5a19bd60aa18e4454f1c4a6432ae5a72&quot; comment=&quot;unicode&quot;/&gt;
+		&lt;/versions&gt;
+		&lt;install&gt;
+			&lt;download&gt;http://f0dder.dcmembers.com/npp_plugins/npp_plugins.zip&lt;/download&gt;
+			&lt;ansi&gt;
+				&lt;copy from=&quot;ansi\switcher.dll&quot; to=&quot;$PLUGINDIR$&quot; validate=&quot;true&quot;/&gt;
+			&lt;/ansi&gt;
+			&lt;unicode&gt;
+				&lt;copy from=&quot;unicode\switcher.dll&quot; to=&quot;$PLUGINDIR$&quot; validate=&quot;true&quot;/&gt;
+			&lt;/unicode&gt;
+			&lt;copy from=&quot;readme.txt&quot; to=&quot;$PLUGINDIR$\doc\switcher&quot;/&gt;
+		&lt;/install&gt;
+&lt;/plugin&gt;
+</pre>
+<br/><br/>Note that you can have as many steps as you like within the &lt;ansi&gt; and &lt;unicode&gt;
+elements, and you can have as many of these as you like also.
+So:
+<pre>
+&lt;install&gt;
+			&lt;unicode&gt;
+				&lt;download&gt;http://downloads.sourceforge.net/sourceforge/npp-plugins/SpeechPlugin_0_2_1_dll.zip&lt;/download&gt;
+				&lt;copy from=&quot;SpeechPlugin_0_2_1_dll\SpeechPlugin.dll&quot; to=&quot;$PLUGINDIR$&quot; validate=&quot;true&quot;/&gt;
+			&lt;/unicode&gt;
+			&lt;ansi&gt;
+				&lt;download&gt;http://downloads.sourceforge.net/sourceforge/npp-plugins/SpeechPlugin_0_2_dll.zip&lt;/download&gt;
+				&lt;copy from=&quot;SpeechPlugin_0_2_dll\SpeechPlugin.dll&quot; to=&quot;$PLUGINDIR$&quot; validate=&quot;true&quot;/&gt;
+			&lt;/ansi&gt;
+&lt;/install&gt;
+</pre>
+<br/>
+is just as valid as, and does the same job as 
+<br/>
+<pre>
+&lt;install&gt;
+			&lt;unicode&gt;
+				&lt;download&gt;http://downloads.sourceforge.net/sourceforge/npp-plugins/SpeechPlugin_0_2_1_dll.zip&lt;/download&gt;
+			&lt;/unicode&gt;
+			&lt;ansi&gt;
+				&lt;download&gt;http://downloads.sourceforge.net/sourceforge/npp-plugins/SpeechPlugin_0_2_dll.zip&lt;/download&gt;
+			&lt;/ansi&gt;
+			
+			&lt;unicode&gt;
+				&lt;copy from=&quot;SpeechPlugin_0_2_1_dll\SpeechPlugin.dll&quot; to=&quot;$PLUGINDIR$&quot; validate=&quot;true&quot;/&gt;
+			&lt;/unicode&gt;
+			&lt;ansi&gt;
+				&lt;copy from=&quot;SpeechPlugin_0_2_dll\SpeechPlugin.dll&quot; to=&quot;$PLUGINDIR$&quot; validate=&quot;true&quot;/&gt;
+			&lt;/ansi&gt;
+&lt;/install&gt;
+</pre>
+
+<hr/>
+<a name="developer"></a>
+<h3>Plugin developers</h3>
+If you're a plugin developer or maintainer, and you don't want your plugin in the list, or you
+want to wait a while until it's stable, then just let me know.  I won't be releasing any updated
+plugins as soon as they are released, only after a few days when any bug reports have had chance to 
+come in - unless there's an urgent fix to something. 
+If you don't see your plugin listed after releasing it, feel free to drop me a mail or find me on 
+#notepad++ on freenode to give me a nudge.
+<hr/>
+<a name="changes"></a>
+<h3>Submitting changes to the XML Plugin List</h3>
+If something is not right, or you wish to add a plugin to the list, you are more than welcome to
+send me (davegb at pobox.com) your update, but ideally you can fork the plugins.xml repository
+from github, and send me a pull request, so I can merge your changes.  There are lots of videos
+and guides on github to get you started if you've not used it before.
+<br/><br/>
+Repository: <br/>
+<a href="http://github.com/davegb3/nppPlugins">http://github.com/davegb3/nppPlugins</a>
+<br/><br/>
+The current XML file is located here - <b><a href="http://npppm.brotherstone.co.uk/plugins.xml">http://npppm.brotherstone.co.uk/plugins.xml</a></b> if you want to check it out.
+<hr/>
+
+<a name="planned"></a>
+<h3>Planned for Version 1.0</h3>
+Not too much on this list at the moment, but:
+<ul><li>Have a progress bar displayed while gpup is copying files, not normally an issue 
+but can take a few seconds if there are lots of files to copy, especially if they need validating.</li>
+<li>A looping check if gpup goes crazy and doesn't remove it's instructions file when it's finished</li>
+<li>Support for multiple installations of the same plugin</li>
+<li>A proper remove - currently it just removes the plugin DLL. Really each plugin should have uninstallation steps</li>
+<li>7zip support.  Currently only zip files are supported, but 7zip is smaller.</li>
+</ul>
+After 1.0, who knows:
+<ul><li>Some form of plugin feedback / rating system, so users can rate the plugins and provide feedback 
+right from Notepad++.
+<li>Providing fresh coffee?</li>
+</ul>
+
+Enjoy, and please let me know what you think, any feedback is gratefully received!  You can either post 
+a comment to the Plugin Development forum, or usually find me in #notepad++ on freenode.  
+
+<a name="credit"></a>
+<hr/>
+<h3>Credits</h3>
+I must say a big thank you to Joce, who helped a lot in the development of this plugin.  
+<br/>The good people on #notepad++ (especially joce and almostautomated) who've helped out with ideas and code reviews
+<br/>Don Ho, for bringing us this great editor, and providing such a neat plugin architecture that developers can easily add stuff
+</body>
+</html>
+
+
+	
+		
+		
+		
+		
+		
+		
+		
+		
+<br/>
