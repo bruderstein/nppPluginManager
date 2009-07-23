@@ -156,8 +156,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,8,0,0
- PRODUCTVERSION 0,8,0,0
+ FILEVERSION 0,9,0,0
+ PRODUCTVERSION 0,9,0,0
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -175,12 +175,12 @@ BEGIN
             VALUE "Comments", "Source code at git://github.com/davegb3/nppPluginManager.git"
             VALUE "CompanyName", "Dave Brotherstone.  davegb@pobox.com"
             VALUE "FileDescription", "Plugin Manager for Notepad++.  A free (GPL) plugin management plugin"
-            VALUE "FileVersion", "0, 8, 0, 0"
+            VALUE "FileVersion", "0, 9, 0, 0"
             VALUE "InternalName", "PluginManager"
             VALUE "LegalCopyright", "Copyright (C) 2009 Dave Brotherstone"
             VALUE "OriginalFilename", "PluginManager.dll"
             VALUE "ProductName", "PluginManager"
-            VALUE "ProductVersion", "0, 8, 0, 0"
+            VALUE "ProductVersion", "0, 9, 0, 0"
             VALUE "SpecialBuild", "UNICODE"
         END
     END
@@ -224,7 +224,7 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
-    LTEXT           "Version 0.8",IDC_STATIC,31,22,37,8
+    LTEXT           "Version 0.9",IDC_STATIC,31,22,37,8
     LTEXT           "Notepad++ Plugin Manager",IDC_STATIC,7,7,90,8
     LTEXT           "(C) Dave Brotherstone",IDC_STATIC,12,37,74,8
     LTEXT           "July 2009",IDC_STATIC,35,50,32,8

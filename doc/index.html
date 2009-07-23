@@ -3,6 +3,7 @@
 <h2>Plugin Manager</h2>
 <hr/>
 <a href="#features">Features</a>&nbsp;&nbsp;
+<a href="#changes">Changes</a>&nbsp;&nbsp;
 <a href="#download">Download</a>&nbsp;&nbsp;
 <a href="#install">Installation</a>&nbsp;&nbsp;
 <a href="#XML">XML File documentation</a>&nbsp;&nbsp;
@@ -37,12 +38,31 @@ downloads and processes against the list of installed plugins.
      a further new version of that plugin is released.</li> 
  <li>The local plugin list file is only downloaded when something has changed - the MD5sum of the
  file is compared to the server's version, and if it is different, then a new copy is downloaded.</li>
+ <li>New for 0.9: Works with plugins that are installed multiple times - update them all or individually</li>
+</ul>
+<br/><br/>
+<a name="changes"></a>
+<h3>Changes</h3>
+0.9
+<br><ul>
+<li>Plugins that are installed multiple times are now supported, and can be updated individually</li>
+<li>The updater (gpup.exe) now shows a progress bar, useful feedback if you've installed or updated a lot of plugins</li>
+<li>User will be presented with a warning if there is an update to the plugin manager that they haven't taken 
+     - it's always best to update the plugin manager first, then install or update other plugins</li>
+<li>Rework of the variable handling in the XML - all variables are now processed at install time</li>
+<li>New variable available, $PLUGINFILENAME$, which is (unsurprisingly) the filename of the installed plugin</li>
+<li>Copy now supports a &quot;toFile&quot; attribute, which copies to a filename rather than a directory</li>
+<li>Added facility in XML to set the name of an unknown plugin based on a hash value - so a plugin that 
+    returns a dynamic name can still be supported (the dynamic name will still be shown in the list 
+	to the user however, but install and update will be possible)
+<li>The user-agent header for all downloads now contains the version number of the plugin manager</li>
+<li>Fixed an issue if the user said no to restarting after removing plugins</li>
 </ul>
 <br/><br/>
 So, I hope you find this plugin useful, and it gives a bit more exposure to plugins, and makes
 it easier to install some of the bigger plugins.
 <br/><br/>
-I'm still adding to the list of plugins, but if you don't see your plugin in the list, let me know
+I'm still cross checking the list of plugins, but if you don't see your plugin in the list, let me know
 and I'll make sure it goes in.  
 
 <br/><br/>
@@ -50,25 +70,34 @@ and I'll make sure it goes in.
 <h3>Installation</h3>
 To install the plugin manager, simply download (links below) the .zip, and place the PluginManager.dll 
 file in the Notepad++ plugins directory, and the gpup.exe in the updater directory under your 
-Notepad++ program directory.  
+Notepad++ program directory.  (e.g. &quot;C:\Program Files\Notepad++\updater&quot;)
 <br/><br/>
 In fact, if you prefer, you can just add the PluginManager.dll to the plugins directory, then 
 do a reinstall of Plugin Manager from the plugin itself, which will place the file in the right place!
+Of course, if you're already using an earlier version of the plugin manager, you'll be able to just update 
+from the update tab (or when you get the notification that the update has happened).
 
 <br/><br/>
 <a name="download"></a>
 <h3>Download links</h3>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_UNI.zip</a>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_UNI.zip</a>
 <br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_ANSI.zip</a>
+ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_ANSI.zip</a>
 <br/>
 Source code is on github: <a href="http://github.com/davegb3/nppPluginManager">http://github.com/davegb3/nppPluginManager</a>
 <br/>
 MD5 Sums:
 <br/>
-bed480f315a3ed35f506323a2d1ba7c9 *PluginManager_0.8_ANSI.zip
+ *PluginManager_0.9_ANSI.zip
 <br/>
-8ea385d2217d4adeaff0449ea16badfb *PluginManager_0.8_UNI.zip
+ *PluginManager_0.9_UNI.zip
+<br/><br/>
+<u>Older versions</u>
+<br/><u>0.8</u>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_UNI.zip</a>
+<br/>
+ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_ANSI.zip</a>
+<br/>
 <hr/>
 <a name="XML"></a>
 <h3>XML File Structure and Features</h3>
@@ -77,8 +106,16 @@ The XML file is currently hosted on my own server, which will probably change to
 The XML file consists of &lt;plugin&gt; elements, each with a name attribute, containing the information about each plugin.  
 The name attribute must match (include case) the name provided by the plugins getName() function, i.e.
 that which appears in the Plugins menu in Notepad++.
+<br/><br/>From 0.9 onwards, a <b>pluginNames</b> element can be used, containing <b>pluginName</b> elements, to 
+specify a plugin's name, if it reports it dynamically.  The MD5sum is given of the file to identify it.
+<br/>e.g.
+<br/>&lt;pluginNames&gt;
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&lt;pluginName md5=&quot;48ae59abb0224ecc252d35e953ce0496&quot; name=&quot;NppExport&quot; comment=&quot;ansi 0.2.8&quot;/&gt;
+<br/>&nbsp;&nbsp;&nbsp;&nbsp;&lt;pluginName md5=&quot;ad32f0f59e70823de864387f65debcea&quot; name=&quot;NppExport&quot; comment=&quot;unicode 0.2.8&quot;/&gt;
+<br/>&lt;/pluginNames&gt;
+
 <br/><br/>
-The following elements can then be contained within the plugin element(all are optional)
+The following elements can be contained within the plugin element(all are optional)
 <ul>
  <li><b>unicodeVersion</b>: The version number of the latest Unicode version.  If this element is not 
  present, then the plugin will not be shown to Unicode users</li>
@@ -104,7 +141,9 @@ The following elements can then be contained within the plugin element(all are o
 		<li><b>copy</b>:  This copies files from the temporary unzipped location to a destination
 		directory.  A destination directory must start with a variable, either $PLUGINDIR$, $CONFIGDIR$
 		or $NPPDIR$ which refer to the plugins directory, plugin config directory and the Notepad++ directory
-		respectively.  Directories that do not exist will automatically be created.  The <b>from</b> attribute
+		respectively.  In 0.9, a variable $PLUGINFILENAME$ is available that is the current installed filename 
+		of the plugin.  Note that this will be empty if the plugin is not installed.
+		Directories that do not exist will automatically be created.  The <b>from</b> attribute
 		can be wildcarded, and the <b>to</b> attribute <i>must</i> be a directory.
 		<br/>
 		If <b>validate=&quot;true&quot;</b> is included in the copy, then the file's MD5sum is 
@@ -119,7 +158,20 @@ The following elements can then be contained within the plugin element(all are o
 		file exists, it will be backed up to the same filename with &quot;.backup&quot; appended.  If
 		the backup file exists, it will be backed up to a &quot;.backup2&quot; file, and so on.  This is 
 		normally used for config files, such that user's config is not lost, but a &quot;good&quot; config 
-		can be installed.</li>
+		can be installed.
+		<br/>
+		In 0.9 onwards, the <b>toFile</b> attribute (case sensitive) can be used instead of the <b>to</b> attribute, to specify
+		that the destination is a file, rather than a directory.  If <b>toFile</b> specifies an existing directory,
+		or the name ends in a backslash (\), the destination is assumed to be a directory, and hence the file is 
+		simply copied with the same name.  This can be used in conjunction with the $PLUGINFILENAME$ variable, 
+		to support plugins that can be installed multiple times. e.g.
+		<br/>
+		&lt;copy from=&quot;ThePlugin.dll&quot; toFile=&quot;$PLUGINDIR$\$PLUGINFILENAME$&quot; /&gt;
+		<br/>
+		This will install normally (as toFile will spot that &quot;$PLUGINDIR$\&quot; is an existing directory,
+		so copy the file as ThePlugin.dll, but updates will copy &quot;ThePlugin.dll&quot; to whatever that
+		instance of the plugin is installed as (e.g. ThePlugin_Copy1.dll).
+		</li>
 </ul>
 </li>
 <li><b>versions</b>:  A collection of <b>version</b> elements that identify a version if the 
@@ -189,16 +241,16 @@ is just as valid as, and does the same job as
 			&lt;/ansi&gt;
 &lt;/install&gt;
 </pre>
-
+<br/> The second is obviously just longer, and the first would probably be preferred.
 <hr/>
 <a name="developer"></a>
 <h3>Plugin developers</h3>
 If you're a plugin developer or maintainer, and you don't want your plugin in the list, or you
 want to wait a while until it's stable, then just let me know.  I won't be releasing any updated
-plugins as soon as they are released, only after a few days when any bug reports have had chance to 
-come in - unless there's an urgent fix to something. 
-If you don't see your plugin listed after releasing it, feel free to drop me a mail or find me on 
-#notepad++ on freenode to give me a nudge.
+plugins as soon as they are released (with the possible exception of the Plugin Manager), only after 
+a few days when any bug reports have had chance to come in - unless there's an urgent fix to something. 
+If you don't see your plugin listed after releasing it, or you need an urgent fix pushing out, feel 
+free to drop me a mail or find me on #notepad++ on freenode (as davegb3) to give me a nudge.
 <hr/>
 <a name="changes"></a>
 <h3>Submitting changes to the XML Plugin List</h3>
@@ -216,16 +268,14 @@ The current XML file is located here - <b><a href="http://npppm.brotherstone.co.
 <a name="planned"></a>
 <h3>Planned for Version 1.0</h3>
 Not too much on this list at the moment, but:
-<ul><li>Have a progress bar displayed while gpup is copying files, not normally an issue 
-but can take a few seconds if there are lots of files to copy, especially if they need validating.</li>
-<li>A looping check if gpup goes crazy and doesn't remove it's instructions file when it's finished</li>
-<li>Support for multiple installations of the same plugin</li>
+<ul>
+<li>A looping check if gpup goes crazy and doesn't remove its instructions file when it's finished</li>
 <li>A proper remove - currently it just removes the plugin DLL. Really each plugin should have uninstallation steps</li>
-<li>7zip support.  Currently only zip files are supported, but 7zip is smaller.</li>
 </ul>
 After 1.0, who knows:
 <ul><li>Some form of plugin feedback / rating system, so users can rate the plugins and provide feedback 
 right from Notepad++.
+<li>7zip support.  Currently only zip files are supported, but 7zip is smaller.  I've moved this from 1.0 as I don't think it's that necessary, just a nice to have.</li>
 <li>Providing fresh coffee?</li>
 </ul>
 
