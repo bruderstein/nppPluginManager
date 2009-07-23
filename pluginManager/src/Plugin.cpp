@@ -211,12 +211,12 @@ InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 
 	InstallStepContainer::iterator stepIterator = _installSteps.begin();
 	 
+	variableHandler->setVariable(_T("PLUGINFILENAME"), getFilename().c_str());
 	
 	StepStatus stepStatus;
 
 	while (stepIterator != _installSteps.end())
 	{
-		variableHandler->setVariable(_T("PLUGINFILENAME"), getFilename().c_str());
 
 		if (variableHandler)
 			(*stepIterator)->replaceVariables(variableHandler);

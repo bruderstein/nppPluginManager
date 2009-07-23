@@ -119,7 +119,10 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	if (_toDestination == TO_DIRECTORY)
 	{
 		toPath = _to;
-	
+		
+		if (toPath == _T(""))
+			return STEPSTATUS_FAIL;
+
 		// Check destination directory exists
 		if (!::PathFileExists(_to.c_str()))
 		{
@@ -132,6 +135,8 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	else
 	{
 		toPath = _toFile;
+		if (toPath == _T(""))
+			return STEPSTATUS_FAIL;
 	}
 	
 	tstring::size_type backSlash = fromPath.find_last_of(_T("\\"));

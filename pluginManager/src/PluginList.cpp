@@ -663,11 +663,17 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	// If not, then the user *really* ought to do that first, as the XML may have changed
 	// or, the URL for the XML may have changed
 
-	tstring pluginManagerName = _T("Plugin Manager");
-	
-	Plugin* pluginManagerPlugin = getPlugin(pluginManagerName);
 
 	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+
+	if (selectedPlugins.get() == NULL)
+	{
+		progressDialog->close();
+		return;
+	}
+
+	tstring pluginManagerName = _T("Plugin Manager");
+	Plugin* pluginManagerPlugin = getPlugin(pluginManagerName);
 
 	if (pluginManagerPlugin && pluginManagerPlugin->getInstalledVersion() < pluginManagerPlugin->getVersion())
 	{
@@ -718,13 +724,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 	
 	
-	if (selectedPlugins.get() == NULL)
-	{
-		delete forGpupDoc;
-		progressDialog->close();
-		return;
-	}
-
+	
 
 	shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
 		
