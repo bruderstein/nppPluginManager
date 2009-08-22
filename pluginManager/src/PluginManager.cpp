@@ -159,6 +159,9 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 			 * and notify the user of any updates too.
 			 Guess what, we do now.
 			 */
+#ifdef ALLOW_OVERRIDE_XML_URL
+			::MessageBox(nppData._nppHandle, _T("The Plugin Manager is running as a special build that allows override of the XML download URL.  This version should be used for testing purposes ONLY."), _T("Plugin Manager"), MB_ICONEXCLAMATION);
+#endif
 			::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)startupChecks, NULL, 0, 0);
 			break;
 
@@ -217,7 +220,17 @@ void loadSettings(void)
 	g_options.proxyPort = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_PROXYPORT, 0, iniFilePath);
 
 	g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
-	
+
+#ifdef ALLOW_OVERRIDE_XML_URL	
+	TCHAR tmpUrl[MAX_PATH];
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_OVERRIDEMD5URL, PLUGINS_MD5_URL, tmpUrl, MAX_PATH, iniFilePath);
+	g_options.downloadMD5Url = tmpUrl;
+
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_OVERRIDEURL, PLUGINS_URL, tmpUrl, MAX_PATH, iniFilePath);
+	g_options.downloadUrl = tmpUrl;
+#endif
+
+
 }
 
 /***

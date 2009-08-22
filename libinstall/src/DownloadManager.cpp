@@ -45,7 +45,12 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
 
 	FILE *fp;
-	_tfopen_s(&fp, filename.c_str(), _T("wb"));
+	if (0 != _tfopen_s(&fp, filename.c_str(), _T("wb")))
+	{
+		// error opening file
+		return FALSE;
+	}
+
 
 	if (proxy && *proxy)
 	{

@@ -35,6 +35,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/InstallStepFactory.h"
 #include "libinstall/md5.h"
 #include "libinstall/DownloadManager.h"
+#include "libinstall/DirectoryUtil.h"
 #include "Utility.h"
 #include "WcharMbcsConverter.h"
 #include <strsafe.h>
@@ -111,6 +112,22 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 	doc.LoadFile();
 	if (doc.Error())
 	{
+#ifdef ALLOW_OVERRIDE_XML_URL
+		tstring error = doc.ErrorDesc();
+		error += _T(" at row ");
+		TCHAR tmp[10];
+		tmp[0] = '\0';
+		if (!_itot_s(doc.ErrorRow(), tmp, 10, 10))
+			error += tmp;
+
+		error += _T(", col ");
+		
+		if (!_itot_s(doc.ErrorCol(), tmp, 10, 10))
+			error += tmp;
+
+		
+		::MessageBox(_nppData->_nppHandle, error.c_str(), _T("Error parsing XML File"), 0);
+#endif
 		return FALSE;
 	}
 
@@ -604,6 +621,11 @@ void PluginList::downloadList()
 	TCHAR pluginConfig[MAX_PATH];
 	::SendMessage(_nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
 	
+	if (!::PathFileExists(pluginConfig))
+	{
+		DirectoryUtil::createDirectories(pluginConfig);
+	}
+
 	tstring pluginsListFilename(pluginConfig);
 	pluginsListFilename.append(_T("\\PluginManagerPlugins.xml"));
 		
@@ -615,11 +637,27 @@ void PluginList::downloadList()
 	TCHAR hashBuffer[(MD5LEN * 2) + 1];
 	MD5::hash(pluginsListFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
 	string serverMD5;
+
+#ifdef ALLOW_OVERRIDE_XML_URL
+	BOOL downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, g_options.proxy.c_str(), g_options.proxyPort);
+#else
 	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, g_options.proxy.c_str(), g_options.proxyPort);
+#endif
+
 	shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
-	if (downloadResult && serverMD5 != cHashBuffer.get())
-		downloadManager.getUrl(PLUGINS_URL, pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
+
 	
+	if (downloadResult && serverMD5 != cHashBuffer.get())
+	{
+		// If the build is allowing to override the download URL, then use the one from options
+#ifdef ALLOW_OVERRIDE_XML_URL
+		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
+#else
+		downloadManager.getUrl(PLUGINS_URL, pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
+#endif
+	}
+
+
 	// Parse it
 	parsePluginFile(pluginsListFilename.c_str());
 	

@@ -32,13 +32,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 
-#ifdef _DEBUG
-#define PLUGINS_MD5_URL     _T("http://localhost/plugins.md5.txt")
-#define PLUGINS_URL         _T("http://localhost/plugins.xml")
-#else
+
 #define PLUGINS_MD5_URL     _T("http://npppm.brotherstone.co.uk/plugins.md5.txt")
 #define PLUGINS_URL         _T("http://npppm.brotherstone.co.uk/plugins.xml")
-#endif
+
 
 
 
@@ -54,6 +51,11 @@ CONST TCHAR SETTINGS_GROUP[]    = _T("Settings");
 CONST TCHAR KEY_NOTIFYUPDATES[] = _T("NotifyUpdates");
 CONST TCHAR KEY_PROXY[]         = _T("Proxy");
 CONST TCHAR KEY_PROXYPORT[]     = _T("ProxyPort");
+#ifdef ALLOW_OVERRIDE_XML_URL
+CONST TCHAR KEY_OVERRIDEMD5URL[] = _T("md5url");
+CONST TCHAR KEY_OVERRIDEURL[]    = _T("xmlurl");
+#endif
+
 
 
 
@@ -78,6 +80,10 @@ struct Options
 	std::string proxy;
 	long proxyPort;
 	BOOL notifyUpdates;
+#ifdef ALLOW_OVERRIDE_XML_URL
+	tstring downloadMD5Url;
+	tstring downloadUrl;
+#endif
 };
 
 extern Options			g_options;

@@ -1,7 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-
+#include "PluginManagerVersion.h"
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -156,8 +156,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,0,0
- PRODUCTVERSION 0,9,0,0
+ FILEVERSION PLUGINMANAGERVERSION_RESOURCE
+ PRODUCTVERSION PLUGINMANAGERVERSION_RESOURCE
  FILEFLAGSMASK 0x37L
 #ifdef _DEBUG
  FILEFLAGS 0x21L
@@ -175,13 +175,18 @@ BEGIN
             VALUE "Comments", "Source code at git://github.com/davegb3/nppPluginManager.git"
             VALUE "CompanyName", "Dave Brotherstone.  davegb@pobox.com"
             VALUE "FileDescription", "Plugin Manager for Notepad++.  A free (GPL) plugin management plugin"
-            VALUE "FileVersion", "0, 9, 0, 0"
+            VALUE "FileVersion", PLUGINMANAGERVERSION_RESOURCE_STRING
             VALUE "InternalName", "PluginManager"
             VALUE "LegalCopyright", "Copyright (C) 2009 Dave Brotherstone"
             VALUE "OriginalFilename", "PluginManager.dll"
             VALUE "ProductName", "PluginManager"
-            VALUE "ProductVersion", "0, 9, 0, 0"
+            VALUE "ProductVersion", PLUGINMANAGERVERSION_RESOURCE_STRING
+#ifdef UNICODE
             VALUE "SpecialBuild", "UNICODE"
+#else
+			VALUE "SpecialBuild", "ANSI"
+#endif
+
         END
     END
     BLOCK "VarFileInfo"
@@ -224,10 +229,11 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
-    LTEXT           "Version 0.9",IDC_STATIC,31,22,37,8
+    LTEXT           PLUGINMANAGERVERSION_STRING,IDC_STATIC,45,23,37,8
     LTEXT           "Notepad++ Plugin Manager",IDC_STATIC,7,7,90,8
     LTEXT           "(C) Dave Brotherstone",IDC_STATIC,12,37,74,8
-    LTEXT           "July 2009",IDC_STATIC,35,50,32,8
+    LTEXT           PLUGINMANAGERVERSION_RELEASEDATE,IDC_STATIC,35,50,50,8
+    LTEXT           "Version",IDC_STATIC,14,23,24,8
 END
 
 
