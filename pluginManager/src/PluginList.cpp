@@ -800,6 +800,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 	pluginIter = selectedPlugins->begin();
 
+	tstring pluginDir = _variableHandler->getVariable(_T("PLUGINDIR"));
 
 	tstring pluginTemp;
 	int pluginCount = 1;
@@ -848,7 +849,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 			TiXmlElement* removeElement = new TiXmlElement(_T("delete"));
 			
-			tstring fullFilename = _variableHandler->getVariable(_T("PLUGINDIR"));
+			tstring fullFilename(pluginDir);
 			fullFilename.push_back(_T('\\'));
 			fullFilename.append((*pluginIter)->getFilename());
 
@@ -955,11 +956,18 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	size_t removeSteps = selectedPlugins->size();
 	progressDialog->setStepCount(removeSteps);
 
+	tstring pluginDir = _variableHandler->getVariable(_T("PLUGINDIR"));
+
 	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
 	while(pluginIter != selectedPlugins->end())
 	{
 		TiXmlElement* deleteElement = new TiXmlElement(_T("delete"));
-		deleteElement->SetAttribute(_T("file"), (*pluginIter)->getFilename());
+		
+		tstring fullFilename(pluginDir);
+		fullFilename.push_back(_T('\\'));
+		fullFilename.append((*pluginIter)->getFilename());
+		deleteElement->SetAttribute(_T("file"), fullFilename.c_str());
+
 		installElement->LinkEndChild(deleteElement);	
 		++pluginIter;
 		progressDialog->stepComplete();

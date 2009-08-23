@@ -116,6 +116,9 @@ private:
 	typedef std::list<boost::shared_ptr<InstallStep> > InstallStepContainer;
 
 	InstallStepContainer	_installSteps;
+
+	/* Private methods */
+	void replaceNewlines(tstring &str);
 };
 
 #endif

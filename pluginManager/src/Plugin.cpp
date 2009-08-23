@@ -47,7 +47,8 @@ Plugin::~Plugin(void)
 
 void Plugin::setDescription(const TCHAR* description)
 {
-	_description = description; 
+	_description = description;
+	replaceNewlines(_description);
 }
 
 void Plugin::setFilename(const TCHAR* filename)
@@ -258,4 +259,15 @@ const list<tstring>& Plugin::getDependencies()
 	return _dependencies;
 }
 
-
+void Plugin::replaceNewlines(tstring &str)
+{
+	tstring::size_type pos = 0;
+	
+	do {
+		pos = str.find(TEXT("\\n"), pos);
+		if (pos != tstring::npos)
+		{
+			str.replace(pos, 2, TEXT("\r\n"));
+		}
+	} while (pos != tstring::npos);
+}
