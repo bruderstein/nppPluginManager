@@ -53,6 +53,7 @@ private:
 	NppData			_nppData;
     HWND			_HSource;
 	HWND            _hListView;
+	HWND			_hUpdateDescription;
 
 	PluginList      *_pluginList;
 	PluginListView  _pluginListView;

@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "Plugin.h"
+#include "PluginVersion.h"
 #include <tchar.h>
 #include <string>
 #include <boost/bind.hpp>
@@ -96,11 +97,23 @@ void Plugin::setSourceUrl(const TCHAR* sourceUrl)
 	_sourceUrl = sourceUrl;
 }
 
+void Plugin::setLatestUpdate(const TCHAR* latestUpdate)
+{
+	_latestUpdate = latestUpdate;
+}
+
+void Plugin::setStability(const TCHAR* stability)
+{
+	_stability = stability;
+}
 
 
 void Plugin::setInstalledVersion(const PluginVersion &version)
 {
 	_installedVersion = version;
+	if (_badVersionMap.find(_installedVersion) != _badVersionMap.end())
+		_installedVersion.setIsBad(true);
+
 	_isInstalled = TRUE;
 }
 
@@ -109,6 +122,9 @@ void Plugin::setInstalledVersionFromHash(const tstring &hash)
 	if (_versionMap.find(hash) != _versionMap.end())
 	{
 		_installedVersion = _versionMap[hash];
+		if (_badVersionMap.find(_installedVersion) != _badVersionMap.end())
+			_installedVersion.setIsBad(true);
+
 	}
 	_isInstalled = TRUE;
 }
@@ -133,6 +149,12 @@ tstring& Plugin::getDescription()
 		{
 			_description.append(_T("\r\nHomepage: "));
 			_description.append(_homepage);
+		}
+
+		if (!_latestUpdate.empty())
+		{
+			_description.append(_T("\r\nLatest update: "));
+			_description.append(_latestUpdate);
 		}
 
 		_detailsAdded = TRUE;
@@ -175,6 +197,16 @@ tstring& Plugin::getCategory()
 	return _category;
 }
 
+tstring& Plugin::getStability()
+{
+	return _stability;
+}
+
+tstring& Plugin::getLatestUpdate()
+{
+	return _latestUpdate;
+}
+
 BOOL Plugin::isInstalled()
 {
 	return _isInstalled;
@@ -187,6 +219,12 @@ void Plugin::addVersion(const TCHAR* hash, const PluginVersion &version)
 
 	_versionMap[(*hashString)] = version;
 }
+
+void Plugin::addBadVersion(const PluginVersion &version, const TCHAR* report)
+{
+	_badVersionMap[version] = report;
+}
+
 
 void Plugin::addInstallStep(shared_ptr<InstallStep> step)
 {

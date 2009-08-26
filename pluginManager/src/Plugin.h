@@ -62,6 +62,8 @@ public:
 	void    setHomepage(const TCHAR* homepage);
 	void    setSourceUrl(const TCHAR* sourceUrl);
 	void	setCategory(const TCHAR* category);
+	void	setLatestUpdate(const TCHAR* latestUpdate);
+	void	setStability(const TCHAR* stability);
 
 	/* Getters */
 	tstring&		getName();
@@ -71,11 +73,13 @@ public:
 	PluginVersion&	getInstalledVersion();
 	tstring&		getAuthor();
 	tstring&		getCategory();
-
+	tstring&		getLatestUpdate();
+	tstring&		getStability();
 
 	/* General methods */
 	BOOL			isInstalled();
 	void			addVersion(const TCHAR* hash, const PluginVersion &version);
+	void			addBadVersion(const PluginVersion &version, const TCHAR* report);
 
 	/* installation */
 	void			addInstallStep(boost::shared_ptr<InstallStep> step);
@@ -105,6 +109,8 @@ private:
 	tstring					_category;
 	tstring					_homepage;
 	tstring					_sourceUrl;
+	tstring					_latestUpdate;
+	tstring					_stability;
 	
 	BOOL					_isInstalled;
 	BOOL					_detailsAdded;
@@ -112,7 +118,8 @@ private:
 	std::list<tstring>		_dependencies;
 
 	std::map<tstring, PluginVersion>  _versionMap;
-	
+	std::map<PluginVersion, tstring>  _badVersionMap;
+
 	typedef std::list<boost::shared_ptr<InstallStep> > InstallStepContainer;
 
 	InstallStepContainer	_installSteps;

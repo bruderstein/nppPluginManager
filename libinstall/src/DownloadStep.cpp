@@ -54,7 +54,8 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxy.c_str(), _proxyPort))
 	{
 		if (contentType == _T("application/zip") 
-			|| contentType == _T("application/octet-stream"))
+			|| contentType == _T("application/octet-stream")
+			|| contentType == _T("application/x-zip-compressed"))
 		{
 			// Attempt to unzip file into basePath
 			if (Decompress::unzip(downloadFilename, basePath))

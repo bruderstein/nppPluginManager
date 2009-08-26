@@ -76,17 +76,24 @@ LRESULT PluginListView::notify(WPARAM /*wParam*/, LPARAM lParam)
 					}
 
 					default:
-						switch(_columns[plvdi->item.iSubItem - 2])
+						if (plvdi->item.iSubItem == _nVersionColumns + 2)
 						{
-							case VERSION_INSTALLED:
-								plvdi->item.pszText = plugin->getInstalledVersion().getDisplayString();
-								plvdi->item.cchTextMax = (int)_tcslen(plvdi->item.pszText);
-								break;
+							plvdi->item.pszText = const_cast<TCHAR*>(plugin->getStability().c_str());
+						} 
+						else
+						{
+							switch(_columns[plvdi->item.iSubItem - 2])
+							{
+								case VERSION_INSTALLED:
+									plvdi->item.pszText = plugin->getInstalledVersion().getDisplayString();
+									plvdi->item.cchTextMax = (int)_tcslen(plvdi->item.pszText);
+									break;
 
-							case VERSION_AVAILABLE:
-								plvdi->item.pszText = plugin->getVersion().getDisplayString();
-								plvdi->item.cchTextMax = (int)_tcslen(plvdi->item.pszText);
-								break;
+								case VERSION_AVAILABLE:
+									plvdi->item.pszText = plugin->getVersion().getDisplayString();
+									plvdi->item.cchTextMax = (int)_tcslen(plvdi->item.pszText);
+									break;
+							}
 						}
 						break;
 				 }
@@ -162,6 +169,11 @@ void PluginListView::initColumns(void)
 		ListView_InsertColumn(_hListView, index + columnOffset, &col);
 	}
 	
+	col.iSubItem = _nVersionColumns + columnOffset;
+	col.cx = 110;
+	col.pszText = _T("Stability");
+	ListView_InsertColumn(_hListView, col.iSubItem, &col);
+
 	ListView_SetExtendedListViewStyle(_hListView, LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
 	
 }

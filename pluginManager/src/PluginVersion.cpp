@@ -28,14 +28,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 
 PluginVersion::PluginVersion(void)
+: _displayString(NULL), _isBad(false)
 {
 	_major = _minor = _revision = _build = 0;
-	_displayString = NULL;
 }
 
 PluginVersion::PluginVersion(const char *version)
+: _displayString(NULL), _isBad(false)
 {
-	_displayString = NULL;
+	
 	size_t versionSize = strlen(version) + 1;
 	char *str = new char[versionSize];
 	strcpy_s(str, versionSize, version);
@@ -45,8 +46,8 @@ PluginVersion::PluginVersion(const char *version)
 
 
 PluginVersion::PluginVersion(string version)
+: _displayString(NULL), _isBad(false)
 {
-	_displayString = NULL;
 	char *str = new char[version.size() + 1];
 	strcpy_s(str, version.size() + 1, version.c_str());
 	parseString(str);
@@ -57,8 +58,8 @@ PluginVersion::PluginVersion(string version)
 #ifdef _UNICODE
 
 PluginVersion::PluginVersion(const TCHAR *version)
+: _displayString(NULL), _isBad(false)
 {
-	_displayString = NULL;
 	size_t versionSize = _tcslen(version) + 1;
 	TCHAR *str = new TCHAR[versionSize];
 	_tcscpy_s(str, versionSize, version);
@@ -68,54 +69,51 @@ PluginVersion::PluginVersion(const TCHAR *version)
 }
 
 PluginVersion::PluginVersion(tstring version)
+: _displayString(NULL), _isBad(false)
 {
-	_displayString = NULL;
 	TCHAR *str = new TCHAR[version.size() + 1];
 	_tcscpy_s(str, version.size() + 1, version.c_str());
 	parseString(str);
 	delete[] str;
-	
 }
 
 #endif
 
 
 PluginVersion::PluginVersion(int major, int minor, int revision, int build)
+: _major(major), _minor(minor), _revision(revision), _build(build), _displayString(NULL), _isBad(false)
 {
-	_major		= major;
-	_minor		= minor;
-	_revision	= revision;
-	_build		= build;
-	_displayString = NULL;
 }
 
 
-bool PluginVersion::operator< (PluginVersion &rhs)
+
+
+bool PluginVersion::operator< (const PluginVersion &rhs)
 {
 	return (compare(*this, rhs) < 0);
 }
 
-bool PluginVersion::operator<= (PluginVersion &rhs)
+bool PluginVersion::operator<= (const PluginVersion &rhs)
 {
 	return (compare(*this, rhs) <= 0);
 }
 
-bool PluginVersion::operator> (PluginVersion &rhs)
+bool PluginVersion::operator> (const PluginVersion &rhs)
 {
 	return (compare(*this, rhs) > 0);
 }
 
-bool PluginVersion::operator>= (PluginVersion &rhs)
+bool PluginVersion::operator>= (const PluginVersion &rhs)
 {
 	return (compare(*this, rhs) >= 0);
 }
 
-bool PluginVersion::operator== (PluginVersion &rhs)
+bool PluginVersion::operator== (const PluginVersion &rhs)
 {
 	return (compare(*this, rhs) == 0);
 }
 
-bool PluginVersion::operator!= (PluginVersion &rhs)
+bool PluginVersion::operator!= (const PluginVersion &rhs)
 {
 	return (compare(*this, rhs) != 0);
 }
@@ -269,8 +267,18 @@ void PluginVersion::parseString(const TCHAR *version)
 #endif
 
 
-int PluginVersion::compare(PluginVersion &lhs, PluginVersion &rhs)
+int PluginVersion::compare(const PluginVersion &lhs, const PluginVersion &rhs) const
 {
+	// Override the result if one side is bad and the other isn't.  
+	// A good plugin is always better than a bad one ;-)
+	if (lhs._isBad != rhs._isBad)
+	{
+		if (lhs._isBad && !rhs._isBad)
+			return -1;
+		if (!lhs._isBad && rhs._isBad)
+			return 1;
+	}
+
 	int difference = lhs._major - rhs._major;
 	if (difference != 0)
 		return difference;
@@ -306,6 +314,9 @@ TCHAR* PluginVersion::getDisplayString()
 
 			if (_build > 0)
 				display  << _T(".") << _build;
+
+			if (_isBad)
+				display << _T(" (unstable)");
 		}
 
 		size_t length = display.tellp();
@@ -315,4 +326,22 @@ TCHAR* PluginVersion::getDisplayString()
 	}
 
 	return _displayString;
+}
+
+
+bool PluginVersion::getIsBad()
+{
+	return _isBad;
+}
+
+void PluginVersion::setIsBad(bool isBad)
+{
+	_isBad = isBad;
+}
+
+
+
+bool operator <	(const PluginVersion &lhs, const PluginVersion &rhs)
+{
+	return (lhs.compare(lhs, rhs) < 0);
 }

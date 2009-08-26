@@ -191,6 +191,18 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 					}
 				}
 
+				TiXmlElement *badVersionsElement = pluginNode->FirstChildElement(_T("badVersions"));
+				
+				if (badVersionsElement)
+				{
+					TiXmlElement *versionElement = badVersionsElement->FirstChildElement(_T("version"));
+					while(versionElement)
+					{
+						plugin->addBadVersion(PluginVersion(versionElement->Attribute(_T("number"))), versionElement->Attribute(_T("report")));
+						versionElement = (TiXmlElement *)badVersionsElement->IterateChildren(versionElement);
+					}
+				}
+
 				TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
 				
 				addInstallSteps(plugin, installElement);
@@ -236,6 +248,13 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 				else
 					plugin->setCategory(_T("Others"));
 				
+				TiXmlElement *latestUpdateElement = pluginNode->FirstChildElement(_T("latestUpdate"));
+				if (latestUpdateElement && latestUpdateElement->FirstChild())
+					plugin->setLatestUpdate(latestUpdateElement->FirstChild()->Value());
+
+				TiXmlElement *stabilityElement = pluginNode->FirstChildElement(_T("stability"));
+				if (stabilityElement && stabilityElement->FirstChild())
+					plugin->setStability(stabilityElement->FirstChild()->Value());
 
 				if (available)
 					_plugins[plugin->getName()] = plugin;

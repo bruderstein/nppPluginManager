@@ -50,22 +50,26 @@ public:
 	PluginVersion& operator= (tstring &rhs);
 #endif
 
-	bool		operator<	(PluginVersion &rhs);
-	bool		operator<=	(PluginVersion &rhs);
-	bool		operator>	(PluginVersion &rhs);
-	bool		operator>=	(PluginVersion &rhs);
-	bool		operator==	(PluginVersion &rhs);
-	bool		operator!=  (PluginVersion &rhs);
+	bool		operator <  (const PluginVersion &rhs);
+	bool		operator<=	(const PluginVersion &rhs);
+	bool		operator>	(const PluginVersion &rhs);
+	bool		operator>=	(const PluginVersion &rhs);
+	bool		operator==	(const PluginVersion &rhs);
+	bool		operator!=  (const PluginVersion &rhs);
 
 	TCHAR* getDisplayString();
+	bool		getIsBad();
+	void		setIsBad(bool isBad);
+	int compare(const PluginVersion &lhs, const PluginVersion &rhs) const;
 
 private:
 
 	/* Private version members */
 
 	int _major, _minor, _revision, _build;
+	bool _isBad;
 
-	int compare(PluginVersion &lhs, PluginVersion &rhs);
+	
 	void parseString(const char *version);
 
 #ifdef _UNICODE
@@ -75,6 +79,9 @@ private:
 	TCHAR* _displayString;
 
 };
+
+
+bool operator <	(const PluginVersion &lhs, const PluginVersion &rhs);
 
 
 #endif

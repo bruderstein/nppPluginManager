@@ -221,6 +221,11 @@ void loadSettings(void)
 
 	g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
 
+	TCHAR tmpLastCheck[20];
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_LASTCHECK, _T("0"), tmpLastCheck, 20, iniFilePath);
+
+	g_options.lastCheck = (time_t)_ttol(tmpLastCheck);
+
 #ifdef ALLOW_OVERRIDE_XML_URL	
 	TCHAR tmpUrl[MAX_PATH];
 	::GetPrivateProfileString(SETTINGS_GROUP, KEY_OVERRIDEMD5URL, PLUGINS_MD5_URL, tmpUrl, MAX_PATH, iniFilePath);
@@ -311,8 +316,16 @@ UINT startupChecks(LPVOID /*param*/)
 	}
 
 
-	if (g_options.notifyUpdates)
+	time_t ltime;
+	time(&ltime);
+
+	if (g_options.notifyUpdates && ((ltime - g_options.lastCheck) > 259200))
 	{
+		// Store the check time
+		TCHAR tmp[20];
+		_ltot_s((long)ltime, tmp, 20, 10);
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_LASTCHECK, tmp, iniFilePath);
+
 		g_pluginList = new PluginList();
 		g_pluginList->init(&nppData);
 		pluginManagerDlg.setPluginList(g_pluginList);

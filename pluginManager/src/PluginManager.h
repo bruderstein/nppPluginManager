@@ -47,13 +47,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
 
 
-CONST TCHAR SETTINGS_GROUP[]    = _T("Settings");
-CONST TCHAR KEY_NOTIFYUPDATES[] = _T("NotifyUpdates");
-CONST TCHAR KEY_PROXY[]         = _T("Proxy");
-CONST TCHAR KEY_PROXYPORT[]     = _T("ProxyPort");
+#define SETTINGS_GROUP     _T("Settings")
+#define KEY_NOTIFYUPDATES  _T("NotifyUpdates")
+#define KEY_PROXY          _T("Proxy")
+#define KEY_PROXYPORT      _T("ProxyPort")
+#define KEY_LASTCHECK	   _T("LastCheck")
 #ifdef ALLOW_OVERRIDE_XML_URL
-CONST TCHAR KEY_OVERRIDEMD5URL[] = _T("md5url");
-CONST TCHAR KEY_OVERRIDEURL[]    = _T("xmlurl");
+#define KEY_OVERRIDEMD5URL  _T("md5url")
+#define KEY_OVERRIDEURL     _T("xmlurl")
 #endif
 
 
@@ -80,6 +81,7 @@ struct Options
 	std::string proxy;
 	long proxyPort;
 	BOOL notifyUpdates;
+	time_t lastCheck;
 #ifdef ALLOW_OVERRIDE_XML_URL
 	tstring downloadMD5Url;
 	tstring downloadUrl;

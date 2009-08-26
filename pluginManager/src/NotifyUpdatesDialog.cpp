@@ -81,7 +81,8 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			columns[0] = PluginListView::VERSION_INSTALLED;
 			columns[1] = PluginListView::VERSION_AVAILABLE;
 			_hListView = ::GetDlgItem(hWnd, IDC_LISTUPDATES);
-			_pluginListView.init(_hListView, NULL, 2, columns);
+			_hUpdateDescription = ::GetDlgItem(hWnd, IDC_UPDATEDESC);
+			_pluginListView.init(_hListView, _hUpdateDescription, 2, columns);
 			
 			_pluginListView.setList(_updateList);
 			_pluginListView.selectAll();
