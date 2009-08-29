@@ -75,6 +75,7 @@ public:
 	tstring&		getCategory();
 	tstring&		getLatestUpdate();
 	tstring&		getStability();
+	tstring&        getUpdateDescription();
 
 	/* General methods */
 	BOOL			isInstalled();
@@ -111,9 +112,12 @@ private:
 	tstring					_sourceUrl;
 	tstring					_latestUpdate;
 	tstring					_stability;
+	tstring					_updateDescription;
 	
 	BOOL					_isInstalled;
 	BOOL					_detailsAdded;
+	BOOL					_updateDetailsAdded;
+
 	/* Dependencies on other plugins */
 	std::list<tstring>		_dependencies;
 

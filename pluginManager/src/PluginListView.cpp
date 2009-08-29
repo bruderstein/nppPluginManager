@@ -34,11 +34,13 @@ PluginListView::PluginListView()
 	_message = NULL;
 }
 
-void PluginListView::init(HWND hListView, HWND hDescription, int nVersionColumns, VERSIONCOLUMN columns[])
+void PluginListView::init(HWND hListView, HWND hDescription, int nVersionColumns, VERSIONCOLUMN columns[], bool displayUpdateDesc)
 {
 	_hListView = hListView;
 	_hDescription = hDescription;
 	_nVersionColumns = nVersionColumns;
+	_displayUpdateDesc = displayUpdateDesc;
+
 	_columns = new VERSIONCOLUMN[nVersionColumns];
 	
 	for(int index = 0; index < nVersionColumns; index++)
@@ -123,7 +125,12 @@ LRESULT PluginListView::notify(WPARAM /*wParam*/, LPARAM lParam)
 			{
 				Plugin* plugin = reinterpret_cast<Plugin*>(pnmv->lParam);
 				if (plugin && _hDescription)
-					::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(plugin->getDescription().c_str()));
+				{
+					if (_displayUpdateDesc)
+						::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(plugin->getUpdateDescription().c_str()));
+					else
+						::SendMessage(_hDescription, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(plugin->getDescription().c_str()));
+				}
 			}
 		}
 	}
@@ -170,7 +177,8 @@ void PluginListView::initColumns(void)
 	}
 	
 	col.iSubItem = _nVersionColumns + columnOffset;
-	col.cx = 110;
+	col.cx = 70;
+	col.fmt = 0;
 	col.pszText = _T("Stability");
 	ListView_InsertColumn(_hListView, col.iSubItem, &col);
 

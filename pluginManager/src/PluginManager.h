@@ -33,15 +33,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 
-#define PLUGINS_MD5_URL     _T("http://npppm.brotherstone.co.uk/plugins.md5.txt")
-#define PLUGINS_URL         _T("http://npppm.brotherstone.co.uk/plugins.xml")
+#define PLUGINS_MD5_URL     _T("http://notepad-plus.sourceforge.net/commun/pluginManager/plugins.md5.txt")
+#define PLUGINS_URL         _T("http://notepad-plus.sourceforge.net/commun/pluginManager/plugins.xml")
+#define VALIDATE_URL         _T("http://notepad-plus.sourceforge.net/commun/pluginManager/validate.php?md5=")
 
 
 
 
-// Note that this version string is deliberately not wide.  DownloadManager expects it in 
-// multibyte format - anything else can do _T(VERSION_STRING)
-#define VERSION_STRING			"0.9"
+
 
 /* ini file name */
 CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
@@ -52,6 +51,7 @@ CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
 #define KEY_PROXY          _T("Proxy")
 #define KEY_PROXYPORT      _T("ProxyPort")
 #define KEY_LASTCHECK	   _T("LastCheck")
+#define KEY_SHOWUNSTABLE   _T("ShowUnstable")
 #ifdef ALLOW_OVERRIDE_XML_URL
 #define KEY_OVERRIDEMD5URL  _T("md5url")
 #define KEY_OVERRIDEURL     _T("xmlurl")
@@ -82,6 +82,7 @@ struct Options
 	long proxyPort;
 	BOOL notifyUpdates;
 	time_t lastCheck;
+	BOOL showUnstable;
 #ifdef ALLOW_OVERRIDE_XML_URL
 	tstring downloadMD5Url;
 	tstring downloadUrl;

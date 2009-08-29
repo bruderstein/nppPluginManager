@@ -320,8 +320,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hInstance);
 	UNREFERENCED_PARAMETER(nCmdShow);
 
-	MessageBox(NULL, _T("GPUP PAUSE"), _T("GPUP"), 0);
-
 	hInst = hInstance;
 
 	Options options;

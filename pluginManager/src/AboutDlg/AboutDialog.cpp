@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "AboutDialog.h"
 #include "PluginInterface.h"
-#include "resource.h"
+#include "resource1.h"
 
 void AboutDialog::doDialog()
 {

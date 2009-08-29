@@ -38,7 +38,7 @@ public:
 	};
 
 	
-	void	init(HWND hListView, HWND hDescription, int nVersionColumns, VERSIONCOLUMN columns[]);
+	void	init(HWND hListView, HWND hDescription, int nVersionColumns, VERSIONCOLUMN columns[], bool displayUpdateDesc = false);
 	void	setList(PluginListContainer &list);
 
 	void    removeSelected();
@@ -63,6 +63,7 @@ private:
 
 	int _nVersionColumns;
 	VERSIONCOLUMN* _columns;
+	bool _displayUpdateDesc;
 
 	enum LISTMODE {
 		LISTMODE_LIST,

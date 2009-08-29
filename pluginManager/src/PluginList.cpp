@@ -48,8 +48,8 @@ typedef BOOL (__cdecl * PFUNCISUNICODE)();
 
 
 PluginList::PluginList(void)
+: _variableHandler(NULL)
 {
-	_variableHandler = NULL;
 	_hListsAvailableEvent = CreateEvent(
 			NULL,				//   LPSECURITY_ATTRIBUTES
 			TRUE,				//   bManualReset
@@ -62,6 +62,8 @@ PluginList::~PluginList(void)
 {
 	if (_variableHandler)
 		delete _variableHandler;
+
+	clearPluginList();
 }
 
 void PluginList::init(NppData *nppData)
@@ -103,10 +105,8 @@ void PluginList::addPluginNames(TiXmlElement* pluginNamesElement)
 
 BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 {
-	/*int len = _tcslen(filename) + 2;
-	char *cFilename = new char[len];
-	wcstombs(cFilename, filename, len);
-	*/
+	clearPluginList();
+
 	TiXmlDocument doc(filename);
 	
 	doc.LoadFile();
@@ -252,9 +252,13 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 				if (latestUpdateElement && latestUpdateElement->FirstChild())
 					plugin->setLatestUpdate(latestUpdateElement->FirstChild()->Value());
 
+				// Check stability, default to "Good"
 				TiXmlElement *stabilityElement = pluginNode->FirstChildElement(_T("stability"));
 				if (stabilityElement && stabilityElement->FirstChild())
 					plugin->setStability(stabilityElement->FirstChild()->Value());
+				else
+					plugin->setStability(_T("Good"));
+
 
 				if (available)
 					_plugins[plugin->getName()] = plugin;
@@ -385,9 +389,8 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 						plugin->setInstalledVersionFromHash(hash);
 					}
 				
-					if (plugin->getVersion() == plugin->getInstalledVersion())
-						_installedPlugins.push_back(plugin);
-					else if (plugin->getVersion() > plugin->getInstalledVersion())
+					if (plugin->getInstalledVersion().getIsBad() 
+						|| plugin->getVersion() > plugin->getInstalledVersion())
 						_updateablePlugins.push_back(plugin);
 					else 
 						_installedPlugins.push_back(plugin);
@@ -413,7 +416,10 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 		while (iter != _plugins.end())
 		{
 			if (!iter->second->isInstalled())
-				_availablePlugins.push_back(iter->second);
+			{
+				if (g_options.showUnstable || iter->second->getStability() == _T("Good"))
+					_availablePlugins.push_back(iter->second);
+			}
 			++iter;
 		}
 
@@ -690,6 +696,19 @@ void PluginList::downloadList()
 	
 }
 
+void PluginList::reparseFile(const tstring& pluginsListFilename)
+{
+	// Parse it
+	parsePluginFile(pluginsListFilename.c_str());
+	
+	// Check for what is installed
+	TCHAR nppDirectory[MAX_PATH];
+	::SendMessage(_nppData->_nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDirectory));
+
+	checkInstalledPlugins(nppDirectory);
+}
+
+
 TiXmlDocument* PluginList::getGpupDocument(const TCHAR* filename)
 {
 	TiXmlDocument* forGpupDoc = new TiXmlDocument();
@@ -921,7 +940,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		forGpupDoc->SaveFile(gpupFile.c_str());
 		delete forGpupDoc;
 
-		int restartNow = ::MessageBox(hMessageBoxParent, _T("Some installation steps still need to be completed.  Notepad++ needs to be restarted in order to complete these steps.  If you restart later, the steps will not be completed.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
+		int restartNow = ::MessageBox(hMessageBoxParent, _T("Some installation steps still need to be completed.  Notepad++ needs to be restarted in order to complete these steps.  If you restart later, you will be prompted again.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 		if (restartNow == IDYES)
 		{
 			
@@ -1000,7 +1019,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 
 	progressDialog->close();
 
-	int restartNow = ::MessageBox(hMessageBoxParent, _T("Notepad++ needs to be restarted in order to complete the removal.  If you restart later, the steps will not be completed.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
+	int restartNow = ::MessageBox(hMessageBoxParent, _T("Notepad++ needs to be restarted in order to complete the removal.  If you restart later, you will be prompted again.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 	if (restartNow == IDYES)
 	{
 		
@@ -1093,5 +1112,21 @@ UINT PluginList::removeThreadProc(LPVOID param)
 	delete ip;
 
 	return 0;
+}
+
+void PluginList::clearPluginList()
+{
+	PluginContainer::iterator iter = _plugins.begin();
+	while (iter != _plugins.end())
+	{
+		delete iter->second;
+		iter++;
+	}
+
+	_plugins.clear();
+	_installedPlugins.clear();
+	_updateablePlugins.clear();
+	_availablePlugins.clear();
+	_pluginRealNames.clear();
 }
 

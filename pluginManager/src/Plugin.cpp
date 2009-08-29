@@ -33,9 +33,8 @@ using namespace boost;
 
 
 Plugin::Plugin(void)
+: _isInstalled(FALSE), _detailsAdded(FALSE), _updateDetailsAdded(FALSE)
 {
-	_isInstalled = FALSE;
-	_detailsAdded = FALSE;
 }
 
 Plugin::~Plugin(void)
@@ -134,7 +133,13 @@ void Plugin::setInstalledVersionFromHash(const tstring &hash)
 tstring& Plugin::getDescription()
 {
 	if (!_detailsAdded)
-	{		
+	{
+		if (_stability != _T("Good"))
+		{
+			_description.append(_T("\r\nStability: "));
+			_description.append(_stability);
+		}
+
 		if (!_author.empty())
 		{
 			_description.append(_T("\r\nAuthor: "));
@@ -161,6 +166,47 @@ tstring& Plugin::getDescription()
 	}
 
 	return _description;
+}
+
+tstring& Plugin::getUpdateDescription()
+{
+	if (!_updateDetailsAdded)
+	{
+		if (isInstalled() && _installedVersion.getIsBad())
+		{
+			_updateDescription.append(_T("The version of this plugin that is installed has been marked as unstable.  "));
+			if (!_badVersionMap[_installedVersion].empty())
+			{
+				_updateDescription.append(_badVersionMap[_installedVersion]);
+			}
+			_updateDescription.append(_T("\r\n"));
+		}
+
+		if (!_latestUpdate.empty())
+		{
+			
+			_updateDescription.append(_T("Latest update: "));
+			_updateDescription.append(_latestUpdate);
+			_updateDescription.append(_T("\r\n"));
+		}
+
+		if (_stability != _T("Good"))
+		{
+			_updateDescription.append(_T("Stability: "));
+			_updateDescription.append(_stability);
+			_updateDescription.append(_T("\r\n"));
+		}
+
+		// If there's nothing, just add the description
+		if (_updateDescription.empty())
+		{
+			_updateDescription.append(_description);
+		}
+
+		_updateDetailsAdded = true;
+	}
+
+	return _updateDescription;
 }
 
 tstring& Plugin::getFilename()

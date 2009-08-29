@@ -35,6 +35,7 @@ public:
 
 	void init(NppData *nppData);
 	void downloadList();
+	void reparseFile(const tstring& pluginsListFilename);
 
 	BOOL parsePluginFile(CONST TCHAR *filename);
 	BOOL checkInstalledPlugins(TCHAR *nppDirectory);
@@ -112,5 +113,6 @@ private:
 	static UINT installThreadProc(LPVOID param);
 	static UINT removeThreadProc(LPVOID param);
 
+	void clearPluginList();
 	
 };

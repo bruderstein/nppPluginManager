@@ -701,6 +701,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\resource1.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\tstring.h"
 				>
 			</File>
@@ -740,6 +744,10 @@
 			>
 			<File
 				RelativePath="..\..\src\PluginManager.rc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\version.rc"
 				>
 			</File>
 		</Filter>

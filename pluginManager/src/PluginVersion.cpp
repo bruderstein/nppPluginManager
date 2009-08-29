@@ -269,15 +269,7 @@ void PluginVersion::parseString(const TCHAR *version)
 
 int PluginVersion::compare(const PluginVersion &lhs, const PluginVersion &rhs) const
 {
-	// Override the result if one side is bad and the other isn't.  
-	// A good plugin is always better than a bad one ;-)
-	if (lhs._isBad != rhs._isBad)
-	{
-		if (lhs._isBad && !rhs._isBad)
-			return -1;
-		if (!lhs._isBad && rhs._isBad)
-			return 1;
-	}
+
 
 	int difference = lhs._major - rhs._major;
 	if (difference != 0)

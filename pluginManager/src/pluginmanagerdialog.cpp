@@ -204,7 +204,7 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 			PluginListView::VERSIONCOLUMN columns[2];
 			columns[0] = PluginListView::VERSION_INSTALLED;
 			columns[1] = PluginListView::VERSION_AVAILABLE;
-			dlg->_updatesListView.init(dlg->_tabs[TAB_UPDATES].hListView, dlg->_tabs[TAB_UPDATES].hDescription, 2, columns);
+			dlg->_updatesListView.init(dlg->_tabs[TAB_UPDATES].hListView, dlg->_tabs[TAB_UPDATES].hDescription, 2, columns, true);
 			dlg->_updatesListView.setMessage(_T("Downloading plugin list..."));
 			return TRUE;
 		}
@@ -444,8 +444,19 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 				case IDC_SETTINGS:
 				{
 					SettingsDialog settingsDlg;
-
+					BOOL oldShowUnstable = g_options.showUnstable;
 					settingsDlg.doModal(_hSelf);
+					if (g_options.showUnstable != oldShowUnstable)
+					{
+						TCHAR pluginConfig[MAX_PATH];
+						::SendMessage(_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
+	
+
+						tstring pluginsListFilename(pluginConfig);
+						pluginsListFilename.append(_T("\\PluginManagerPlugins.xml"));
+						_pluginList->reparseFile(pluginsListFilename);
+						populateLists(this);
+					}
 					return TRUE;
 				}
 				case IDOK :
@@ -633,7 +644,14 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 		}
 	}
 
+	populateLists(dlg);
+	
 
+	_endthread();
+}
+
+void PluginManagerDialog::populateLists(PluginManagerDialog* dlg)
+{
 	// Show the lists
 	PluginListContainer availablePlugins = dlg->_pluginList->getAvailablePlugins();
 	if (availablePlugins.empty())
@@ -659,8 +677,6 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 		dlg->_updatesListView.setList(updatesPlugins);
 		dlg->_updatesListView.selectAll();
 	}
-
-	_endthread();
 }
 
 

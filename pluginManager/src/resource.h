@@ -95,7 +95,6 @@
 #define SORT_GERMAN_PHONE_BOOK          0x1
 #define SORT_HUNGARIAN_TECHNICAL        0x1
 #define SORT_GEORGIAN_MODERN            0x1
-#define VS_VERSION_INFO                 1
 #define VFFF_ISSHAREDFILE               0x0001
 #define VFF_CURNEDEST                   0x0001
 #define VIFF_FORCEINSTALL               0x0001
@@ -551,7 +550,6 @@
 #define IDD_PLUGINMANAGER_DLG           101
 #define VK_NUMPAD6                      0x66
 #define IDD_DIALOG1                     102
-#define IDD_ABOUT_DLG                   102
 #define VK_NUMPAD7                      0x67
 #define IDD_TABINSTALLED                103
 #define VK_NUMPAD8                      0x68
@@ -916,12 +914,12 @@
 #define IDC_PROXYPORT                   1017
 #define IDC_NOTIFY                      1018
 #define IDC_NOTIFY2                     1019
+#define IDC_SHOWUNSTABLE                1019
 #define IDC_IGNORE                      1020
 #define IDC_BUTTON3                     1021
 #define IDC_REINSTALL                   1021
 #define IDC_BUTTON2                     1022
 #define CF_GDIOBJLAST                   0x03FF
-#define IDC_EDIT2                       1023
 #define IDC_UPDATEDESC                  1023
 #define WM_USER                         0x0400
 #define WVR_VALIDRECTS                  0x0400

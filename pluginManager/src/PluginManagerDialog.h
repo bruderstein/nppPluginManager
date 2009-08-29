@@ -118,6 +118,7 @@ private:
 
 	/* Threaded proc to download the plugin list and populate the views */
 	static void downloadAndPopulate(PVOID pvoid);
+	static void populateLists(PluginManagerDialog* dlg);
 
 	/* Threaded procs to install plugins from a given list */
 	static UINT installThreadProc(LPVOID param);

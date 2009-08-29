@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <boost/shared_ptr.hpp>
 
 #include "PluginManager.h"
+#include "PluginManagerVersion.h"
 #include "AboutDialog.h"
 #include "PluginManagerDialog.h"
 #include "NotifyUpdatesDialog.h"
@@ -93,7 +94,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 			funcItem[0]._pShKey = NULL;
 			funcItem[1]._pShKey = NULL;
 
-			DownloadManager::setUserAgent(_T("Notepad++/Plugin-Manager;v") _T(VERSION_STRING));
+			DownloadManager::setUserAgent(_T("Notepad++/Plugin-Manager;v") _T(PLUGINMANAGERVERSION_STRING));
 			break;
 		}	
 		case DLL_PROCESS_DETACH:
@@ -221,6 +222,8 @@ void loadSettings(void)
 
 	g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
 
+	g_options.showUnstable = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_SHOWUNSTABLE, 1, iniFilePath);
+
 	TCHAR tmpLastCheck[20];
 	::GetPrivateProfileString(SETTINGS_GROUP, KEY_LASTCHECK, _T("0"), tmpLastCheck, 20, iniFilePath);
 
@@ -260,6 +263,9 @@ void saveSettings(void)
 
 	_itot_s(g_options.notifyUpdates, temp, 16, 10);
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_NOTIFYUPDATES, temp, iniFilePath);
+
+	_itot_s(g_options.showUnstable, temp, 16, 10);
+	::WritePrivateProfileString(SETTINGS_GROUP, KEY_SHOWUNSTABLE, temp, iniFilePath);
 
 }
 
