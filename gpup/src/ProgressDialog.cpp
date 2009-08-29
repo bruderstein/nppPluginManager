@@ -62,7 +62,7 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		}
 		default:
 		{
-			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(static_cast<LONG_PTR>(::GetWindowLongPtr(hWnd, GWL_USERDATA)));
 			return dlg->runDlgProc(hWnd, message, wParam, lParam);
 		}
 	}
