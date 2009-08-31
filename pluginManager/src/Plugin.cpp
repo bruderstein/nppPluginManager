@@ -99,6 +99,7 @@ void Plugin::setSourceUrl(const TCHAR* sourceUrl)
 void Plugin::setLatestUpdate(const TCHAR* latestUpdate)
 {
 	_latestUpdate = latestUpdate;
+	replaceNewlines(_latestUpdate);
 }
 
 void Plugin::setStability(const TCHAR* stability)

@@ -46,7 +46,11 @@ void VariableHandler::replaceVariables(tstring &source)
 	{
 		startPos = source.find(_T('$'), startPos);
 		if (startPos != tstring::npos)
+		{
 			endPos = source.find(_T('$'), startPos + 1);
+			if (endPos == tstring::npos)
+				break;
+		}
 
 		if (endPos != tstring::npos)
 		{
@@ -55,6 +59,7 @@ void VariableHandler::replaceVariables(tstring &source)
 			startPos = startPos + varValue.size();
 			endPos = tstring::npos;
 		}
+
 
 	} while(startPos != tstring::npos);
 
