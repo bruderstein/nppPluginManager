@@ -27,8 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tstring.h"
 
 class VariableHandler;
-
-#define VALIDATE_BASEURL          _T("http://npppm.brotherstone.co.uk/validate.php?md5=")
+#define VALIDATE_BASEURL          _T("http://notepad-plus.sourceforge.net/commun/pluginManager/validate.php?md5=")
 #define VALIDATE_RESULT_OK        "ok"
 #define VALIDATE_RESULT_UNKNOWN   "unknown"
 #define VALIDATE_RESULT_BANNED    "banned"
