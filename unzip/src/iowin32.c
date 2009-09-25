@@ -23,7 +23,7 @@
 
 voidpf ZCALLBACK win32_open_file_func OF((
    voidpf opaque,
-   const char* filename,
+   const TCHAR* filename,
    int mode));
 
 uLong ZCALLBACK win32_read_file_func OF((
@@ -64,7 +64,7 @@ typedef struct
 
 voidpf ZCALLBACK win32_open_file_func (opaque, filename, mode)
    voidpf opaque;
-   const char* filename;
+   const TCHAR* filename;
    int mode;
 {
     const char* mode_fopen = NULL;

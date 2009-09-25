@@ -417,15 +417,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\src\ioapi.h"
+				RelativePath="..\..\include\ioapi.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\iowin32.h"
+				RelativePath="..\..\include\iowin32.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\unzip.h"
+				RelativePath="..\..\include\unzip.h"
 				>
 			</File>
 		</Filter>

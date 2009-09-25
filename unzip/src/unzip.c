@@ -395,7 +395,7 @@ local uLong unzlocal_SearchCentralDir(pzlib_filefunc_def,filestream)
        of this unzip package.
 */
 extern unzFile ZEXPORT unzOpen2 (path, pzlib_filefunc_def)
-    const char *path;
+    const TCHAR *path;
     zlib_filefunc_def* pzlib_filefunc_def;
 {
     unz_s us;
@@ -498,7 +498,7 @@ extern unzFile ZEXPORT unzOpen2 (path, pzlib_filefunc_def)
 
 
 extern unzFile ZEXPORT unzOpen (path)
-    const char *path;
+    const TCHAR *path;
 {
     return unzOpen2(path, NULL);
 }

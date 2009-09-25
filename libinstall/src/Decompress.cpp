@@ -26,17 +26,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/DirectoryUtil.h"
 
 #include "unzip.h"
-
+#include "iowin32.h"
 
 using namespace std;
 using namespace boost;
 
 BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 {
-	string zip;
-	setString(zipFile, zip);
-	
-	unzFile hZip = unzOpen(zip.c_str());
+
+	zlib_filefunc_def filefunc;
+	fill_win32_filefunc(&filefunc);
+	unzFile hZip = unzOpen2(zipFile.c_str(), &filefunc);
 	
 	if (unzGoToFirstFile(hZip) != UNZ_OK)
 	{
@@ -54,20 +54,23 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 		}
 
 		char filename[MAX_PATH];
+
 		if (unzGetCurrentFileInfo(hZip, NULL, filename, MAX_PATH, NULL, 0, NULL, 0) != UNZ_OK)
 		{
 			unzClose(hZip);
 			return FALSE;
 		}
 
+		shared_ptr<TCHAR> tFilename = WcharMbcsConverter::char2tchar(filename);
+	
 
-		if (filename[strlen(filename) - 1] == '/')
+		if ((tFilename.get())[_tcslen(tFilename.get()) - 1] == _T('/'))
 		{
-			string outputDir;
-			setString(destDir, outputDir);
-			outputDir.append(filename);
+			tstring outputDir(destDir);
+			
+			outputDir.append(tFilename.get());
 			outputDir.erase(outputDir.size() - 1);
-			::CreateDirectoryA(outputDir.c_str(), NULL);
+			::CreateDirectory(outputDir.c_str(), NULL);
 			unzCloseCurrentFile(hZip);
 		}
 		else
@@ -77,12 +80,11 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 			int bytesRead;
 			
 			FILE *fp = NULL;
-			string outputFilename;
-
-			setString(destDir, outputFilename);
-			outputFilename.append(filename);
+			tstring outputFilename (destDir);
 			
-			string::size_type pos = outputFilename.find_first_of(_T('/'));
+			outputFilename.append(tFilename.get());
+			
+			tstring::size_type pos = outputFilename.find_first_of(_T('/'));
 			// Replace all the forward slashes with backward ones 
 			while (pos != string::npos)
 			{
@@ -94,18 +96,17 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 			// Now grab the directory name of the output
 			pos = outputFilename.find_last_of(_T('\\'));
 
-			if (pos != string::npos)
+			if (pos != tstring::npos)
 			{
 				// If it doesn't exist, create it (and its parents)
-				string outputDir = string(outputFilename, 0, pos);
-				if (!::PathFileExistsA(outputDir.c_str()))
+				tstring outputDir = tstring(outputFilename, 0, pos);
+				if (!::PathFileExists(outputDir.c_str()))
 				{
-					shared_ptr<TCHAR> outputDirToCreate = WcharMbcsConverter::char2tchar(outputDir.c_str());
-					DirectoryUtil::createDirectories(outputDirToCreate.get());
+					DirectoryUtil::createDirectories(outputDir.c_str());
 				}
 			}
 
-			if (fopen_s(&fp, outputFilename.c_str(), "wb") == 0)
+			if (_tfopen_s(&fp, outputFilename.c_str(), _T("wb")) == 0)
 			{
 				do
 				{

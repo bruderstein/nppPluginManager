@@ -23,6 +23,8 @@ distribution.
 */
 
 #include <ctype.h>
+#include <tchar.h>
+
 #include "tinyxml/tinyxml.h"
 
 #ifdef TIXML_USE_STL
@@ -92,7 +94,7 @@ void TiXmlBase::PutString( const TIXML_STRING& str, TIXML_STRING* outString )
 			// Easy pass at non-alpha/numeric/symbol
 			// 127 is the delete key. Below 32 is symbolic.
 			TCHAR buf[ 32 ];
-			wsprintf( buf, TEXT("&#x%04X;"), (unsigned) ( c & 0xffff ) );
+			wsprintf( buf, TEXT("&#x%04X;"), ((_TUCHAR)c) & 0xffff );
 			outString->append( buf, lstrlen( buf ) );
 			++i;
 		}

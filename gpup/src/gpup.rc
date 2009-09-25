@@ -100,8 +100,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,2,0
- PRODUCTVERSION 0,9,2,0
+ FILEVERSION 0,9,2,2
+ PRODUCTVERSION 0,9,2,2
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -118,12 +118,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "A generic(ish) plugin updater, built initially for Notepad++"
             VALUE "FileDescription", "gpup"
-            VALUE "FileVersion", "0, 9, 2, 0"
+            VALUE "FileVersion", "0, 9, 2, 2"
             VALUE "InternalName", "gpup"
             VALUE "LegalCopyright", "Copyright (C) 2009 Dave Brotherstone"
             VALUE "OriginalFilename", "gpup.exe"
             VALUE "ProductName", " gpup"
-            VALUE "ProductVersion", "0, 9, 2, 0"
+            VALUE "ProductVersion", "0, 9, 2, 2"
         END
     END
     BLOCK "VarFileInfo"

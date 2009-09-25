@@ -229,16 +229,18 @@ const TCHAR* TiXmlBase::GetEntity( const TCHAR* p, TCHAR* value )
 	// Handle the &#x entities.
 	if (generic_strncmp( TEXT("&#x"), p, 3 ) == 0)
 	{
+
 		const TCHAR* end = generic_strchr(p+3, TEXT(';'));
 		if (end && end - p <= 3 + 4)
 		{
-			TCHAR val;
+			int val;
 			if (generic_sscanf(p+3, TEXT("%x"), &val) == 1)
 			{
-				*value = val;
+				*value = (TCHAR)val;
 				return end + 1;
 			}
 		}
+
 	}
 
 	// Now try to match it.
