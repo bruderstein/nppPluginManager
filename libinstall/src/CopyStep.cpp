@@ -172,121 +172,126 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 				dest.append(foundData.cFileName);
 			}
 			
-			statusString = _T("Copying ");
-			statusString.append(foundData.cFileName);
-			setStatus(statusString.c_str());
-
-
-			src = fromDir;
-			src.append(foundData.cFileName);
-			copy = false;
-			if (_validate)
+			// Exclude the . and .. directories
+			if (_tcscmp(foundData.cFileName, _T(".")) 
+				&& _tcscmp(foundData.cFileName, _T("..")))
 			{
-				switch(Validate(src))
+				statusString = _T("Copying ");
+				statusString.append(foundData.cFileName);
+				setStatus(statusString.c_str());
+
+
+				src = fromDir;
+				src.append(foundData.cFileName);
+				copy = false;
+				if (_validate)
 				{
-				
-					case VALIDATE_OK:
-						copy = true;
-						break;
-
-					case VALIDATE_UNKNOWN:
-						{
-							tstring msg(_T("It has not been possible to validate the integrity of '"));
-							msg.append(foundData.cFileName);
-							msg.append(_T("' needed to install or update a plugin.  Do you want to copy this file anyway (not recommended)?"));
-							
-							int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
-							
-							if (userChoice == IDYES)
-							{
-								copy = true;
-							}
-							else
-							{
-								status = STEPSTATUS_FAIL;
-								copy = false;
-							}
+					switch(Validate(src))
+					{
+					
+						case VALIDATE_OK:
+							copy = true;
 							break;
+
+						case VALIDATE_UNKNOWN:
+							{
+								tstring msg(_T("It has not been possible to validate the integrity of '"));
+								msg.append(foundData.cFileName);
+								msg.append(_T("' needed to install or update a plugin.  Do you want to copy this file anyway (not recommended)?"));
+								
+								int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
+								
+								if (userChoice == IDYES)
+								{
+									copy = true;
+								}
+								else
+								{
+									status = STEPSTATUS_FAIL;
+									copy = false;
+								}
+								break;
+							}
+
+
+						case VALIDATE_BANNED:
+							{
+								tstring msg(_T("'"));
+								msg.append(foundData.cFileName);
+								msg.append(_T("' has been identified as unstable, incorrect or dangerous.  It is NOT recommended you install this file.  Do you want to install this file anyway?"));
+								
+								int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
+								
+								if (userChoice == IDYES)
+								{
+									copy = true;
+								}
+								else
+								{
+									status = STEPSTATUS_FAIL;
+									copy = false;
+								}
+								break;
+							}
+							
+
+
+					}
+				}
+				else 
+					copy = true;
+
+				if (copy)
+				{
+					if (_backup && ::PathFileExists(dest.c_str()))
+					{
+						tstring baseBackupPath(dest);
+						baseBackupPath.append(_T(".backup"));
+						tstring backupPath(baseBackupPath);
+						int counter = 1;
+						TCHAR buf[10];
+
+						// Keep checking the paths - if there's more than 500, tough.
+						while(::PathFileExists(backupPath.c_str()) && counter < 500)
+						{
+							++counter;
+							_itot_s(counter, buf, 10, 10);
+							backupPath = baseBackupPath;
+							backupPath.append(buf);
 						}
 
-
-					case VALIDATE_BANNED:
+						// If there's 500 backups, give it a silly name.
+						if (counter >= 500)
 						{
-							tstring msg(_T("'"));
-							msg.append(foundData.cFileName);
-							msg.append(_T("' has been identified as unstable, incorrect or dangerous.  It is NOT recommended you install this file.  Do you want to install this file anyway?"));
-							
-							int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
-							
-							if (userChoice == IDYES)
-							{
-								copy = true;
-							}
-							else
-							{
-								status = STEPSTATUS_FAIL;
-								copy = false;
-							}
-							break;
+							backupPath = baseBackupPath;
+							backupPath.append(_T("_too_many_backups"));
 						}
+
+						::CopyFile(dest.c_str(), backupPath.c_str(), FALSE);
+
+					}
+
+					if (!::CopyFile(src.c_str(), dest.c_str(), _failIfExists))
+					{
+						status = STEPSTATUS_NEEDGPUP;
+						// Add file to forGpup doc
 						
+						TiXmlElement* copy = new TiXmlElement(_T("copy"));
+						
+						copy->SetAttribute(_T("from"), src.c_str());
+						
+						if (_toDestination == TO_DIRECTORY)
+							copy->SetAttribute(_T("to"), _to.c_str());
+						else if (_toDestination == TO_FILE)
+							copy->SetAttribute(_T("toFile"), _toFile.c_str());
 
+						copy->SetAttribute(_T("replace"), _T("true"));
+						if (_backup)
+							copy->SetAttribute(_T("backup"), _T("true"));
+						
+						forGpup->LinkEndChild(copy);
 
-				}
-			}
-			else 
-				copy = true;
-
-			if (copy)
-			{
-				if (_backup && ::PathFileExists(dest.c_str()))
-				{
-					tstring baseBackupPath(dest);
-					baseBackupPath.append(_T(".backup"));
-					tstring backupPath(baseBackupPath);
-					int counter = 1;
-					TCHAR buf[10];
-
-					// Keep checking the paths - if there's more than 500, tough.
-					while(::PathFileExists(backupPath.c_str()) && counter < 500)
-					{
-						++counter;
-						_itot_s(counter, buf, 10, 10);
-						backupPath = baseBackupPath;
-						backupPath.append(buf);
 					}
-
-					// If there's 500 backups, give it a silly name.
-					if (counter >= 500)
-					{
-						backupPath = baseBackupPath;
-						backupPath.append(_T("_too_many_backups"));
-					}
-
-					::CopyFile(dest.c_str(), backupPath.c_str(), FALSE);
-
-				}
-
-				if (!::CopyFile(src.c_str(), dest.c_str(), _failIfExists))
-				{
-					status = STEPSTATUS_NEEDGPUP;
-					// Add file to forGpup doc
-					
-					TiXmlElement* copy = new TiXmlElement(_T("copy"));
-					
-					copy->SetAttribute(_T("from"), src.c_str());
-					
-					if (_toDestination == TO_DIRECTORY)
-						copy->SetAttribute(_T("to"), _to.c_str());
-					else if (_toDestination == TO_FILE)
-						copy->SetAttribute(_T("toFile"), _toFile.c_str());
-
-					copy->SetAttribute(_T("replace"), _T("true"));
-					if (_backup)
-						copy->SetAttribute(_T("backup"), _T("true"));
-					
-					forGpup->LinkEndChild(copy);
-
 				}
 			}
 		} while(status != STEPSTATUS_FAIL && ::FindNextFile(hFindFile, &foundData));

@@ -203,6 +203,20 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 					}
 				}
 
+
+
+				TiXmlElement *aliasesElement = pluginNode->FirstChildElement(_T("aliases"));
+				
+				if (aliasesElement)
+				{
+					TiXmlElement *aliasElement = aliasesElement->FirstChildElement(_T("alias"));
+					while(aliasElement)
+					{
+						_aliases[tstring(aliasElement->Attribute(_T("name")))] = plugin->getName();
+						aliasElement = (TiXmlElement *)aliasesElement->IterateChildren(aliasElement);
+					}
+				}
+
 				TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
 				
 				addInstallSteps(plugin, installElement);
@@ -362,6 +376,16 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 						{
 							knownPlugin = _plugins.find(realNameIter->second);
 						}
+					}
+				}
+
+				// If still unknown, check the aliases
+				if (knownPlugin == _plugins.end())
+				{
+					map<tstring, tstring>::iterator aliasIter = _aliases.find(pluginName);
+					if (aliasIter != _aliases.end())
+					{
+						knownPlugin = _plugins.find(aliasIter->second);
 					}
 				}
 

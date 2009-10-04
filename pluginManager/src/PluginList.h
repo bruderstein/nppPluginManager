@@ -82,6 +82,9 @@ private:
 
 	/* Hashes to real names, for plugins that dynamically report their names */
 	std::map<tstring, tstring> _pluginRealNames;
+	
+	/* Aliases of plugins with different names for different versions */
+	std::map<tstring, tstring> _aliases;
 
 	/* Lists of plugins */
 	PluginListContainer		_installedPlugins;
