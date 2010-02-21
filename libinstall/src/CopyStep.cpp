@@ -73,12 +73,13 @@ void CopyStep::replaceVariables(VariableHandler *variableHandler)
 ValidateStatus CopyStep::Validate(tstring& file)
 {
 	DownloadManager download;
+	
 	TCHAR localMD5[(MD5::HASH_LENGTH * 2) + 1];
 	MD5::hash(file.c_str(), localMD5, (MD5::HASH_LENGTH * 2) + 1);
 	tstring validateUrl = VALIDATE_BASEURL;
 	validateUrl.append(localMD5);
 	string validateResult;
-	if (download.getUrl(validateUrl.c_str(), validateResult, "", 0))
+	if (download.getUrl(validateUrl.c_str(), validateResult, _proxy.c_str(), _proxyPort))
 	{
 		if (validateResult == VALIDATE_RESULT_OK)
 			return VALIDATE_OK;
