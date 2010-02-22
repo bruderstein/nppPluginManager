@@ -118,12 +118,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "A generic(ish) plugin updater, built initially for Notepad++"
             VALUE "FileDescription", "gpup"
-            VALUE "FileVersion", "0, 9, 3, 0"
+            VALUE "FileVersion", "0, 9, 3, 1"
             VALUE "InternalName", "gpup"
             VALUE "LegalCopyright", "Copyright (C) 2009 Dave Brotherstone"
             VALUE "OriginalFilename", "gpup.exe"
             VALUE "ProductName", " gpup"
-            VALUE "ProductVersion", "0, 9, 3, 0"
+            VALUE "ProductVersion", "0, 9, 3, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -147,3 +147,5 @@ END
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
+#define MANIFEST_RESOURCE_ID 1
+MANIFEST_RESOURCE_ID RT_MANIFEST "gpup.exe.manifest"

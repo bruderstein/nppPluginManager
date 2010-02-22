@@ -3,7 +3,7 @@ This file is part of Plugin Template for Notepad++
 Copyright (C)2006 Jens Lorenz <jens.plugin.npp@gmx.de>
 
 Modifications for Plugin Manager Plugin for Notepad++
-Copyright (C)2009 Dave Brotherstone <davegb@pobox.com>
+Copyright (C)2009-2010 Dave Brotherstone <davegb@pobox.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
