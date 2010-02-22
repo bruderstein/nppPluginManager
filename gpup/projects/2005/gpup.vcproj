@@ -72,6 +72,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\src\gpup.exe.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -303,6 +304,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="..\..\src\gpup.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -599,6 +601,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\src\gpup.exe.manifest"
+			>
+		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

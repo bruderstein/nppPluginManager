@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+	<assemblyIdentity version="1.0.0.0"
+	   processorArchitecture="X86"
+	   name="gpup"
+	   type="win32"/>
+	<description>Description of your application</description>
+	<!-- Identify the application security requirements. -->
+	<mssv2:trustInfo xmlns:mssv2="urn:schemas-microsoft-com:asm.v2">
+		<mssv2:security>
+			<mssv2:requestedPrivileges>
+				<mssv2:requestedExecutionLevel
+				  level="requireAdministrator"
+				  uiAccess="false"/>
+			</mssv2:requestedPrivileges>
+		</mssv2:security>
+	</mssv2:trustInfo>
+</assembly>
