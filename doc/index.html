@@ -18,6 +18,10 @@ Plugin Manager is a plugin for Notepad++ that allows you to install, update and 
 from Notepad++.  A centrally hosted XML file holds the list of plugins, that the plugin manager 
 downloads and processes against the list of installed plugins.
 <br/><br/>
+<font color="#F00000">Important note for Vista / Windows 7: </font>
+In order to update the plugin manager from 0.9.3 to 0.9.3.1 (which fixes the issue with 
+Win7 and Vista), you need to run Notepad++ as administrator, update plugin manager, then 
+everything will run properly under a normal user.
 <a name="features"></a>
 <h3>Features</h3>
 
@@ -44,6 +48,19 @@ downloads and processes against the list of installed plugins.
 <br/><br/>
 <a name="changes"></a>
 <h3>Changes</h3>
+0.9.3.1
+<br><ul>
+<li>Fixed issue with Windows 7 / Vista, so you now get a UAC prompt on restart of N++
+<li>Fixed issue with Proxy Server settings being ignored when checking the MD5s of downloaded files
+</ul>
+<br/>
+0.9.3
+<br><ul>
+<li>Fixed issue with extended characters in the Notepad++ path, or the user's home directory
+<li>Added aliases entry to XML file, so a plugin can be known by different names in different versions
+<li>Fixed an issue copying all files from a plugin's zip file (i.e. a *.* copy)
+</ul>
+<br/>
 0.9.2.1
 <br><ul>
 <li>Fixed a minor issue if an variable was badly used in the XML
@@ -103,21 +120,36 @@ from the update tab (or when you get the notification that the update has happen
 <br/><br/>
 <a name="download"></a>
 <h3>Download links</h3>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_UNI.zip</a>
+Official home: <a href="http://sourceforge.net/projects/npp-plugins/files">http://sourceforge.net/projects/npp-plugins/files</a>
 <br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_ANSI.zip</a>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_UNI.zip</a>
+<br/>
+ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_ANSI.zip</a>
 <br/>
 Source code is on github: <a href="http://github.com/davegb3/nppPluginManager">http://github.com/davegb3/nppPluginManager</a>
 <br/>
 MD5 Sums:
-<br/>877d04a24f0ef7aa19963aee1f9433a6 *PluginManager_0.9.2.1_ANSI.zip
-<br/>53deafa0c50d62a0f510c4f18db21e5f *PluginManager_0.9.2.1_UNI.zip
+<br/>c5dda18f55bfad2b168a7313d7e98532  PluginManager_0.9.3.1_ANSI.zip
+<br/>b32ae069e7ee1498f8b6e6c353c33a09  PluginManager_0.9.3.1_UNI.zip
+
 <br/><br/>
 <u>Older versions</u>
-<br/><u>0.9.2</u>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_UNI.zip</a>
+<br/><u>0.9.3.0</u>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3_UNI.zip</a>
 <br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_ANSI.zip</a>
+ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3_ANSI.zip</a>
+<br/>
+
+<br/><u>0.9.2.1</u>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_UNI.zip</a>
+<br/>
+ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_ANSI.zip</a>
+<br/>
+
+<br/><u>0.9.2</u>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_UNI.zip</a>
+<br/>
+ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_ANSI.zip</a>
 <br/>
 <br/><u>0.9</u>
 Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_UNI.zip</a>
@@ -161,6 +193,7 @@ The following elements can be contained within the plugin element(all are option
  <li><b>badVersions</b>: Contains a list of unstable version numbers, that will always come below the latest version identified in unicodeVersion or ansiVersion tags.
  <br/><ul><li><b>version</b>: Attribute <b>number</b> identifies the version number as bad, attribute <b>report</b> is the status report, which is shown in the updates tab, and the notify window.</li></ul>
  </li>
+ <li><b>aliases</b>: A list of <b>alias</b> elements with a <b>name</b> attribute, identifying other names this plugin is known by.
  <li><b>install</b>: This is the set of install steps.
  <br/>The steps can be contained in &lt;ansi&gt; or &lt;unicode&gt; elements, which means 
  that the steps are only performed for the relevant version.  A step which is not inside a unicode
@@ -230,6 +263,9 @@ such s .h and .cpp :
 			&lt;version number=&quot;1.0&quot; md5=&quot;301c72341ba758b3cdfc8a56d576c7f0&quot; comment=&quot;ansi&quot;/&gt;
 			&lt;version number=&quot;1.0&quot; md5=&quot;5a19bd60aa18e4454f1c4a6432ae5a72&quot; comment=&quot;unicode&quot;/&gt;
 		&lt;/versions&gt;
+		&lt;aliases&gt;
+			&lt;alias name=&quot;Extension Switcher&quot; /&gt;
+		&lt;/aliases&gt;
 		&lt;install&gt;
 			&lt;download&gt;http://f0dder.dcmembers.com/npp_plugins/npp_plugins.zip&lt;/download&gt;
 			&lt;ansi&gt;
@@ -295,10 +331,35 @@ send me (davegb at pobox.com) your update, but ideally you can fork the plugins.
 from github, and send me a pull request, so I can merge your changes.  There are lots of videos
 and guides on github to get you started if you've not used it before.
 <br/><br/>
+We use the "next" and "live" branches.  Branch off the next branch to do your update, and send
+me a pull request.  I'll merge your changes and push them out in the next update.
+
+So it goes something like: (assuming you've got a github account or similar)
+<pre>
+git checkout -b myplugin_1.3 next
+[edit plugins.xml]
+git commit -m "Updated MyPlugin to version 1.3"
+git push origin myplugin_1.3
+
+[send pull request for myplugin_1.3]
+</pre>
+<br/><br/>
 Repository: <br/>
 <a href="http://github.com/davegb3/nppPlugins">http://github.com/davegb3/nppPlugins</a>
 <br/><br/>
-The current XML file is located <b><a href="http://notepad-plus.sourceforge.net/commun/pluginManager/plugins.xml">here</a></b>, if you want to check it out.
+It's obviously important to test that your XML modifications work, so for that we have a 
+testing version of the Plugin Manager.  This version allows you to override the 
+URL of the XML and MD5 file. Just set xmlurl and md5url settings in the PluginManager.ini.
+<br/>Note these are URLs, so you need to use something like
+<pre>
+xmlurl=file:///d:/work/npp/pluginsxml/plugins.xml
+md5url=file:///d:/work/npp/pluginsxml/plugins.md5.txt
+</pre>
+<br/>The testing version of the Plugin Manager is here:  <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_UNI.zip">Unicode</a> / <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_ANSI.zip">ANSI</a>
+<br/><br/>This is also a "debug" build, so if something goes wrong, you can step through it. - Let me know if you need the pdbs.
+<br/><font color="#F00000">If you've NOT tested your updates with this, then please let me know in the pull request,
+then I know I need to test it as well. - Thanks!</font>
+<br/><br/>The current XML file is located <b><a href="http://notepad-plus.sourceforge.net/commun/pluginManager/plugins.xml">here</a></b>, if you want to check it out.
 <hr/>
 
 <a name="planned"></a>
@@ -323,7 +384,7 @@ a comment to the Plugin Development forum, or usually find me in #notepad++ on f
 <h3>Credits</h3>
 I must say a big thank you to Joce, who helped a lot in the development of this plugin.  
 <br/>The good people on #notepad++ (especially joce and almostautomated) who've helped out with ideas and code reviews
-<br/>Don Ho, for bringing us this great editor, and providing such a neat plugin architecture that developers can easily add stuff
+<br/>Don Ho and all the contributors, for bringing us this great editor, and providing such a neat plugin architecture that developers can easily add stuff
 </body>
 </html>
 
