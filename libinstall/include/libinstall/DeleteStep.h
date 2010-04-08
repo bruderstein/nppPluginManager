@@ -29,16 +29,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class DeleteStep : public InstallStep
 {
 public:
-	DeleteStep(const TCHAR* file);
+	DeleteStep(const TCHAR* file, BOOL isDirectory);
 	~DeleteStep() {};
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress, const HWND windowParent);
 
+	void replaceVariables(VariableHandler *variableHandler);
+
 private:
+	BOOL removeDirectory(const TCHAR* directory);
+
 	tstring	_file;
-	
+	BOOL _isDirectory;
 };
 
 #endif

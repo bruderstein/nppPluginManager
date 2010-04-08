@@ -20,19 +20,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <tchar.h>
 #include <string.h>
 #include <windows.h>
+#include <shlwapi.h>
 #include <boost/function.hpp>
 #include "libinstall/InstallStep.h"
 #include "libinstall/DeleteStep.h"
-
+#include "libinstall/VariableHandler.h"
 #include "libinstall/tstring.h"
+
+
 
 using namespace std;
 
 
-DeleteStep::DeleteStep(const TCHAR *file)
+DeleteStep::DeleteStep(const TCHAR *file, BOOL isDirectory)
 {
 	_file = file;
+	_isDirectory = isDirectory;
 }
+
 
 StepStatus DeleteStep::perform(tstring& /*basePath*/, TiXmlElement* forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
@@ -46,7 +51,16 @@ StepStatus DeleteStep::perform(tstring& /*basePath*/, TiXmlElement* forGpup,
 	setStatus(statusString.c_str());
 
 
-	BOOL deleteSuccess = ::DeleteFile(_file.c_str());
+	BOOL deleteSuccess = FALSE;
+	
+	if (_isDirectory)
+	{
+		deleteSuccess = removeDirectory(_file.c_str());
+	}
+	else
+	{
+		deleteSuccess = ::DeleteFile(_file.c_str());
+	}
 
 	if (!deleteSuccess)
 	{
@@ -56,7 +70,7 @@ StepStatus DeleteStep::perform(tstring& /*basePath*/, TiXmlElement* forGpup,
 				TiXmlElement* deleteElement = new TiXmlElement(_T("delete"));
 				
 				deleteElement->SetAttribute(_T("file"), _file.c_str());
-				
+				deleteElement->SetAttribute(_T("isDirectory"), _isDirectory ? _T("true") : _T("false"));
 				forGpup->LinkEndChild(deleteElement);
 
 	}
@@ -64,4 +78,58 @@ StepStatus DeleteStep::perform(tstring& /*basePath*/, TiXmlElement* forGpup,
 		status = STEPSTATUS_SUCCESS;
 
 	return status;
+}
+
+
+
+void DeleteStep::replaceVariables(VariableHandler *variableHandler)
+{
+	if (variableHandler)
+	{
+		variableHandler->replaceVariables(_file);
+	}
+
+}
+
+
+BOOL DeleteStep::removeDirectory(const TCHAR* directory)
+{
+	tstring dir = directory;
+	tstring baseDir = directory;
+	baseDir.append(_T("\\"));
+
+	dir.append(_T("\\*"));
+	WIN32_FIND_DATA foundData;
+	
+	HANDLE hFind = ::FindFirstFile(dir.c_str(), &foundData);
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		do 
+		{
+			if (foundData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				if (_tcscmp(foundData.cFileName, _T(".")) && _tcscmp(foundData.cFileName, _T("..")))
+				{
+					tstring thisDir(baseDir);
+					thisDir.append(foundData.cFileName);
+					removeDirectory(thisDir.c_str());
+					
+				}
+			}
+			else
+			{
+				tstring thisFile(baseDir);
+				thisFile.append(foundData.cFileName);
+
+				::DeleteFile(thisFile.c_str());
+			}
+		} while(::FindNextFile(hFind, &foundData));
+		
+		::FindClose(hFind);
+	}
+
+	::RemoveDirectory(directory);
+
+	return TRUE;
+
 }

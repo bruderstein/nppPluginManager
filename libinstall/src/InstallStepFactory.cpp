@@ -87,15 +87,16 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, const 
 		if (!tFile)
 			return installStep;
 
-		tstring file;
-
-		file = tFile;
-		if (_variableHandler)
+		BOOL isDirectory = FALSE;
+		
+		const TCHAR *tIsDir = element->Attribute(_T("isDirectory"));
+		
+		if (tIsDir && !_tcsicmp(tIsDir, _T("true")))
 		{
-			_variableHandler->replaceVariables(file);
+			isDirectory = TRUE;
 		}
 
-		installStep.reset(new DeleteStep(file.c_str()));
+		installStep.reset(new DeleteStep(tFile, isDirectory));
 	}
 
 	return installStep;

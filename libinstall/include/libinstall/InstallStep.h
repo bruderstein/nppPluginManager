@@ -48,6 +48,11 @@ public:
 		boost::function<void(const int)> stepProgress,
 		const HWND /*windowParent */) { return STEPSTATUS_SUCCESS; };
 
+	virtual StepStatus remove(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
+		boost::function<void(const TCHAR*)> setStatus,
+		boost::function<void(const int)> stepProgress,
+		const HWND /*windowParent */) { return STEPSTATUS_SUCCESS; };
+
 	virtual void replaceVariables(VariableHandler* /*variableHandler*/) { };
 
 protected:

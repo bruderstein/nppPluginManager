@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="PluginManager"
 	ProjectGUID="{0A9F9D63-C282-4AE8-9F80-A6D5F541AD12}"
 	RootNamespace="PluginManager"
@@ -578,6 +578,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(OutDir)\$(TargetFileName) &quot;c:\program files (x86)\Notepad++\plugins&quot;"
 			/>
 		</Configuration>
 		<Configuration

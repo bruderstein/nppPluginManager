@@ -278,12 +278,23 @@ void Plugin::addInstallStep(shared_ptr<InstallStep> step)
 	_installSteps.push_back(step);
 }
 
+void Plugin::addRemoveStep(shared_ptr<InstallStep> step)
+{
+	_removeSteps.push_back(step);
+}
+
+
 
 size_t Plugin::getInstallStepCount()
 {
 	return _installSteps.size();
 }
 
+size_t Plugin::getRemoveStepCount()
+{
+	// Add 1 for removal of plugin dll file
+	return _removeSteps.size() + 1;
+}
 
 
 InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup, 
@@ -293,15 +304,52 @@ InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 									  const HWND windowParent,
 									  VariableHandler* variableHandler)
 {
+	
+
+	return runSteps(_installSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, windowParent, variableHandler);
+}
+
+
+InstallStatus Plugin::remove(tstring& basePath, TiXmlElement* forGpup, 
+									  boost::function<void(const TCHAR*)> setStatus,
+									  boost::function<void(const int)> stepProgress,
+									  boost::function<void()> stepComplete,
+									  const HWND windowParent,
+									  VariableHandler* variableHandler)
+{
+	
+	TiXmlElement* deleteElement = new TiXmlElement(_T("delete"));
+	
+	tstring fullFilename(variableHandler->getVariable(_T("PLUGINDIR")).c_str());
+	fullFilename.push_back(_T('\\'));
+	fullFilename.append(getFilename());
+	deleteElement->SetAttribute(_T("file"), fullFilename.c_str());
+
+	forGpup->LinkEndChild(deleteElement);	
+	
+	runSteps(_removeSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, windowParent, variableHandler);
+
+	return INSTALL_NEEDRESTART;
+}
+
+
+
+InstallStatus Plugin::runSteps(InstallStepContainer steps, tstring& basePath, TiXmlElement* forGpup, 
+									  boost::function<void(const TCHAR*)> setStatus,
+									  boost::function<void(const int)> stepProgress,
+									  boost::function<void()> stepComplete,
+									  const HWND windowParent,
+									  VariableHandler* variableHandler)
+{
 	InstallStatus status = INSTALL_SUCCESS;
 
-	InstallStepContainer::iterator stepIterator = _installSteps.begin();
+	InstallStepContainer::iterator stepIterator = steps.begin();
 	 
 	variableHandler->setVariable(_T("PLUGINFILENAME"), getFilename().c_str());
 	
 	StepStatus stepStatus;
 
-	while (stepIterator != _installSteps.end())
+	while (stepIterator != steps.end())
 	{
 
 		if (variableHandler)
@@ -326,6 +374,8 @@ InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 
 	return status;
 }
+
+
 
 void Plugin::addDependency(const TCHAR* pluginName)
 {

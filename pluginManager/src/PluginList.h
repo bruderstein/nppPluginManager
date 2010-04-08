@@ -27,6 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "ProgressDialog.h"
 #include "PluginListView.h"
 
+enum InstallOrRemove
+{
+	INSTALL,
+	REMOVE
+};
+
 class PluginList
 {
 public:
@@ -117,5 +123,7 @@ private:
 	static UINT removeThreadProc(LPVOID param);
 
 	void clearPluginList();
-	
+
+
+	void addSteps(Plugin* plugin, TiXmlElement* installElement, InstallOrRemove ior);
 };

@@ -219,8 +219,15 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 
 				TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
 				
-				addInstallSteps(plugin, installElement);
+				addSteps(plugin, installElement, INSTALL);
 				
+				TiXmlElement *removeElement = pluginNode->FirstChildElement(_T("remove"));
+				
+				if (NULL != removeElement)
+				{
+					addSteps(plugin, removeElement, REMOVE);
+				}
+
 				
 
 				TiXmlElement *dependencies = pluginNode->FirstChildElement(_T("dependencies"));
@@ -285,7 +292,9 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 	return TRUE;
 }
 
-void PluginList::addInstallSteps(Plugin* plugin, TiXmlElement* installElement)
+
+
+void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallOrRemove ior)
 {
 	if (!installElement)
 		return;
@@ -306,14 +315,19 @@ void PluginList::addInstallSteps(Plugin* plugin, TiXmlElement* installElement)
 			&& !_tcscmp(installStepElement->Value(), _T("ansi")) 
 			&& installStepElement->FirstChild()))
 		{
-			addInstallSteps(plugin, installStepElement);
+			addSteps(plugin, installStepElement, ior);
 		}
 		else 
 		{
 
 			shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, g_options.proxy.c_str(), g_options.proxyPort);
 			if (installStep.get()) 
-				plugin->addInstallStep(installStep);
+			{
+				if (INSTALL == ior)
+					plugin->addInstallStep(installStep);
+				else if (REMOVE == ior)
+					plugin->addRemoveStep(installStep);
+			}
 
 		}
 
@@ -1014,25 +1028,30 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 		progressDialog->close();
 		return;
 	}
+	
+	size_t removeSteps = 0;
+	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
+	
+	while(pluginIter != selectedPlugins->end())
+	{
+		removeSteps += (*pluginIter)->getRemoveStepCount();
+		++pluginIter;
+	}
 
-	size_t removeSteps = selectedPlugins->size();
 	progressDialog->setStepCount(removeSteps);
 
 	tstring pluginDir = _variableHandler->getVariable(_T("PLUGINDIR"));
 
-	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
+	pluginIter = selectedPlugins->begin();
 	while(pluginIter != selectedPlugins->end())
 	{
-		TiXmlElement* deleteElement = new TiXmlElement(_T("delete"));
 		
-		tstring fullFilename(pluginDir);
-		fullFilename.push_back(_T('\\'));
-		fullFilename.append((*pluginIter)->getFilename());
-		deleteElement->SetAttribute(_T("file"), fullFilename.c_str());
-
-		installElement->LinkEndChild(deleteElement);	
+		(*pluginIter)->remove(tstring(), installElement, 
+					boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
+					boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
+					boost::bind(&ProgressDialog::stepComplete, progressDialog),
+					hMessageBoxParent, _variableHandler);
 		++pluginIter;
-		progressDialog->stepComplete();
 	}
 
 

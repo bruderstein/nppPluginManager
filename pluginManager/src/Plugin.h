@@ -92,6 +92,15 @@ public:
 		const HWND windowParent,
 		VariableHandler* variableHandler);
 
+	/* removal */
+	size_t getRemoveStepCount();
+	void addRemoveStep(boost::shared_ptr<InstallStep> step);
+	InstallStatus remove(tstring& basePath, TiXmlElement* forGpup, 
+									  boost::function<void(const TCHAR*)> setStatus,
+									  boost::function<void(const int)> stepProgress,
+									  boost::function<void()> stepComplete,
+									  const HWND windowParent,
+									  VariableHandler* variableHandler);
 
 	/* dependencies */
 	void				addDependency(const TCHAR* pluginName);
@@ -127,9 +136,18 @@ private:
 	typedef std::list<boost::shared_ptr<InstallStep> > InstallStepContainer;
 
 	InstallStepContainer	_installSteps;
+	InstallStepContainer	_removeSteps;
 
 	/* Private methods */
 	void replaceNewlines(tstring &str);
+	
+	/* Step Runner for install/remove */
+	InstallStatus runSteps(InstallStepContainer steps, tstring& basePath, TiXmlElement* forGpup, 
+									  boost::function<void(const TCHAR*)> setStatus,
+									  boost::function<void(const int)> stepProgress,
+									  boost::function<void()> stepComplete,
+									  const HWND windowParent,
+									  VariableHandler* variableHandler);
 };
 
 #endif

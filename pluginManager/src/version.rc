@@ -75,7 +75,7 @@ BEGIN
             VALUE "FileDescription", "Plugin Manager for Notepad++.  A free (GPL) plugin management plugin"
             VALUE "FileVersion", PLUGINMANAGERVERSION_RESOURCE_STRING
             VALUE "InternalName", "PluginManager"
-            VALUE "LegalCopyright", "Copyright (C) 2009 Dave Brotherstone"
+            VALUE "LegalCopyright", "Copyright (C) 2009-10 Dave Brotherstone"
             VALUE "OriginalFilename", "PluginManager.dll"
             VALUE "ProductName", "PluginManager"
             VALUE "ProductVersion", PLUGINMANAGERVERSION_RESOURCE_STRING
