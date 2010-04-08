@@ -1,6 +1,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <shlwapi.h>
 #include <boost/shared_ptr.hpp>
 
 #include "libinstall/DownloadStep.h"
@@ -36,11 +37,24 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	TCHAR tempPath[MAX_PATH];
 	::GetTempPath(MAX_PATH, tempPath);
 
-	TCHAR tDownloadFilename[MAX_PATH];
-	::GetTempFileName(basePath.c_str(), _T("download"), 0, tDownloadFilename);
+
 	
+	tstring downloadFilename;
+
+	if (_filename.empty())
+	{
+		TCHAR tDownloadFilename[MAX_PATH];
+		::GetTempFileName(basePath.c_str(), _T("download"), 0, tDownloadFilename);
+		downloadFilename = tDownloadFilename;
+	}
+	else
+	{
+		TCHAR tDownloadPath[MAX_PATH];
+		PathCombine(tDownloadPath, basePath.c_str(), _filename.c_str());
+		downloadFilename = tDownloadPath;
+	}
+
 	// Set the status 
-	tstring downloadFilename = tDownloadFilename;
 	tstring status = _T("Downloading ");
 	status.append(_url);
 	setStatus(status.c_str());
@@ -53,18 +67,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxy.c_str(), _proxyPort))
 	{
-		if (contentType == _T("application/zip") 
-			|| contentType == _T("application/octet-stream")
-			|| contentType == _T("application/x-zip-compressed"))
-		{
-			// Attempt to unzip file into basePath
-			if (Decompress::unzip(downloadFilename, basePath))
-				return STEPSTATUS_SUCCESS;
-			else
-				return STEPSTATUS_FAIL;
-			
-		}
-		else if (contentType == _T("text/html"))
+		if (contentType == _T("text/html"))
 		{
 			DirectLinkSearch linkSearch(downloadFilename.c_str());
 			shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
@@ -77,6 +80,15 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 			}
 			else
 				return STEPSTATUS_FAIL;
+		} else {
+			// Attempt to unzip file into basePath
+			// Assume it is a zip file - if unzipping fails, then check if the filename is filled in 
+			// - if it is, then just leave the file as it is (ie. direct download)
+			//   the file will be available for copying or installing.
+			if (Decompress::unzip(downloadFilename, basePath) || !_filename.empty())
+			{
+				return STEPSTATUS_SUCCESS;
+			}
 		}
 	}
 
