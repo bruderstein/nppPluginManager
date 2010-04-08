@@ -178,16 +178,38 @@ BOOL parseCommandLine(const TCHAR* cmdLine, Options& options)
 BOOL closeMainProgram(Options &options)
 {
 	HWND h = ::FindWindowEx(NULL, NULL, options.getWindowName().c_str(), NULL);
+	
+	DWORD dwPid;
+	HANDLE hProc;
+
 	while (h)
 	{
+		
+		
+		GetWindowThreadProcessId(h, &dwPid);
+		if (dwPid) // Wait for process to terminate
+		{
+			hProc = OpenProcess(SYNCHRONIZE|PROCESS_TERMINATE, FALSE, dwPid);
+		}
+		else 
+		{
+			hProc = NULL;
+		}
+		
 		if (!::SendMessage(h, WM_CLOSE, 0, 0))
 			return FALSE;
+
+		if (hProc)
+		{
+			WaitForSingleObject(hProc, INFINITE);
+		}
 
 		h = ::FindWindowEx(NULL, NULL, options.getWindowName().c_str(), NULL);
 	}
 
 	return TRUE;
 }
+
 
 void startNewInstance(const tstring& exeName)
 {
@@ -214,10 +236,10 @@ void startNewInstance(const tstring& exeName)
 
 
 
-void showProgressDialog(int stepCount)
+void showProgressDialog()
 {
 	g_progressDialog = new ProgressDialog(hInst);
-	g_progressDialog->doDialog(stepCount);
+	g_progressDialog->doDialog();
 
 	
 	
@@ -227,6 +249,12 @@ void setStatus(const TCHAR* status)
 {
 	g_progressDialog->setStatus(status);
 }
+
+void setStepCount(int stepCount)
+{
+	g_progressDialog->setStepCount(stepCount);
+}
+
 
 void stepProgress(int /*percentageComplete*/)
 {
@@ -257,7 +285,7 @@ BOOL processActionsFile(const tstring& actionsFile)
 				step = static_cast<TiXmlElement*>(install->IterateChildren(step));
 			} 
 
-			showProgressDialog(stepCount);
+			setStepCount(stepCount);
 
 
 			step = install->FirstChildElement();
@@ -335,6 +363,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return RETURN_INVALID_PARAMETERS;
 	}
 
+	::MessageBox(NULL, _T("Pause..."), _T("Attach now"), 0);
+
+	showProgressDialog();
+	
+	setStatus(_T("Waiting for Notepad++ to close"));
+
 	BOOL allClosed = closeMainProgram(options);
 
 	if (!allClosed)
@@ -342,7 +376,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return RETURN_CANCELLED;
 	}
 
-	//::MessageBox(NULL, _T("Pause..."), _T("Timing test"), 0);
+	
 
 	if (options.getActionsFile() != _T(""))
 	{

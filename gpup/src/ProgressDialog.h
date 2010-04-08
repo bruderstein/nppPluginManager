@@ -10,8 +10,9 @@ public:
 	void setStatus(const TCHAR* status);
 
 	BOOL CALLBACK runDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-	void doDialog(int stepCount);
+	
+	void setStepCount(int stepCount);
+	void doDialog();
 
 	static BOOL CALLBACK dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

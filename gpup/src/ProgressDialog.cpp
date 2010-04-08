@@ -42,11 +42,15 @@ void ProgressDialog::goToCenter()
 }
 
 
-void ProgressDialog::doDialog(int stepCount)
+void ProgressDialog::doDialog()
+{
+	goToCenter();
+}
+
+void ProgressDialog::setStepCount(int stepCount)
 {
 	_stepCount = stepCount;
 	::SendMessage(_hProgressBar, PBM_SETRANGE, 0, MAKELPARAM(0, _stepCount));	
-	goToCenter();
 }
 
 
