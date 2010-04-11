@@ -163,7 +163,18 @@ BOOL parseCommandLine(const TCHAR* cmdLine, Options& options)
 			if (iter != argList.end())
 				options.setActionsFile((*iter)->c_str());
 		}
-
+		else if (*(*iter) == _T("-c"))
+		{
+			++iter;
+			if (iter != argList.end())
+				options.setCopyFrom((*iter)->c_str());
+		}
+		else if (*(*iter) == _T("-t"))
+		{
+			++iter;
+			if (iter != argList.end())
+				options.setCopyTo((*iter)->c_str());
+		}
 
 		++iter;
 	}
@@ -354,6 +365,15 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	
 	parseCommandLine(lpCmdLine, options);
 
+	// If this is just a copy request
+	if (!options.getCopyFrom().empty() && !options.getCopyTo().empty())
+	{
+		BOOL copyStatus = CopyFile(options.getCopyFrom().c_str(), options.getCopyTo().c_str(), false);
+		// We don't delete the old file, leave that to the caller
+		// Return 0 for success, 1 for failure
+		return copyStatus ? 0 : 1;
+	}
+
 	if (options.getWindowName() == _T("")
 		|| options.getExeName() == _T(""))
 	{
@@ -362,8 +382,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 						   _T(" gpup.exe -w <window name> -e <exe name> [-a <actions file>]"), _T("Plugin Update"), MB_OK | MB_ICONERROR);
 		return RETURN_INVALID_PARAMETERS;
 	}
-
-	::MessageBox(NULL, _T("Pause..."), _T("Attach now"), 0);
 
 	showProgressDialog();
 	

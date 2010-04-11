@@ -37,6 +37,7 @@ public:
 		VERSION_AVAILABLE
 	};
 
+
 	
 	void	init(HWND hListView, HWND hDescription, int nVersionColumns, VERSIONCOLUMN columns[], bool displayUpdateDesc = false);
 	void	setList(PluginListContainer &list);

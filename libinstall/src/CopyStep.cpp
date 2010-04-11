@@ -34,9 +34,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 
 
-CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace, BOOL validate, BOOL backup, const char* proxy, const long proxyPort)
+CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace, 
+				   BOOL validate, BOOL isGpup, BOOL backup, const char* proxy, const long proxyPort)
+				   : _from(from), _validate(validate), _failIfExists(!attemptReplace),
+				     _isGpup(isGpup), _backup(backup), _proxy(proxy), _proxyPort(proxyPort)
 {
-	_from = from;
+
 	if (to)
 	{
 		_toDestination = TO_DIRECTORY;
@@ -49,11 +52,6 @@ CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL
 		_toDestination = TO_FILE;
 	}
 
-	_failIfExists = !attemptReplace;
-	_validate	= validate;
-	_backup		= backup;
-	_proxy		= proxy;
-	_proxyPort	= proxyPort;
 }
 
 void CopyStep::replaceVariables(VariableHandler *variableHandler)
@@ -96,6 +94,7 @@ ValidateStatus CopyStep::Validate(tstring& file)
 		return VALIDATE_UNKNOWN;
 }
 
+
 StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
 							 boost::function<void(const int)> stepProgress,
@@ -116,6 +115,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 	tstring toPath;
 	
+
 	
 	if (_toDestination == TO_DIRECTORY)
 	{
@@ -150,6 +150,16 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		fromDir = basePath;
 	}
 
+	//////////// Special GPUP.EXE handling (run the new version to copy itself over the old one)
+	if (_isGpup)
+	{
+		setStatus(_T("Copying GPUP.EXE"));
+		if (_toDestination == TO_DIRECTORY)
+			toPath.append(_T("gpup.exe"));
+		copyGpup(basePath, toPath);
+		return STEPSTATUS_SUCCESS;
+	}
+
 	// For each file in fromPath, fromFileSpec, copy to [_to]\[found file]
 	WIN32_FIND_DATA foundData;
 	HANDLE hFindFile = ::FindFirstFile(fromPath.c_str(), &foundData);
@@ -173,6 +183,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 				dest.append(foundData.cFileName);
 			}
 			
+
 			// Exclude the . and .. directories
 			if (_tcscmp(foundData.cFileName, _T(".")) 
 				&& _tcscmp(foundData.cFileName, _T("..")))
@@ -180,7 +191,6 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 				statusString = _T("Copying ");
 				statusString.append(foundData.cFileName);
 				setStatus(statusString.c_str());
-
 
 				src = fromDir;
 				src.append(foundData.cFileName);
@@ -301,4 +311,39 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	::FindClose(hFindFile);
 
 	return status;
+}
+
+
+
+void CopyStep::copyGpup(const tstring& basePath, const tstring& toPath)
+{
+	if (!_tcsicmp(_T("gpup.exe"), PathFindFileName(_from.c_str())))
+	{
+		tstring arguments(_T("-c \""));
+		arguments.append(basePath.c_str());
+		arguments.append(_from.c_str());
+		arguments.append(_T("\" -t \""));
+		arguments.append(toPath.c_str());
+		arguments.append(_T("\""));
+		tstring gpupExe(basePath);
+		gpupExe.append(_from);
+		callGpup(gpupExe.c_str(), arguments.c_str());
+	}
+}
+
+void CopyStep::callGpup(const TCHAR *gpupPath, const TCHAR *arguments)
+{
+	SHELLEXECUTEINFO sei;
+	memset(&sei, 0, sizeof(sei));
+	sei.cbSize = sizeof(sei);
+	sei.lpFile = gpupPath;
+	sei.lpParameters = arguments;
+	sei.lpVerb = _T("open");
+	sei.nShow = SW_SHOW;
+
+	if (::ShellExecuteEx(&sei))
+	{
+		WaitForSingleObject(sei.hProcess, INFINITE);
+	}
+	
 }

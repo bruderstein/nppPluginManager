@@ -50,7 +50,8 @@ enum ToDestination
 class CopyStep : public InstallStep
 {
 public:
-	CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate,
+	CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate, 
+		BOOL isGpup,
 		BOOL backup, const char* proxy, const long proxyPort);
 
 	~CopyStep() {};
@@ -64,11 +65,13 @@ public:
 private:
 	
 	ValidateStatus Validate(tstring& file);
-
+	void copyGpup(const tstring& basePath, const tstring& toPath);
+	void callGpup(const TCHAR *gpupPath, const TCHAR *arguments);
 
 	tstring	_from;
 	tstring _to;
 	tstring _toFile;
+
 
 	ToDestination _toDestination;
 
@@ -78,6 +81,7 @@ private:
 	BOOL    _failIfExists;
 	BOOL    _validate;
 	BOOL	_backup;
+	BOOL    _isGpup;
 };
 
 #endif

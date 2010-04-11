@@ -32,16 +32,21 @@ public:
 	void setActionsFile(const TCHAR* actionsFile);
 	void setWindowName(const TCHAR* windowName);
 	void setExeName(const TCHAR* exeName);
+	void setCopyFrom(const TCHAR* copyFrom);
+	void setCopyTo(const TCHAR* copyTo);
 
 	const tstring& getActionsFile();
 	const tstring& getExeName();
 	const tstring& getWindowName();
+	const tstring& getCopyFrom();
+	const tstring& getCopyTo();
 
 private: 
 	tstring _actionsFile;
 	tstring _windowName;
 	tstring _exeName;
-
+	tstring _copyFrom;
+	tstring _copyTo;
 	
 };
 

@@ -37,6 +37,16 @@ void Options::setWindowName(const TCHAR* windowName)
 	_windowName = windowName;
 }
 
+void Options::setCopyFrom(const TCHAR* copyFrom)
+{
+	_copyFrom = copyFrom;
+}
+
+void Options::setCopyTo(const TCHAR* copyTo)
+{
+	_copyTo = copyTo;
+}
+
 const tstring& Options::getActionsFile()
 {
 	return _actionsFile;
@@ -50,4 +60,14 @@ const tstring& Options::getExeName()
 const tstring& Options::getWindowName()
 {
 	return _windowName;
+}
+
+const tstring& Options::getCopyFrom()
+{
+	return _copyFrom;
+}
+
+const tstring& Options::getCopyTo()
+{
+	return _copyTo;
 }
