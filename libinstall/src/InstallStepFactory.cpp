@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/DownloadStep.h"
 #include "libinstall/CopyStep.h"
 #include "libinstall/DeleteStep.h"
-
+#include "libinstall/RunStep.h"
 #include "libinstall/tstring.h"
 #include "libinstall/VariableHandler.h"
 
@@ -92,6 +92,20 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, const 
 		}
 
 		installStep.reset(new DeleteStep(tFile, isDirectory));
+	}
+	else if (!_tcscmp(element->Value(), _T("run")))
+	{
+		const TCHAR *tFile = element->Attribute(_T("file"));
+		const TCHAR *tArgs = element->Attribute(_T("arguments"));
+		const TCHAR *tOutsideNpp = element->Attribute(_T("outsideNpp"));
+
+		BOOL outsideNpp = FALSE;
+		if (tOutsideNpp && !_tcsicmp(tOutsideNpp, _T("true")))
+		{
+			outsideNpp = TRUE;
+		}
+
+		installStep.reset(new RunStep(tFile, tArgs, outsideNpp, proxy, proxyPort));
 	}
 
 	return installStep;

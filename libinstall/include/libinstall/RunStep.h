@@ -17,62 +17,36 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-#ifndef _COPYSTEP_H
-#define _COPYSTEP_H
+#ifndef _RUNSTEP_H
+#define _RUNSTEP_H
 #include <windows.h>
 #include <string>
 #include "InstallStep.h"
 #include <tchar.h>
 #include "tstring.h"
-#include "Validate.h"
+#include "validate.h"
 
-class VariableHandler;
-
-
-enum ToDestination
-{
-	TO_DIRECTORY,
-	TO_FILE
-};
-
-
-
-class CopyStep : public InstallStep
+class RunStep : public InstallStep
 {
 public:
-	CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate, 
-		BOOL isGpup,
-		BOOL backup, const char* proxy, const long proxyPort);
-
-	~CopyStep() {};
+	RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp, const CHAR* proxy, const long proxyPort);
+	~RunStep() {};
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
-		 boost::function<void(const TCHAR*)> setStatus,
-	     boost::function<void(const int)> stepProgress, const HWND windowParent);
+		boost::function<void(const TCHAR*)> setStatus,
+		boost::function<void(const int)> stepProgress, const HWND windowParent);
 
 	void replaceVariables(VariableHandler *variableHandler);
 
 private:
-	
-	ValidateStatus Validate(tstring& file);
-	void copyGpup(const tstring& basePath, const tstring& toPath);
-	void callGpup(const TCHAR *gpupPath, const TCHAR *arguments);
+	BOOL execute(const TCHAR *executable, const TCHAR *arguments);
 
-	tstring	_from;
-	tstring _to;
-	tstring _toFile;
-
-
-	ToDestination _toDestination;
 
 	std::string _proxy;
 	long    _proxyPort;
-	
-	BOOL    _failIfExists;
-	BOOL    _validate;
-	BOOL	_backup;
-	BOOL    _isGpup;
+	BOOL	_outsideNpp;
+	tstring	_file;
+	tstring _arguments;
 };
 
 #endif
