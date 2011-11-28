@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="libinstall"
 	ProjectGUID="{F8F0B077-8778-4CB9-9B54-EC67A3D2C750}"
 	RootNamespace="libinstall"
@@ -453,6 +453,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\ProxyInfo.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\RunStep.cpp"
 				>
 			</File>
@@ -516,6 +520,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\libinstall\md5.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\libinstall\ProxyInfo.h"
 				>
 			</File>
 			<File

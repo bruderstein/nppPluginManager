@@ -32,11 +32,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 
 
-RunStep::RunStep(const TCHAR *file, const TCHAR *arguments, BOOL outsideNpp, const CHAR *proxy, const long proxyPort)
+RunStep::RunStep(const TCHAR *file, const TCHAR *arguments, BOOL outsideNpp, ProxyInfo *proxyInfo)
 	: _file(file), 
 	  _arguments( arguments ? arguments : _T("")),
-	  _proxy(proxy),
-	  _proxyPort(proxyPort),
+	  _proxyInfo(proxyInfo),
 	  _outsideNpp(outsideNpp)
 {
 	
@@ -82,7 +81,7 @@ StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup,
 	tstring executable(basePath);
 	executable.append(_file);
     BOOL executeFile = FALSE;
-	switch(Validator::validate(executable, _proxy.c_str(), _proxyPort))
+	switch(Validator::validate(executable, _proxyInfo))
 	{
 	
 		case VALIDATE_OK:

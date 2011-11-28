@@ -24,14 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VariableHandler.h"
 #include "tinyxml/tinyxml.h"
 
-
+class ProxyInfo;
 
 class InstallStepFactory
 {
 public:
 	InstallStepFactory(VariableHandler* handler);
 
-	boost::shared_ptr<InstallStep> create(TiXmlElement* element, const char* proxy, long proxyPort);
+	boost::shared_ptr<InstallStep> create(TiXmlElement* element, ProxyInfo *proxyInfo);
 
 private:
 	VariableHandler* _variableHandler;

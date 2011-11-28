@@ -213,12 +213,22 @@ void loadSettings(void)
 		::CloseHandle(::CreateFile(iniFilePath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
 	}
 
-	TCHAR proxy[MAX_PATH];
-	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), proxy, MAX_PATH, iniFilePath);
+	TCHAR tmp[MAX_PATH];
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), tmp, MAX_PATH, iniFilePath);
 
-	g_options.proxy = WcharMbcsConverter::tchar2char(proxy).get();
+	g_options.proxyInfo.setProxy(WcharMbcsConverter::tchar2char(proxy).get());
 
-	g_options.proxyPort = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_PROXYPORT, 0, iniFilePath);
+	g_options.proxyInfo.setProxyPort(::GetPrivateProfileInt(SETTINGS_GROUP, KEY_PROXYPORT, 0, iniFilePath));
+
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, _T(""), tmp, MAX_PATH, iniFilePath);
+	g_options.proxyInfo.setUsername(WcharMbcsConverter::tchar2char(tmp).get());
+
+	TCHAR encBuffer[1000];
+	int passwordLen = ::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, _T(""), encBuffer, MAX_PATH, iniFilePath);
+	
+	decrypt(encBuffer, tmp, MAX_PATH);
+	g_options.proxyInfo.setPassword(WcharMbcsConverter::tchar2char(tmp).get());
+	
 
 	g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
 
@@ -241,6 +251,91 @@ void loadSettings(void)
 
 }
 
+void generateKey(unsigned char *buffer, int bufferSize);
+{
+	HCRYPTPROV phProv;
+	CryptAcquireContext(&phProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT);
+	CryptGenRandom(hProv, bufferSize, buffer);
+	CryptReleaseContext(&phProv, NULL);
+}
+
+int encryptKey(unsigned const char *keyBuffer, const int keyLength, unsigned char *encKeyBuffer, const int encKeyBufferLength)
+{
+	int retVal = 0;
+
+	DATA_BLOB pDataOut;
+	CryptProtectData(keyBuffer, NULL, NULL, NULL, NULL, NULL, &pDataOut);
+	if (encKeyBufferLength >= pDataOut.cbData)
+	{
+		memcpy(encKeyBuffer, pDataOut.pbData, pDataOut.cbData);
+		retVal = pDataOut.cbData;
+	}
+
+	LocalFree(pDataOut.pbData);
+	return retVal;
+}
+
+bool convertToHex(const unsigned char *source, int sourceLength, TCHAR *hex, int bufferLength)
+{
+	if (bufferLength < ((sourceLength * 2) + 1))
+	{
+		return false;
+	}
+
+	for (int pos = 0; pos < sourceLength; pos++)
+	{
+		_stprintf((hex + (pos*2)), _T("%02x"), source[pos]);
+	}
+
+	hex[sourceLength * 2] = '\0';
+	return true;
+}
+
+void convertFromHex(const TCHAR *hex, int hexLength, unsigned char *result, int resultLength)
+{
+	unsigned char b;
+
+	for(int pos = 0, int resultPos = 0; pos < hexLength && resultPos < resultLength; pos += 2)
+	{
+		result[resultPos] = ((hex[pos] & 0x0F) + ((hex[pos] & 0x40) ? 9 : 0)) << 4;
+		result[resultPos++] |= (hex[pos+1] & 0x0F) + ((hex[pos+1] & 0x40) ? 9 : 0);
+	}
+
+}
+
+
+
+bool getKey(unsigned char *buffer, int bufferSize)
+{
+	TCHAR encKeyBufferHex[1000]
+	unsigned char encKeyBuffer[500]
+	unsigned char keyBuffer[16];
+
+	int len = ::GetPrivateProfileString(SETTINGS_GROUP, KEY_KEY, _T(""), encKeyBufferHex, 1000, iniFilePath);
+	if (len == 0)
+	{
+		generateKey(keyBuffer, 16);
+		int encryptedSize = encryptKey(keyBuffer, 16, encKeyBuffer, 500);
+		convertToHex(encKeyBuffer, encryptedSize, encKeyBufferHex, 1000);
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_KEY, encKeyBufferHex, iniFilePath);
+	}
+	else
+	{
+		convertFromHex(encKeyBufferHex, encKeyBuffer, 500);
+		decryptKey(encKeyBuffer, keyBuffer, 16);	
+	}
+
+	if (bufferSize >= 16)
+	{
+		memcpy(buffer, keyBuffer, 16);
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 /***
  *	saveSettings()
  *
@@ -261,6 +356,16 @@ void saveSettings(void)
 		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, tproxy.get(), iniFilePath);
 	}
 
+	shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername().get())
+	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, username.get());
+	
+	TCHAR buffer[1000];
+	if (encrypt(g_options.proxyInfo._password.get(), buffer, 1000))
+	{
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, buffer);
+	}
+
+	::WritePrivateProfileStringA(SETTINGS_GROUP, KEY_PROXYUSERNAME, g_options.proxyInfo.getUsername(
 	_itot_s(g_options.notifyUpdates, temp, 16, 10);
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_NOTIFYUPDATES, temp, iniFilePath);
 

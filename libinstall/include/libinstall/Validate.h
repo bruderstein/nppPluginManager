@@ -16,8 +16,10 @@ enum ValidateStatus
 	VALIDATE_BANNED
 };
 
+class ProxyInfo;
+
 namespace Validator {
-	ValidateStatus validate(const tstring& file, const char* proxy, const long proxyPort);
+	ValidateStatus validate(const tstring& file, ProxyInfo *proxyInfo);
 }
 
 #endif

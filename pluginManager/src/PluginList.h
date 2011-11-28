@@ -107,6 +107,8 @@ private:
 	/* Object that knows variable definitions - e.g. $PLUGINDIR$ */
 	VariableHandler* _variableHandler;
 
+	/* Notepad++ Version */
+	PluginVersion _nppVersion;
 
     void        addInstallSteps(Plugin* plugin, TiXmlElement* installElement);
 	BOOL		setInstalledVersion(tstring filename, Plugin* plugin);

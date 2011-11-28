@@ -25,11 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <tchar.h>
 #include "tstring.h"
 
+class ProxyInfo;
 
 class DownloadStep : public InstallStep
 {
 public:
-	DownloadStep(const TCHAR* url, const TCHAR* filename, const char* proxy, long proxyPort);
+	DownloadStep(const TCHAR* url, const TCHAR* filename, ProxyInfo *proxyInfo);
 	~DownloadStep() {};
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
@@ -39,8 +40,8 @@ public:
 private:
 	tstring	_url;
 	tstring _filename;
-	std::string _proxy;
-	long _proxyPort;
+	ProxyInfo *_proxyInfo;
+
 };
 
 #endif

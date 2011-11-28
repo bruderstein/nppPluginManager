@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <list>
 #include "Plugin.h"
 #include "tstring.h"
-
+#include "libinstall/ProxyInfo.h"
 
 
 
@@ -78,8 +78,7 @@ extern BOOL   g_isUnicode;
 
 struct Options
 {
-	std::string proxy;
-	long proxyPort;
+	ProxyInfo proxyInfo;
 	BOOL notifyUpdates;
 	time_t lastCheck;
 	BOOL showUnstable;

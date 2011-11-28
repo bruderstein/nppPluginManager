@@ -35,13 +35,13 @@ InstallStepFactory::InstallStepFactory(VariableHandler* variableHandler)
 
 
 
-shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, const char* proxy, long proxyPort)
+shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, ProxyInfo *proxyInfo)
 {
 	shared_ptr<InstallStep> installStep;
 
 	if (!_tcscmp(element->Value(), _T("download")) && element->FirstChild())
 	{
-		installStep.reset(new DownloadStep(element->FirstChild()->Value(), element->Attribute(_T("filename")), proxy, proxyPort));
+		installStep.reset(new DownloadStep(element->FirstChild()->Value(), element->Attribute(_T("filename")), proxyInfo));
 	}
 	else if (!_tcscmp(element->Value(), _T("copy")))
 	{
@@ -72,7 +72,7 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, const 
 			isGpup = TRUE;
 
 
-		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, isGpup, backup, proxy, proxyPort));
+		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, isGpup, backup, proxyInfo));
 	}
 	else if (!_tcscmp(element->Value(), _T("delete")))
 	{
@@ -105,7 +105,7 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, const 
 			outsideNpp = TRUE;
 		}
 
-		installStep.reset(new RunStep(tFile, tArgs, outsideNpp, proxy, proxyPort));
+		installStep.reset(new RunStep(tFile, tArgs, outsideNpp, proxyInfo));
 	}
 
 	return installStep;

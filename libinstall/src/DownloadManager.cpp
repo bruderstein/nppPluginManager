@@ -7,6 +7,8 @@
 #include "libinstall/tstring.h"
 #include "libinstall/DownloadManager.h"
 #include "libinstall/WcharMbcsConverter.h"
+#include "libinstall/ProxyInfo.h"
+
 using namespace std;
 using namespace boost;
 
@@ -39,7 +41,7 @@ void DownloadManager::setProgressFunction(function<void(int)> progressFunction)
 	_progressFunctionSet = TRUE;
 }
 
-BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, const char* proxy, long proxyPort)
+BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo)
 {
 	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
@@ -51,13 +53,8 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 		return FALSE;
 	}
 
-
-	if (proxy && *proxy)
-	{
-		curl_easy_setopt(_curl, CURLOPT_PROXY, proxy);
-		curl_easy_setopt(_curl, CURLOPT_PROXYPORT, proxyPort);
-	}
-
+	proxyInfo->setCurlOptions(_curl);
+	
 	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteCallback);
 	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, fp);
 	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
@@ -90,16 +87,12 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 
 
 
-BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const char* proxy, long proxyPort)
+BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, ProxyInfo *proxyInfo)
 {
 	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
 
-	if (proxy && *proxy)
-	{
-		curl_easy_setopt(_curl, CURLOPT_PROXY, proxy);
-		curl_easy_setopt(_curl, CURLOPT_PROXYPORT, proxyPort);
-	}
+	proxyInfo->setCurlOptions(_curl);
 
 	
 	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteStringCallback);

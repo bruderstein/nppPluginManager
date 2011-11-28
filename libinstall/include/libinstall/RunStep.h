@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class RunStep : public InstallStep
 {
 public:
-	RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp, const CHAR* proxy, const long proxyPort);
+	RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp, ProxyInfo *proxyInfo);
 	~RunStep() {};
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
@@ -42,8 +42,7 @@ private:
 	BOOL execute(const TCHAR *executable, const TCHAR *arguments);
 
 
-	std::string _proxy;
-	long    _proxyPort;
+	ProxyInfo *_proxyInfo;
 	BOOL	_outsideNpp;
 	tstring	_file;
 	tstring _arguments;

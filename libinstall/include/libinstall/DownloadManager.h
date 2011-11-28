@@ -25,14 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tstring.h"
 #include <boost/function.hpp>
 
+class ProxyInfo;
 
 class DownloadManager
 {
 public:
 	DownloadManager(void);
 	~DownloadManager(void);
-	BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, const char* proxy, long proxyPort);
-	BOOL getUrl(const TCHAR *url, std::string& result, const char* proxy, long proxyPort);
+	BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo);
+	BOOL getUrl(const TCHAR *url, std::string& result, ProxyInfo *proxyInfo);
 
 	void setProgressFunction(boost::function<void(int)> progressFunction);
 

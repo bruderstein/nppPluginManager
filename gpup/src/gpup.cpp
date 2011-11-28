@@ -302,7 +302,8 @@ BOOL processActionsFile(const tstring& actionsFile)
 			step = install->FirstChildElement();
 			while (step)
 			{
-				shared_ptr<InstallStep> installStep = installStepFactory.create(step, "", 0);
+				// TODO: NEED TO FIX THIS - Need proxy info somehow
+				shared_ptr<InstallStep> installStep = installStepFactory.create(step, NULL);
 
 
 				StepStatus stepStatus;

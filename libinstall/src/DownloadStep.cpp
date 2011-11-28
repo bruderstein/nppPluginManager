@@ -11,17 +11,17 @@
 #include "libinstall/InstallStep.h"
 #include "libinstall/WcharMbcsConverter.h"
 #include "libinstall/DirectLinkSearch.h"
+#include "libinstall/ProxyInfo.h"
 
 using namespace std;
 using namespace boost;
 
-DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename, const char* proxy, long proxyPort)
+DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename, ProxyInfo *proxyInfo)
 {
 	_url = url;
 
-	_proxy = proxy;
-	_proxyPort = proxyPort;
-
+	_proxyInfo = proxyInfo;
+	
 	if (filename)
 		_filename = filename;
 }
@@ -65,7 +65,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 	tstring contentType;
 
-	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxy.c_str(), _proxyPort))
+	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxyInfo))
 	{
 		if (contentType == _T("text/html"))
 		{

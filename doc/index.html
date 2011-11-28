@@ -8,7 +8,7 @@
 <a href="#install">Installation</a>&nbsp;&nbsp;
 <a href="#XML">XML File documentation</a>&nbsp;&nbsp;
 <a href="#developer">Plugin Developers</a>&nbsp;&nbsp;
-<a href="#changes">Submitting changes</a>&nbsp;&nbsp;
+<a href="#submitting">Submitting changes</a>&nbsp;&nbsp;
 <a href="#credits">Credits</a>&nbsp;&nbsp;
 <a href="#contact">Contact</a>&nbsp;&nbsp;
 
@@ -319,17 +319,36 @@ is just as valid as, and does the same job as
 <h3>Plugin developers</h3>
 If you're a plugin developer or maintainer, and you don't want your plugin in the list, or you
 want to wait a while until it's stable, then just let me know.  I won't be releasing any updated
-plugins as soon as they are released (with the possible exception of the Plugin Manager), only after 
-a few days when any bug reports have had chance to come in - unless there's an urgent fix to something. 
-If you don't see your plugin listed after releasing it, or you need an urgent fix pushing out, feel 
+plugins as soon as they are released, only after 
+a few days when any bug reports have had chance to come in - unless there's a very good reason. 
+If you don't see your plugin listed after releasing it, feel 
 free to drop me a mail or find me on #notepad++ on freenode (as davegb3) to give me a nudge.
+<br><br>
+<h4>How to get your plugin listed</h4>
+Make an announcement on the <a href="http://sourceforge.net/projects/notepad-plus/forums/forum/482781/">
+Plugin Development forum</a> of the Notepad++ project.  I monitor this forum closely, and take the updates 
+from there.  Ideally, especially for new plugins, you can write your own XML, see <a href="#submitting">below</a>. 
+
+<br>
+<b>IMPORTANT:</b> If you haven't announced your plugin (or new version)
+on the Plugin development forum, it doesn't go in Plugin Manager. Period.  This is a safety feature, so we don't 
+distribute a random
+binary through Plugin Manager, without first giving people the opportunity to download it themselves, virus check it,
+and, most importantly check it doesn't do anything harmful.
+<br/><br/>Due to pressure of time, updates tend to be bunched up over a few weeks (shorter if there have been a lot of updates).
+This eases the burden on testing, and also means that the XML isn't downloaded by 1-2 million users TOO often 
+(that's nearly 200GB download every time we update).  
 <hr/>
-<a name="changes"></a>
+<a name="submitting"></a>
 <h3>Submitting changes to the XML Plugin List</h3>
 If something is not right, or you wish to add a plugin to the list, you are more than welcome to
 send me (davegb at pobox.com) your update, but ideally you can fork the plugins.xml repository
 from github, and send me a pull request, so I can merge your changes.  There are lots of videos
 and guides on github to get you started if you've not used it before.
+<br/><br/>
+<b>Please remember</b> to update the <b>files.sql</b> file as well as the plugins.xml file - this file
+has a very obvious format, and contains the MD5sums of all the valid binary files. Nothing gets removed, only added.
+
 <br/><br/>
 We use the "next" and "live" branches.  Branch off the next branch to do your update, and send
 me a pull request.  I'll merge your changes and push them out in the next update.
@@ -338,6 +357,7 @@ So it goes something like: (assuming you've got a github account or similar)
 <pre>
 git checkout -b myplugin_1.3 next
 [edit plugins.xml]
+[edit files.sql]
 git commit -m "Updated MyPlugin to version 1.3"
 git push origin myplugin_1.3
 
@@ -364,16 +384,21 @@ then I know I need to test it as well. - Thanks!</font>
 
 <a name="planned"></a>
 <h3>Planned for Version 1.0</h3>
-Not too much on this list at the moment, but:
 <ul>
-<li>Rollback to a previously installed version.  This might not make into 1.0, but I hope so.</li>
-<li>A proper remove - currently it just removes the plugin DLL. Really each plugin should have uninstallation steps</li>
+<li>DONE - <span style="text-decoration:line-through">Much improved downloader, can download individual files and more reliable ZIP downloading</span></li>
+<li>DONE - <span style="text-decoration:line-through">Notepad++ version detection, so plugins can have different versions for different Notepad++ versions</span></li>
+<li>DONE - <span style="text-decoration:line-through">A proper remove - so each plugin has removal steps, when it's more than just the DLL</span></li>
+<li>DONE - <span style="text-decoration:line-through">A "run" step, to allow for custom installation routines</span></li>
+<li>DONE - <span style="text-decoration:line-through">Improved GPUP.exe - better Notepad++ restart handling, self-replacement support</span></li>
+<li>In progress - Proxy authentication (the tricky bit is storing the credentials, that involves encryption, and key management)</li>
+<li>Improved UAC support, so you don't get a UAC prompt if you don't need one (like in the case where you just need to restart)</li>
+<li>Zipped (or maybe 7zipped) plugins.xml - the XML has grown from 40KB when we started, to nearly 100KB - no reason not to zip it</li>
+<li>Recursive copy - plugins with many directories (my Python Script plugin is the worst culprit) have a large definition, just because we can't do an XCOPY /S equivalent</li>
 </ul>
 After 1.0, who knows:
-<ul><li>Some form of plugin feedback / rating system, so users can rate the plugins and provide feedback 
-right from Notepad++.
-<li>7zip support.  Currently only zip files are supported, but 7zip is smaller.  I've moved this from 1.0 as I don't think it's that necessary, just a nice to have.</li>
-<li>Providing fresh coffee?</li>
+<ul><li>Rollback to a previously installed version.  This might not make into 1.0, but I hope so.</li>
+<li>Some form of plugin feedback / rating system
+<li>7zip support.  Currently only zip files are supported, but 7zip is smaller, and being able to download the smaller version of plugins is always a plus.  I've moved this from 1.0 as I don't think it's that necessary, just a nice to have.</li>
 </ul>
 
 Enjoy, and please let me know what you think, any feedback is gratefully received!  You can either post 
@@ -383,7 +408,7 @@ a comment to the Plugin Development forum, or usually find me in #notepad++ on f
 <hr/>
 <h3>Credits</h3>
 I must say a big thank you to Joce, who helped a lot in the development of this plugin.  
-<br/>The good people on #notepad++ (especially joce and almostautomated) who've helped out with ideas and code reviews
+<br/>The good people on #notepad++ (especially joce and Thell) who've helped out with ideas and code reviews
 <br/>Don Ho and all the contributors, for bringing us this great editor, and providing such a neat plugin architecture that developers can easily add stuff
 </body>
 </html>

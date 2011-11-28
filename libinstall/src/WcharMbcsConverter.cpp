@@ -16,11 +16,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+Modified for inclusion in VS2010 project "Python Script"
 */
-#include <boost/shared_ptr.hpp>
+
 #include <windows.h>
 #include "libinstall/WcharMbcsConverter.h"
-
+#include <boost/shared_ptr.hpp>
+using namespace std;
 using namespace boost;
 
 

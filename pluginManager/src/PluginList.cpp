@@ -75,6 +75,26 @@ void PluginList::init(NppData *nppData)
 
 	::SendMessage(nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, reinterpret_cast<LPARAM>(configDir));
 	::SendMessage(nppData->_nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDir));
+	LPARAM nppVersion = ::SendMessage(nppData->_nppHandle, NPPM_GETNPPVERSION, 0, 0);
+	
+	int majorVersion = HIWORD(nppVersion);
+	int minorVersion = LOWORD(nppVersion);
+	char tmp[10];
+	_itot_s(majorVersion, tmp, 10, 10);
+	tstring versionString(tmp);
+	
+	_itot_s(minorVersion, tmp, 10, 10);
+	
+	
+	for(int i = 0; tmp[i]; i++)
+	{
+		versionString.push_back(_T('.'));
+		versionString.push_back(tmp[i]);
+	}
+
+	_nppVersion = versionString;
+		
+
 	_tcscpy_s(pluginDir, MAX_PATH, nppDir);
 	_tcscat_s(pluginDir, MAX_PATH, _T("\\plugins"));
 	
@@ -82,6 +102,7 @@ void PluginList::init(NppData *nppData)
 	_variableHandler->setVariable(_T("NPPDIR"), nppDir);
 	_variableHandler->setVariable(_T("PLUGINDIR"), pluginDir);
 	_variableHandler->setVariable(_T("CONFIGDIR"), configDir);
+
 
 	
 }
@@ -171,6 +192,23 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 
 				}
 
+				/* Notepad++ Version checks */
+				TiXmlElement *minVersionElement = pluginNode->FirstChildElement(_T("minNotepadVersion"));
+				if (minVersionElement && minVersionElement->FirstChild())
+				{
+					if (_nppVersion < PluginVersion(minVersionElement->FirstChild()->Value()))
+						available = FALSE;
+				}
+
+
+				TiXmlElement *maxVersionElement = pluginNode->FirstChildElement(_T("maxNotepadVersion"));
+				if (maxVersionElement && maxVersionElement->FirstChild())
+				{
+					if (_nppVersion > PluginVersion(maxVersionElement->FirstChild()->Value()))
+						available = FALSE;
+				}
+
+				/* Plugin attributes - description, author etc */
 				TiXmlElement *descriptionUrlElement = pluginNode->FirstChildElement(_T("description"));
 				if (descriptionUrlElement && descriptionUrlElement->FirstChild())
 					plugin->setDescription(descriptionUrlElement->FirstChild()->Value());
@@ -217,6 +255,7 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 					}
 				}
 
+				/* Installation / Removal */
 				TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
 				
 				addSteps(plugin, installElement, INSTALL);
@@ -320,7 +359,7 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 		else 
 		{
 
-			shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, g_options.proxy.c_str(), g_options.proxyPort);
+			shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, g_options.proxyInfo);
 			if (installStep.get()) 
 			{
 				if (INSTALL == ior)
@@ -702,9 +741,9 @@ void PluginList::downloadList()
 	string serverMD5;
 
 #ifdef ALLOW_OVERRIDE_XML_URL
-	BOOL downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, g_options.proxy.c_str(), g_options.proxyPort);
+	BOOL downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, &g_options.proxyInfo);
 #else
-	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, g_options.proxy.c_str(), g_options.proxyPort);
+	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo);
 #endif
 
 	shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
@@ -714,9 +753,9 @@ void PluginList::downloadList()
 	{
 		// If the build is allowing to override the download URL, then use the one from options
 #ifdef ALLOW_OVERRIDE_XML_URL
-		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
+		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.proxyInfo);
 #else
-		downloadManager.getUrl(PLUGINS_URL, pluginsListFilename, contentType, g_options.proxy.c_str(), g_options.proxyPort);
+		downloadManager.getUrl(PLUGINS_URL, pluginsListFilename, contentType, &g_options.proxyInfo);
 #endif
 	}
 
