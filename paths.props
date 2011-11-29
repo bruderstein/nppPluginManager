@@ -6,6 +6,8 @@
     <BoostPath>e:\libs\boost</BoostPath>
     <CurlPath>e:\libs\curl-7.19.5</CurlPath>
 	<ZlibPath>e:\libs\zlib-1.2.3</ZlibPath>
+	<TestNotepadPlusPlusUnicode>e:\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
+	<TestNotepadPlusPlusAnsi>e:\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ANSI-Debug' Or '$(Configuration)' == 'Debug-xml-test' Or '$(Configuration)' == 'ANSI-Debug-xml-test'">

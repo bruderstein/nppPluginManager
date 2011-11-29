@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/InstallStepFactory.h"
 #include "libinstall/md5.h"
 #include "libinstall/DownloadManager.h"
+#include "libinstall/Decompress.h"
 #include "libinstall/DirectoryUtil.h"
 #include "Utility.h"
 #include "WcharMbcsConverter.h"
@@ -721,8 +722,10 @@ void PluginList::downloadList()
 	}
 
 	tstring pluginsListFilename(pluginConfig);
+	tstring pluginsListZipFilename(pluginConfig);
+
 	pluginsListFilename.append(_T("\\PluginManagerPlugins.xml"));
-		
+	pluginsListZipFilename.append(_T("\\PluginManagerPlugins.zip"));
 	
 
 	// Download the plugins.xml from the repository
@@ -747,9 +750,15 @@ void PluginList::downloadList()
 #ifdef ALLOW_OVERRIDE_XML_URL
 		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.proxyInfo);
 #else
-		downloadManager.getUrl(PLUGINS_URL, pluginsListFilename, contentType, &g_options.proxyInfo);
+		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.proxyInfo);
 #endif
+		
+		// Unzip the plugins.zip to PluginManagerPlugins.xml
+		tstring unzipPath(pluginConfig);
+		unzipPath.append(_T("\\"));
+		Decompress::unzip(pluginsListZipFilename, unzipPath);
 	}
+
 
 
 	// Parse it
@@ -1072,13 +1081,14 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	progressDialog->setStepCount(removeSteps);
 
 	tstring pluginDir = _variableHandler->getVariable(_T("PLUGINDIR"));
+	tstring removeBasePath;
 
 	pluginIter = selectedPlugins->begin();
-	tstring basePath;
+	
 	while(pluginIter != selectedPlugins->end())
 	{
 		
-		(*pluginIter)->remove(basePath, installElement, 
+		(*pluginIter)->remove(removeBasePath, installElement, 
 					boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 					boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 					boost::bind(&ProgressDialog::stepComplete, progressDialog),
@@ -1204,4 +1214,5 @@ void PluginList::clearPluginList()
 	_availablePlugins.clear();
 	_pluginRealNames.clear();
 }
+
 

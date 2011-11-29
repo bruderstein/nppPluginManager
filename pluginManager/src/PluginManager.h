@@ -26,8 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 
-#define PLUGINS_MD5_URL     _T("http://notepad-plus.sourceforge.net/commun/pluginManager/plugins.md5.txt")
-#define PLUGINS_URL         _T("http://notepad-plus.sourceforge.net/commun/pluginManager/plugins.xml")
+#define PLUGINS_MD5_URL     _T("http://downloads.sourceforge.net/project/npppluginmgr/xml/plugins.md5.txt")
+#define PLUGINS_URL         _T("http://downloads.sourceforge.net/project/npppluginmgr/xml/plugins.zip")
 
 
 
