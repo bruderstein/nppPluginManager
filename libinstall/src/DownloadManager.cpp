@@ -1,16 +1,13 @@
+#include "precompiled_headers.h"
 
-#include <boost/shared_ptr.hpp>
-#include <boost/function.hpp>
 
 #include <curl/curl.h>
 
-#include "libinstall/tstring.h"
 #include "libinstall/DownloadManager.h"
 #include "libinstall/WcharMbcsConverter.h"
 #include "libinstall/ProxyInfo.h"
 
 using namespace std;
-using namespace boost;
 
 string DownloadManager::_userAgent("Plugin-Manager");
 
@@ -31,11 +28,11 @@ DownloadManager::~DownloadManager(void)
 
 void DownloadManager::setUserAgent(const TCHAR* userAgent)
 {
-	shared_ptr<char> ua = WcharMbcsConverter::tchar2char(userAgent);
+	std::tr1::shared_ptr<char> ua = WcharMbcsConverter::tchar2char(userAgent);
 	_userAgent = ua.get();
 }
 
-void DownloadManager::setProgressFunction(function<void(int)> progressFunction)
+void DownloadManager::setProgressFunction(boost::function<void(int)> progressFunction)
 {
 	_progressFunction = progressFunction;
 	_progressFunctionSet = TRUE;
@@ -43,7 +40,7 @@ void DownloadManager::setProgressFunction(function<void(int)> progressFunction)
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo)
 {
-	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
+	std::tr1::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
 
 	FILE *fp;
@@ -69,7 +66,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 	curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
 	if (contentTypeBuffer && *contentTypeBuffer)
 	{
-		shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
+		std::tr1::shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
 		
 		contentType = tContentTypeBuffer.get();
 		tstring::size_type pos = contentType.find(_T(';'));
@@ -89,7 +86,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, ProxyInfo *proxyInfo)
 {
-	shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
+	std::tr1::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
 
 	proxyInfo->setCurlOptions(_curl);

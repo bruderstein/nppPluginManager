@@ -17,12 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include <tchar.h>
-#include <string.h>
-#include <windows.h>
-#include <shlwapi.h>
-#include <list>
-#include <boost/function.hpp>
+#include "precompiled_headers.h"
 #include "libinstall/InstallStep.h"
 #include "libinstall/CopyStep.h"
 #include "libinstall/DownloadManager.h"
@@ -31,14 +26,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/DirectoryUtil.h"
 #include "libinstall/VariableHandler.h"
 #include "libinstall/Validate.h"
+#include "libinstall/ProxyInfo.h"
 
 using namespace std;
 
 
 CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace, 
-				   BOOL validate, BOOL isGpup, BOOL backup, const char* proxy, const long proxyPort)
+				   BOOL validate, BOOL isGpup, BOOL backup, ProxyInfo *proxyInfo)
 				   : _from(from), _validate(validate), _failIfExists(!attemptReplace),
-				     _isGpup(isGpup), _backup(backup), _proxy(proxy), _proxyPort(proxyPort)
+				     _isGpup(isGpup), _backup(backup), _proxyInfo(proxyInfo)
 {
 
 	if (to)
@@ -174,7 +170,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 				copy = false;
 				if (_validate)
 				{
-					switch(Validator::validate(src, _proxy.c_str(), _proxyPort))
+					switch(Validator::validate(src, _proxyInfo))
 					{
 					
 						case VALIDATE_OK:

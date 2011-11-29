@@ -20,15 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifndef _COPYSTEP_H
 #define _COPYSTEP_H
-#include <windows.h>
-#include <string>
 #include "InstallStep.h"
-#include <tchar.h>
-#include "tstring.h"
 #include "Validate.h"
 
 class VariableHandler;
-
+class ProxyInfo;
 
 enum ToDestination
 {
@@ -43,7 +39,7 @@ class CopyStep : public InstallStep
 public:
 	CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate, 
 		BOOL isGpup,
-		BOOL backup, const char* proxy, const long proxyPort);
+		BOOL backup, ProxyInfo* proxyInfo);
 
 	~CopyStep() {};
 	
@@ -66,8 +62,7 @@ private:
 
 	ToDestination _toDestination;
 
-	std::string _proxy;
-	long    _proxyPort;
+	ProxyInfo *_proxyInfo;
 	
 	BOOL    _failIfExists;
 	BOOL    _validate;

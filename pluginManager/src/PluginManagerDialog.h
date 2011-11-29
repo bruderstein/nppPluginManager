@@ -1,6 +1,5 @@
 #pragma once
 
-#include <TCHAR.H>
 
 #include "StaticDialog.h"
 #include "resource.h"

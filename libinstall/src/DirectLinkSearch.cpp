@@ -17,11 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include <tchar.h>
-#include <string>
-#include <iostream>
-#include <boost/shared_ptr.hpp>
-
+#include "precompiled_headers.h"
 #include "libinstall/DirectLinkSearch.h"
 
 // Copied over from winnt.h, in order to avoid dependency to windows just for this.
@@ -34,7 +30,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 using namespace std;
-using namespace boost;
 
 
 DirectLinkSearch::DirectLinkSearch(const TCHAR *filename)
@@ -78,7 +73,7 @@ shared_ptr<TCHAR> DirectLinkSearch::search(const TCHAR *filename)
 				size_t realPosition = validateDirectLink(currentPosition-checkOffset + 1);
 				if (realPosition != LINK_NOT_VALID)
 				{
-					shared_ptr<TCHAR> buffer(new TCHAR[currentPosition - realPosition + 2]);
+					std::tr1::shared_ptr<TCHAR> buffer(new TCHAR[currentPosition - realPosition + 2]);
 					int bufferPosition = 0;
 					while(realPosition <= currentPosition)
 					{
@@ -106,7 +101,7 @@ shared_ptr<TCHAR> DirectLinkSearch::search(const TCHAR *filename)
 		
 	} while (_file.getCharAt(currentPosition) != FILEBUFFER_EOF);
 	
-	shared_ptr<TCHAR> empty;
+	std::tr1::shared_ptr<TCHAR> empty;
 	return empty;
 
 }

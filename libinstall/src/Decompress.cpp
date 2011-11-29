@@ -17,9 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include <string>
-#include <shlwapi.h>
-#include <boost/shared_ptr.hpp>
+#include "precompiled_headers.h"
 #include "libinstall/Decompress.h"
 #include "libinstall/WcharMbcsConverter.h"
 #include "libinstall/tstring.h"
@@ -29,7 +27,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "iowin32.h"
 
 using namespace std;
-using namespace boost;
 
 BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 {
@@ -61,7 +58,7 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 			return FALSE;
 		}
 
-		shared_ptr<TCHAR> tFilename = WcharMbcsConverter::char2tchar(filename);
+		std::tr1::shared_ptr<TCHAR> tFilename = WcharMbcsConverter::char2tchar(filename);
 	
 
 		if ((tFilename.get())[_tcslen(tFilename.get()) - 1] == _T('/'))
@@ -139,6 +136,6 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 
 void Decompress::setString(const tstring &src, std::string &dest)
 {
-	shared_ptr<char> cDest = WcharMbcsConverter::tchar2char(src.c_str());
+	std::tr1::shared_ptr<char> cDest = WcharMbcsConverter::tchar2char(src.c_str());
 	dest = cDest.get();
 }

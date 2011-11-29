@@ -17,14 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
+#include "precompiled_headers.h"
 #include "Plugin.h"
 #include "PluginVersion.h"
-#include <tchar.h>
-#include <string>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-
 #include "libinstall/VariableHandler.h"
 #include "tinyxml/tinyxml.h"
 
@@ -273,12 +268,12 @@ void Plugin::addBadVersion(const PluginVersion &version, const TCHAR* report)
 }
 
 
-void Plugin::addInstallStep(shared_ptr<InstallStep> step)
+void Plugin::addInstallStep(std::tr1::shared_ptr<InstallStep> step)
 {
 	_installSteps.push_back(step);
 }
 
-void Plugin::addRemoveStep(shared_ptr<InstallStep> step)
+void Plugin::addRemoveStep(std::tr1::shared_ptr<InstallStep> step)
 {
 	_removeSteps.push_back(step);
 }

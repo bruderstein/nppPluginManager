@@ -18,8 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <windows.h>
-
+#include "precompiled_headers.h"
 #include "PluginManager.h"
 #include "SettingsDialog.h"
 #include "resource.h"
@@ -85,12 +84,12 @@ BOOL SettingsDialog::run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
 void SettingsDialog::initialiseOptions()
 {
-	::SetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYADDRESS), g_options.proxy.c_str());
+	::SetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYADDRESS), g_options.proxyInfo.getProxy());
 	char tmp[15];
 
-	if (g_options.proxyPort != 0) 
+	if (g_options.proxyInfo.getProxyPort() != 0) 
 	{
-		_ltoa_s(g_options.proxyPort, tmp, 15, 10);
+		_ltoa_s(g_options.proxyInfo.getProxyPort(), tmp, 15, 10);
 		::SetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYPORT), tmp);
 	}
 	else
@@ -106,10 +105,10 @@ void SettingsDialog::setOptions()
 {
 	char address[MAX_PATH];
 	::GetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYADDRESS), address, MAX_PATH);
-	g_options.proxy = address;
+	g_options.proxyInfo.setProxy(address);
 
 	::GetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYPORT), address, MAX_PATH);
-	g_options.proxyPort = atol(address);
+	g_options.proxyInfo.setProxyPort(atol(address));
 	
 	LRESULT result = ::SendMessage(GetDlgItem(_hSelf, IDC_NOTIFY), BM_GETCHECK, 0, 0);
 	if (BST_CHECKED == result)

@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #ifndef _INSTALLSTEPFACTORY_H
 #define _INSTALLSTEPFACTORY_H
-#include <boost/shared_ptr.hpp>
 #include "InstallStep.h"
 #include "VariableHandler.h"
 #include "tinyxml/tinyxml.h"
@@ -31,7 +30,7 @@ class InstallStepFactory
 public:
 	InstallStepFactory(VariableHandler* handler);
 
-	boost::shared_ptr<InstallStep> create(TiXmlElement* element, ProxyInfo *proxyInfo);
+	std::tr1::shared_ptr<InstallStep> create(TiXmlElement* element, ProxyInfo *proxyInfo);
 
 private:
 	VariableHandler* _variableHandler;

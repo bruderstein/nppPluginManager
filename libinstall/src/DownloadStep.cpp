@@ -1,9 +1,4 @@
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <shlwapi.h>
-#include <boost/shared_ptr.hpp>
-
+#include "precompiled_headers.h"
 #include "libinstall/DownloadStep.h"
 #include "libinstall/DownloadManager.h"
 #include "libinstall/Decompress.h"
@@ -14,7 +9,6 @@
 #include "libinstall/ProxyInfo.h"
 
 using namespace std;
-using namespace boost;
 
 DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename, ProxyInfo *proxyInfo)
 {
@@ -70,7 +64,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		if (contentType == _T("text/html"))
 		{
 			DirectLinkSearch linkSearch(downloadFilename.c_str());
-			shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
+			std::tr1::shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
 			
 
 			if (realLink.get())

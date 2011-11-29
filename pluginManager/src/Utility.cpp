@@ -17,13 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include <windows.h>
-#include <tchar.h>
-#include <string>
-#include <shlwapi.h>
+#include "precompiled_headers.h"
 #include "Utility.h"
 
-#include "tstring.h"
 
 BOOL Utility::removeDirectory(const TCHAR* directory)
 {

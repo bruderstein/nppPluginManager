@@ -19,11 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <TCHAR.H>
-#include <string>
 #include <curl/curl.h>
-#include "tstring.h"
-#include <boost/function.hpp>
 
 class ProxyInfo;
 

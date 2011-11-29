@@ -18,14 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-
-#include <windows.h>
-#include <set>
-#include <shlwapi.h>
-#include <boost/shared_ptr.hpp>
-
-
+#include "precompiled_headers.h"
 #include "PluginList.h"
 #include "PluginManager.h"
 
@@ -38,11 +31,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/DirectoryUtil.h"
 #include "Utility.h"
 #include "WcharMbcsConverter.h"
-#include <strsafe.h>
+
 
 
 using namespace std;
-using namespace boost;
 
 typedef BOOL (__cdecl * PFUNCISUNICODE)();
 
@@ -79,7 +71,7 @@ void PluginList::init(NppData *nppData)
 	
 	int majorVersion = HIWORD(nppVersion);
 	int minorVersion = LOWORD(nppVersion);
-	char tmp[10];
+	TCHAR tmp[10];
 	_itot_s(majorVersion, tmp, 10, 10);
 	tstring versionString(tmp);
 	
@@ -359,7 +351,7 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 		else 
 		{
 
-			shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, g_options.proxyInfo);
+			std::tr1::shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, &g_options.proxyInfo);
 			if (installStep.get()) 
 			{
 				if (INSTALL == ior)
@@ -668,10 +660,10 @@ BOOL PluginList::isInstallOrUpgrade(const tstring& name)
 
 
 
-shared_ptr< list<tstring> > PluginList::calculateDependencies(shared_ptr< list<Plugin*> > selectedPlugins)
+shared_ptr< list<tstring> > PluginList::calculateDependencies(std::tr1::shared_ptr< list<Plugin*> > selectedPlugins)
 {
 	set<tstring> toBeInstalled;
-	shared_ptr< list<tstring> > installDueToDepends(new list<tstring>);
+	std::tr1::shared_ptr< list<tstring> > installDueToDepends(new list<tstring>);
 
 
 	// First add all selected plugins to a name map
@@ -746,7 +738,7 @@ void PluginList::downloadList()
 	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo);
 #endif
 
-	shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
+	std::tr1::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
 
 	
 	if (downloadResult && serverMD5 != cHashBuffer.get())
@@ -817,7 +809,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	// or, the URL for the XML may have changed
 
 
-	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+	std::tr1::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 
 	if (selectedPlugins.get() == NULL)
 	{
@@ -879,7 +871,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	
 	
 
-	shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
+	std::tr1::shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
 		
 	if (!installDueToDepends->empty())
 	{
@@ -1058,7 +1050,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str());
 	TiXmlElement*  installElement = forGpupDoc->FirstChildElement(_T("install"));
 
-	shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+	std::tr1::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 		
 
 	if (selectedPlugins.get() == NULL)
@@ -1082,10 +1074,11 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	tstring pluginDir = _variableHandler->getVariable(_T("PLUGINDIR"));
 
 	pluginIter = selectedPlugins->begin();
+	tstring basePath;
 	while(pluginIter != selectedPlugins->end())
 	{
 		
-		(*pluginIter)->remove(tstring(), installElement, 
+		(*pluginIter)->remove(basePath, installElement, 
 					boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 					boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 					boost::bind(&ProgressDialog::stepComplete, progressDialog),

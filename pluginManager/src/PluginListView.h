@@ -20,10 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _PLUGINLISTVIEW_H
 #define _PLUGINLISTVIEW_H
 
-#include <windows.h>
-#include <tchar.h>
-#include <boost/shared_ptr.hpp>
-#include <list>
 #include "PluginManager.h"
 
 class PluginListView
@@ -49,7 +45,7 @@ public:
 	void	setMessage(TCHAR *msg);
 	LRESULT notify(WPARAM wParam, LPARAM lParam);
 	Plugin* getCurrentPlugin();
-	boost::shared_ptr< std::list<Plugin*> > getSelectedPlugins();
+	std::tr1::shared_ptr< std::list<Plugin*> > getSelectedPlugins();
 	BOOL    empty();
 	
 

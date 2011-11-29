@@ -20,15 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _PLUGIN_H
 #define _PLUGIN_H
 
-#include <windows.h>
-#include <string>
-#include <map>
-#include <list>
-#include <memory>
-#include <boost/shared_ptr.hpp>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include "tstring.h"
 #include "tinyxml/tinyxml.h"
 #include "PluginVersion.h"
 #include "libinstall/InstallStep.h"
@@ -83,7 +74,7 @@ public:
 	void			addBadVersion(const PluginVersion &version, const TCHAR* report);
 
 	/* installation */
-	void			addInstallStep(boost::shared_ptr<InstallStep> step);
+	void			addInstallStep(std::tr1::shared_ptr<InstallStep> step);
 	size_t				getInstallStepCount();
 	InstallStatus   install(tstring& basePath, TiXmlElement* forGpup, 
 		boost::function<void(const TCHAR*)> setStatus,
@@ -94,7 +85,7 @@ public:
 
 	/* removal */
 	size_t getRemoveStepCount();
-	void addRemoveStep(boost::shared_ptr<InstallStep> step);
+	void addRemoveStep(std::tr1::shared_ptr<InstallStep> step);
 	InstallStatus remove(tstring& basePath, TiXmlElement* forGpup, 
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
@@ -133,7 +124,7 @@ private:
 	std::map<tstring, PluginVersion>  _versionMap;
 	std::map<PluginVersion, tstring>  _badVersionMap;
 
-	typedef std::list<boost::shared_ptr<InstallStep> > InstallStepContainer;
+	typedef std::list<std::tr1::shared_ptr<InstallStep> > InstallStepContainer;
 
 	InstallStepContainer	_installSteps;
 	InstallStepContainer	_removeSteps;

@@ -20,13 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _DIRECTLINKSEARCH_H
 #define _DIRECTLINKSEARCH_H
 
-#include <string>
-#include <iostream>
-#include <fstream>
 #include "libinstall/FileBuffer.h"
-#include <boost/shared_ptr.hpp>
 
-#include <limits.h>
+
 
 #ifdef UNICODE
 
@@ -38,7 +34,7 @@ public:
 	DirectLinkSearch(const TCHAR *filename);
 	~DirectLinkSearch();
 
-	boost::shared_ptr<TCHAR> search(const TCHAR *filename);
+	std::tr1::shared_ptr<TCHAR> search(const TCHAR *filename);
 
 
 private:

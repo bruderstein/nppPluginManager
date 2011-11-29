@@ -20,13 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _FILEBUFFER_H
 #define _FILEBUFFER_H
 
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <limits.h>
-#include <boost/shared_ptr.hpp>
-#include <tchar.h>
-
 #define FILEBUFFER_EOF	  CHAR_MAX
 using namespace std;
 
@@ -42,7 +35,7 @@ public:
 
 private:
 	ifstream _file;
-	boost::shared_ptr<char> _buffer;
+	std::tr1::shared_ptr<char> _buffer;
 
 	size_t _currentBufferStart;
 	size_t _bufferLength;

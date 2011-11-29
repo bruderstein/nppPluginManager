@@ -17,10 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include <stdio.h>
-#include <windows.h>
+#include "precompiled_headers.h"
 #include <Wincrypt.h>
-#include <tchar.h>
 #include "libinstall/md5.h"
 
 

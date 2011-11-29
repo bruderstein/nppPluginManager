@@ -20,10 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _PLUGINVERSION_H
 #define _PLUGINVERSION_H
 
-#include <tchar.h>
-#include <string.h>
-#include "tstring.h"
-
 
 
 class PluginVersion

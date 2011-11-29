@@ -21,11 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _DIRECTORYUTIL_H
 #define _DIRECTORYUTIL_H
 
-#include <tchar.h>
-
-// Copied from windows.h to avoid dependency
-typedef int BOOL;
-
 class DirectoryUtil
 {
 public:

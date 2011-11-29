@@ -18,8 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
-#include <tchar.h>
-#include <map>
 #include "PluginManager.h"
 #include "libinstall/VariableHandler.h"
 #include "tinyxml/tinyxml.h"
@@ -58,7 +56,7 @@ public:
 /* Checks dependencies on a list of plugins
  *  Any dependencies are added to the list, and a list of names of plugins added is returned
  */
-	boost::shared_ptr< std::list<tstring> > calculateDependencies(boost::shared_ptr< std::list<Plugin*> > selectedPlugins);
+	std::tr1::shared_ptr< std::list<tstring> > calculateDependencies(std::tr1::shared_ptr< std::list<Plugin*> > selectedPlugins);
 
 	/* Installs or updates given list of plugins, and also includes dependencies 
 	 * Warns user with messageboxes about intended actions

@@ -18,11 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <tchar.h>
-#include <string.h>
-#include <string>
-#include <shlwapi.h>
-#include <sstream>
+#include "precompiled_headers.h"
 #include "PluginVersion.h"
 
 using namespace std;
@@ -311,10 +307,10 @@ TCHAR* PluginVersion::getDisplayString()
 				display << _T(" (unstable)");
 		}
 
-		size_t length = display.tellp();
+		unsigned int length = static_cast<unsigned int>(display.tellp());
 		length++;
 		_displayString = new TCHAR[length];
-		_tcscpy_s(_displayString, length, display.str().c_str());
+		_tcscpy_s(_displayString, static_cast<rsize_t>(length), display.str().c_str());
 	}
 
 	return _displayString;

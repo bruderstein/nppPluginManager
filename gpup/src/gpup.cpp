@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <tchar.h>
 #include <string>
 #include <list>
-#include <boost/shared_ptr.hpp>
+
 
 #pragma warning (push)
 #pragma warning (disable : 4512) // assignment operator could not be generated
@@ -303,7 +303,7 @@ BOOL processActionsFile(const tstring& actionsFile)
 			while (step)
 			{
 				// TODO: NEED TO FIX THIS - Need proxy info somehow
-				shared_ptr<InstallStep> installStep = installStepFactory.create(step, NULL);
+				std::tr1::shared_ptr<InstallStep> installStep = installStepFactory.create(step, NULL);
 
 
 				StepStatus stepStatus;

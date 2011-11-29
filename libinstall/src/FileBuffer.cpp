@@ -17,13 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include <string>
-#include <iostream>
-#include <boost/shared_ptr.hpp>
+#include "precompiled_headers.h"
 #include "libinstall/FileBuffer.h"
 
 using namespace std;
-using namespace boost;
 
 FileBuffer::FileBuffer()
 {
@@ -48,7 +45,7 @@ void FileBuffer::open(const TCHAR *filename)
 	_buffer.reset(new char[BUFFER_SIZE]);
 	_file.read(_buffer.get(), BUFFER_SIZE);
 	_currentBufferStart = 0;
-	_bufferLength = _file.gcount();
+	_bufferLength = static_cast<size_t>(_file.gcount());
 }
 
 char FileBuffer::getCharAt(size_t position)
@@ -64,7 +61,7 @@ char FileBuffer::getCharAt(size_t position)
 		
 		_file.seekg((std::streamoff)_currentBufferStart);
 		_file.read(_buffer.get(), BUFFER_SIZE);
-		_bufferLength = _file.gcount();
+		_bufferLength = static_cast<size_t>(_file.gcount());
 		positionInBuffer = position - _currentBufferStart;
 		if (positionInBuffer < _bufferLength && positionInBuffer > 0)
 			return _buffer.get()[positionInBuffer];

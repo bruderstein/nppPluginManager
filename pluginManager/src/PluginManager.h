@@ -20,15 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef PLUGIN_TEMPLATE_H
 #define PLUGIN_TEMPLATE_H
 
-#define WIN32_LEAN_AND_MEAN
-//#include "SysMsg.h"
 #include "PluginInterface.h"
-#include <TCHAR.H>
-#include <map>
-#include <string>
-#include <list>
 #include "Plugin.h"
-#include "tstring.h"
 #include "libinstall/ProxyInfo.h"
 
 
@@ -52,6 +45,9 @@ CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
 #define KEY_PROXYPORT      _T("ProxyPort")
 #define KEY_LASTCHECK	   _T("LastCheck")
 #define KEY_SHOWUNSTABLE   _T("ShowUnstable")
+#define KEY_PROXYUSERNAME  _T("ProxyUsername")
+#define KEY_PROXYPASSWORD  _T("ProxyPassword")
+#define KEY_KEY            _T("Key")
 #ifdef ALLOW_OVERRIDE_XML_URL
 #define KEY_OVERRIDEMD5URL  _T("md5url")
 #define KEY_OVERRIDEURL     _T("xmlurl")

@@ -1,4 +1,4 @@
-
+#include "precompiled_headers.h"
 #include "libinstall/ProxyInfo.h"
 #include <curl/curl.h>
 

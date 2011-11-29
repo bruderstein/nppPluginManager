@@ -1,7 +1,5 @@
 #ifndef _VALIDATE_H
 
-#include "tstring.h"
-
 #define _VALIDATE_H
 
 #define VALIDATE_BASEURL          _T("http://notepad-plus.sourceforge.net/commun/pluginManager/validate.php?md5=")

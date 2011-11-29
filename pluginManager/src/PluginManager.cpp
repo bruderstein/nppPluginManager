@@ -17,10 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-
-#include <shlwapi.h>
-#include <windows.h>
-#include <boost/shared_ptr.hpp>
+#include "precompiled_headers.h"
 
 #include "PluginManager.h"
 #include "PluginManagerVersion.h"
@@ -68,7 +65,6 @@ UINT startupChecks(LPVOID param);
 
 
 using namespace std;
-using namespace boost;
 
 
 /* main function of dll */
@@ -216,7 +212,7 @@ void loadSettings(void)
 	TCHAR tmp[MAX_PATH];
 	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), tmp, MAX_PATH, iniFilePath);
 
-	g_options.proxyInfo.setProxy(WcharMbcsConverter::tchar2char(proxy).get());
+	g_options.proxyInfo.setProxy(WcharMbcsConverter::tchar2char(tmp).get());
 
 	g_options.proxyInfo.setProxyPort(::GetPrivateProfileInt(SETTINGS_GROUP, KEY_PROXYPORT, 0, iniFilePath));
 
@@ -224,9 +220,9 @@ void loadSettings(void)
 	g_options.proxyInfo.setUsername(WcharMbcsConverter::tchar2char(tmp).get());
 
 	TCHAR encBuffer[1000];
-	int passwordLen = ::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, _T(""), encBuffer, MAX_PATH, iniFilePath);
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, _T(""), encBuffer, MAX_PATH, iniFilePath);
 	
-	decrypt(encBuffer, tmp, MAX_PATH);
+	//decrypt(encBuffer, tmp, MAX_PATH);
 	g_options.proxyInfo.setPassword(WcharMbcsConverter::tchar2char(tmp).get());
 	
 
@@ -251,12 +247,12 @@ void loadSettings(void)
 
 }
 
-void generateKey(unsigned char *buffer, int bufferSize);
+void generateKey(unsigned char *buffer, int bufferSize)
 {
-	HCRYPTPROV phProv;
-	CryptAcquireContext(&phProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT);
+	HCRYPTPROV hProv;
+	CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT);
 	CryptGenRandom(hProv, bufferSize, buffer);
-	CryptReleaseContext(&phProv, NULL);
+	CryptReleaseContext(hProv, NULL);
 }
 
 int encryptKey(unsigned const char *keyBuffer, const int keyLength, unsigned char *encKeyBuffer, const int encKeyBufferLength)
@@ -264,8 +260,12 @@ int encryptKey(unsigned const char *keyBuffer, const int keyLength, unsigned cha
 	int retVal = 0;
 
 	DATA_BLOB pDataOut;
-	CryptProtectData(keyBuffer, NULL, NULL, NULL, NULL, NULL, &pDataOut);
-	if (encKeyBufferLength >= pDataOut.cbData)
+	DATA_BLOB pDataIn;
+	pDataIn.cbData = keyLength;
+	pDataIn.pbData = static_cast<BYTE *>(const_cast<unsigned char *>(keyBuffer));
+
+	CryptProtectData(&pDataIn, NULL, NULL, NULL, NULL, NULL, &pDataOut);
+	if (encKeyBufferLength >= static_cast<int>(pDataOut.cbData))
 	{
 		memcpy(encKeyBuffer, pDataOut.pbData, pDataOut.cbData);
 		retVal = pDataOut.cbData;
@@ -284,7 +284,7 @@ bool convertToHex(const unsigned char *source, int sourceLength, TCHAR *hex, int
 
 	for (int pos = 0; pos < sourceLength; pos++)
 	{
-		_stprintf((hex + (pos*2)), _T("%02x"), source[pos]);
+		_stprintf_s((hex + (pos*2)), bufferLength, _T("%02x"), source[pos]);
 	}
 
 	hex[sourceLength * 2] = '\0';
@@ -293,9 +293,8 @@ bool convertToHex(const unsigned char *source, int sourceLength, TCHAR *hex, int
 
 void convertFromHex(const TCHAR *hex, int hexLength, unsigned char *result, int resultLength)
 {
-	unsigned char b;
-
-	for(int pos = 0, int resultPos = 0; pos < hexLength && resultPos < resultLength; pos += 2)
+	
+	for(int pos = 0, resultPos = 0; pos < hexLength && resultPos < resultLength; pos += 2)
 	{
 		result[resultPos] = ((hex[pos] & 0x0F) + ((hex[pos] & 0x40) ? 9 : 0)) << 4;
 		result[resultPos++] |= (hex[pos+1] & 0x0F) + ((hex[pos+1] & 0x40) ? 9 : 0);
@@ -305,10 +304,15 @@ void convertFromHex(const TCHAR *hex, int hexLength, unsigned char *result, int 
 
 
 
+void decryptKey(const unsigned char *encKeyBuffer, unsigned char *keyBuffer, int keyLength)
+{
+
+}
+
 bool getKey(unsigned char *buffer, int bufferSize)
 {
-	TCHAR encKeyBufferHex[1000]
-	unsigned char encKeyBuffer[500]
+	TCHAR encKeyBufferHex[1000];
+	unsigned char encKeyBuffer[500];
 	unsigned char keyBuffer[16];
 
 	int len = ::GetPrivateProfileString(SETTINGS_GROUP, KEY_KEY, _T(""), encKeyBufferHex, 1000, iniFilePath);
@@ -321,7 +325,7 @@ bool getKey(unsigned char *buffer, int bufferSize)
 	}
 	else
 	{
-		convertFromHex(encKeyBufferHex, encKeyBuffer, 500);
+		convertFromHex(encKeyBufferHex, _tcslen(encKeyBufferHex), encKeyBuffer, 500);
 		decryptKey(encKeyBuffer, keyBuffer, 16);	
 	}
 
@@ -336,6 +340,13 @@ bool getKey(unsigned char *buffer, int bufferSize)
 	}
 }
 
+
+bool encrypt(const char *dataIn, TCHAR *output, int inputLength)
+{
+	//strcpy_s(output, inputLength, static_cast<const char *>(dataIn));
+	return false;
+}
+
 /***
  *	saveSettings()
  *
@@ -345,27 +356,28 @@ void saveSettings(void)
 {
 	TCHAR	temp[16];
 
-	_itot_s(g_options.proxyPort, temp, 16, 10);
+	_itot_s(g_options.proxyInfo.getProxyPort(), temp, 16, 10);
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPORT, temp, iniFilePath);
-	if (g_options.proxy.empty())
+	const char *proxy = g_options.proxyInfo.getProxy();
+	if (proxy && *proxy)
 		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), iniFilePath);
 	else
 	{
 		
-		shared_ptr<TCHAR> tproxy = WcharMbcsConverter::char2tchar(g_options.proxy.c_str());
+		std::tr1::shared_ptr<TCHAR> tproxy = WcharMbcsConverter::char2tchar(proxy);
 		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, tproxy.get(), iniFilePath);
 	}
 
-	shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername().get())
-	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, username.get());
+	std::tr1::shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername());
+	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, username.get(), iniFilePath);
 	
 	TCHAR buffer[1000];
-	if (encrypt(g_options.proxyInfo._password.get(), buffer, 1000))
+	if (encrypt(g_options.proxyInfo.getPassword(), buffer, 1000))
 	{
-		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, buffer);
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, buffer, iniFilePath);
 	}
 
-	::WritePrivateProfileStringA(SETTINGS_GROUP, KEY_PROXYUSERNAME, g_options.proxyInfo.getUsername(
+	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername()).get(), iniFilePath);
 	_itot_s(g_options.notifyUpdates, temp, 16, 10);
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_NOTIFYUPDATES, temp, iniFilePath);
 

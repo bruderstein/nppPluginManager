@@ -1,9 +1,6 @@
 #ifndef _PROGRESSDIALOG_H
 #define _PROGRESSDIALOG_H
 
-#include <windows.h>
-#include <boost/function.hpp>
-
 class ProgressDialog
 {
 public:

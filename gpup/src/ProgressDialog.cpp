@@ -1,5 +1,4 @@
-#include <windows.h>
-#include <commctrl.h>
+#include "stdafx.h"
 #include "ProgressDialog.h"
 #include "Resource.h"
 

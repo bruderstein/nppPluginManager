@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _INSTALLSTEP_H
 #define _INSTALLSTEP_H
 
-#include <windows.h>
 #include <boost/function.hpp>
 #include "tstring.h"
 #include "tinyxml/tinyxml.h"

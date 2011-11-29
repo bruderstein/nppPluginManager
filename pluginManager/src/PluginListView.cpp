@@ -18,14 +18,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "precompiled_headers.h"
 #include "PluginListView.h"
 #include "PluginList.h"
-#include <commctrl.h>
-#include <string.h>
-#include <list>
 
 using namespace std;
-using namespace boost;
 
 
 PluginListView::PluginListView()
@@ -271,7 +268,7 @@ Plugin* PluginListView::getCurrentPlugin()
 shared_ptr< list<Plugin*> > PluginListView::getSelectedPlugins()
 {
 	
-	shared_ptr< list<Plugin*> > selectedList;
+	std::tr1::shared_ptr< list<Plugin*> > selectedList;
 	
 	if (_listMode == LISTMODE_MESSAGE)
 		return selectedList;

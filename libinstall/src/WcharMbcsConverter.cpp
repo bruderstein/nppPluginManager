@@ -19,18 +19,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 Modified for inclusion in VS2010 project "Python Script"
 */
-
-#include <windows.h>
+#include "precompiled_headers.h"
 #include "libinstall/WcharMbcsConverter.h"
-#include <boost/shared_ptr.hpp>
+
 using namespace std;
-using namespace boost;
 
 
 shared_ptr<wchar_t> WcharMbcsConverter::char2wchar(const char* mbStr)
 {
 	
-	shared_ptr<wchar_t> wideCharStr;
+	std::tr1::shared_ptr<wchar_t> wideCharStr;
 
 	int len = ::MultiByteToWideChar(CP_UTF8, 0, mbStr, -1, NULL, 0);
 	
@@ -53,7 +51,7 @@ shared_ptr<wchar_t> WcharMbcsConverter::char2wchar(const char* mbStr)
 shared_ptr<char> WcharMbcsConverter::wchar2char(const wchar_t* wcStr)
 {
 
-	shared_ptr<char> multiByteStr;
+	std::tr1::shared_ptr<char> multiByteStr;
 
 	int len = WideCharToMultiByte(CP_UTF8, 0, wcStr, -1, NULL, 0, NULL, NULL);
 
@@ -71,15 +69,15 @@ shared_ptr<char> WcharMbcsConverter::wchar2char(const wchar_t* wcStr)
 	return multiByteStr;
 }
 
-	//static boost::shared_ptr<const TCHAR>   char2tchar(const char* mbStr);
-	//static boost::shared_ptr<const char>    tchar2char(const TCHAR* tStr);
+	//static std::tr1::shared_ptr<const TCHAR>   char2tchar(const char* mbStr);
+	//static std::tr1::shared_ptr<const char>    tchar2char(const TCHAR* tStr);
 shared_ptr<TCHAR> WcharMbcsConverter::char2tchar(const char* mbStr)
 {
 #ifdef _UNICODE
 	return char2wchar(mbStr);
 #else
 	int len = strlen(mbStr) + 1;
-	shared_ptr<TCHAR> result(new TCHAR[len]);
+	std::tr1::shared_ptr<TCHAR> result(new TCHAR[len]);
 	strcpy_s(result.get(), len, mbStr);
 	return result;
 #endif
@@ -91,7 +89,7 @@ shared_ptr<char> WcharMbcsConverter::tchar2char(const TCHAR* tStr)
 	return wchar2char(tStr);
 #else
 	int len = _tcslen(tStr) + 1;
-	shared_ptr<TCHAR> result(new TCHAR[len]);
+	std::tr1::shared_ptr<TCHAR> result(new TCHAR[len]);
 	strcpy_s(result.get(), len, tStr);
 	return result;
 #endif

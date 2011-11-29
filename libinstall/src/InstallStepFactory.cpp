@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+#include "precompiled_headers.h"
 #include "libinstall/InstallStepFactory.h"
 #include "libinstall/DownloadStep.h"
 #include "libinstall/CopyStep.h"
@@ -24,8 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/RunStep.h"
 #include "libinstall/tstring.h"
 #include "libinstall/VariableHandler.h"
+#include "libinstall/ProxyInfo.h"
 
-using namespace boost;
+
 using namespace std;
 
 InstallStepFactory::InstallStepFactory(VariableHandler* variableHandler)
@@ -37,7 +39,7 @@ InstallStepFactory::InstallStepFactory(VariableHandler* variableHandler)
 
 shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, ProxyInfo *proxyInfo)
 {
-	shared_ptr<InstallStep> installStep;
+	std::tr1::shared_ptr<InstallStep> installStep;
 
 	if (!_tcscmp(element->Value(), _T("download")) && element->FirstChild())
 	{

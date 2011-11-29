@@ -1,4 +1,4 @@
-#include <tchar.h>
+#include "precompiled_headers.h"
 #include "libinstall/Validate.h"
 #include "libinstall/DownloadManager.h"
 #include "libinstall/tstring.h"

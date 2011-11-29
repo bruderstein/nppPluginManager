@@ -19,11 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #ifndef _DELETESTEP_H
 #define _DELETESTEP_H
-#include <windows.h>
-#include <string>
+
 #include "InstallStep.h"
-#include <tchar.h>
-#include "tstring.h"
 
 
 class DeleteStep : public InstallStep

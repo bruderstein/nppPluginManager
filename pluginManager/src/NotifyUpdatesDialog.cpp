@@ -17,8 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <boost/shared_ptr.hpp>
-#include <list>
+#include "precompiled_headers.h"
 #include "NotifyUpdatesDialog.h"
 #include "PluginInterface.h"
 #include "resource.h"
@@ -97,7 +96,7 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			{
 				case IDC_IGNORE:
 					{
-						shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
+						std::tr1::shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
 						tstring pluginConfigFilename(_pluginList->getVariableHandler()->getVariable(_T("CONFIGDIR")));
 						pluginConfigFilename.append(_T("\\PluginManager.ini"));
 						
