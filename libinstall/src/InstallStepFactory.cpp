@@ -55,11 +55,13 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, ProxyI
 		const TCHAR *tValidate = element->Attribute(_T("validate"));
 		const TCHAR *tBackup = element->Attribute(_T("backup"));
 		const TCHAR *tIsGpup = element->Attribute(_T("isGpup"));
-		
+		const TCHAR *tRecursive = element->Attribute(_T("recursive"));
+
 		BOOL attemptReplace = FALSE;
 		BOOL validate		= FALSE;
 		BOOL backup			= FALSE;
 		BOOL isGpup         = FALSE;
+		BOOL recursive	    = FALSE;
 
 		if (tReplace && !_tcscmp(tReplace, _T("true")))
 			attemptReplace = TRUE;
@@ -73,8 +75,10 @@ shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, ProxyI
 		if (tIsGpup && !_tcscmp(tIsGpup, _T("true")))
 			isGpup = TRUE;
 
+		if (tRecursive && !_tcscmp(tRecursive, _T("true")))
+			recursive = TRUE;
 
-		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, isGpup, backup, proxyInfo));
+		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, isGpup, backup, recursive, proxyInfo));
 	}
 	else if (!_tcscmp(element->Value(), _T("delete")))
 	{

@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #include "precompiled_headers.h"
 #include "Utility.h"
-
+#include "PluginManager.h"
 
 BOOL Utility::removeDirectory(const TCHAR* directory)
 {
@@ -64,7 +64,7 @@ BOOL Utility::removeDirectory(const TCHAR* directory)
 }
 
 
-void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *arguments)
+void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *arguments, BOOL needAdmin)
 {
 
 	tstring gpupExe(nppDir);
@@ -118,7 +118,7 @@ void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *argu
 	PROCESS_INFORMATION procinfo;
 */
 	::ShellExecute(NULL,
-				   _T("open"),
+				   g_winVer < WV_VISTA ? _T("open") : (needAdmin ? _T("runas") : _T("open")),
 				   gpupExe.c_str(),
 				   gpupArguments.c_str(),
 				   NULL,

@@ -146,6 +146,14 @@
     <Manifest>
       <AdditionalManifestFiles>%(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusUnicode)\updater
+copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

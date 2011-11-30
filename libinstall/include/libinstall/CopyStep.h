@@ -39,7 +39,9 @@ class CopyStep : public InstallStep
 public:
 	CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate, 
 		BOOL isGpup,
-		BOOL backup, ProxyInfo* proxyInfo);
+		BOOL backup, 
+		BOOL recursive,
+		ProxyInfo* proxyInfo);
 
 	~CopyStep() {};
 	
@@ -68,6 +70,7 @@ private:
 	BOOL    _validate;
 	BOOL	_backup;
 	BOOL    _isGpup;
+	BOOL	_recursive;
 };
 
 #endif

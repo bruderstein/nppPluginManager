@@ -32,9 +32,10 @@ using namespace std;
 
 
 CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace, 
-				   BOOL validate, BOOL isGpup, BOOL backup, ProxyInfo *proxyInfo)
+				   BOOL validate, BOOL isGpup, BOOL backup, BOOL recursive, ProxyInfo *proxyInfo)
 				   : _from(from), _validate(validate), _failIfExists(!attemptReplace),
-				     _isGpup(isGpup), _backup(backup), _proxyInfo(proxyInfo)
+				     _isGpup(isGpup), _backup(backup), _recursive(recursive), 
+					 _proxyInfo(proxyInfo)
 {
 
 	if (to)
@@ -88,7 +89,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 	tstring toPath;
 	
-
+	// Need to split this out into separate function, then we can call it recursively (if _recursive).
 	
 	if (_toDestination == TO_DIRECTORY)
 	{
@@ -141,6 +142,8 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	tstring dest;
 	bool copy;
 
+	
+
 	if(hFindFile != INVALID_HANDLE_VALUE)
 	{
 		do 
@@ -156,6 +159,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 				dest.append(foundData.cFileName);
 			}
 			
+
 
 			// Exclude the . and .. directories
 			if (_tcscmp(foundData.cFileName, _T(".")) 

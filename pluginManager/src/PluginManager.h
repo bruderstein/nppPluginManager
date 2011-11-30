@@ -71,6 +71,7 @@ void doPluginManagerDlg(void);
 
 extern HANDLE g_hModule;
 extern BOOL   g_isUnicode;
+extern winVer g_winVer;
 
 struct Options
 {

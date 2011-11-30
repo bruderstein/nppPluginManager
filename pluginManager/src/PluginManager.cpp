@@ -49,6 +49,7 @@ Options				g_options;
 SettingsDialog		g_settingsDlg;
 PluginList          *g_pluginList       = NULL;
 
+winVer				g_winVer;
 
 /* dialog classes */
 AboutDialog			aboutDlg;
@@ -124,6 +125,8 @@ extern "C" __declspec(dllexport) void setInfo(NppData notpadPlusData)
 	aboutDlg.init((HINSTANCE)g_hModule, nppData);
 
 	pluginManagerDlg.init((HINSTANCE)g_hModule, nppData);
+
+	g_winVer = static_cast<winVer>(::SendMessage(nppData._nppHandle, NPPM_GETWINDOWSVERSION, 0, 0));
 }
 
 extern "C" __declspec(dllexport) CONST TCHAR * getName()
@@ -423,7 +426,7 @@ UINT startupChecks(LPVOID /*param*/)
 			{
 				configPath.insert(0, _T("-a \""));
 				configPath.append(_T("\""));
-				Utility::startGpup(nppData._nppHandle, tNppPath, configPath.c_str());
+				Utility::startGpup(nppData._nppHandle, tNppPath, configPath.c_str(), TRUE);
 			}
 
 	}

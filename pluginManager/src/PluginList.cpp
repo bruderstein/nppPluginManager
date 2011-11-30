@@ -747,16 +747,18 @@ void PluginList::downloadList()
 	if (downloadResult && serverMD5 != cHashBuffer.get())
 	{
 		// If the build is allowing to override the download URL, then use the one from options
+		// Also, don't unzip it - assume if it's overridden, it's a test version and hence easier to treat it 
+		// as a plain xml file
 #ifdef ALLOW_OVERRIDE_XML_URL
 		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.proxyInfo);
 #else
 		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.proxyInfo);
-#endif
-		
+
 		// Unzip the plugins.zip to PluginManagerPlugins.xml
 		tstring unzipPath(pluginConfig);
 		unzipPath.append(_T("\\"));
 		Decompress::unzip(pluginsListZipFilename, unzipPath);
+#endif
 	}
 
 
@@ -943,6 +945,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		if (pluginCount >= 500)
 		{
 			::MessageBox(hMessageBoxParent, _T("Error creating temporary directory for plugin download.  Ensure you have permission to your plugin config directory."), _T("Plugin Manager"), MB_ICONERROR);
+			progressDialog->close();
 			// nothing to clean up, any created temp directories will be cleaned up if necessary on next launch, once any successful installs have happened
 			return;
 		}
@@ -1026,7 +1029,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			gpupArguments.append(gpupFile);
 			gpupArguments.append(_T("\""));
 
-			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str());
+			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str(), TRUE);
 		}
 	}
 	else if (somethingInstalled)
@@ -1036,7 +1039,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		int restartNow = ::MessageBox(hMessageBoxParent, _T("Notepad++ needs to be restarted for changes to take effect.  Would you like to do this now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 		if (restartNow == IDYES)
 		{
-			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), _T(""));
+			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), _T(""), FALSE);
 		}
 	}
 	else
@@ -1112,7 +1115,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 		gpupArguments.append(gpupFile);
 		gpupArguments.append(_T("\""));
 
-		Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str());
+		Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str(), TRUE);
 	}
 	else
 	{
