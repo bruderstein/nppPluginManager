@@ -193,6 +193,10 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusAnsi)\updater
+copy "$(TargetPath)" "$(TestNotepadPlusPlusAnsi)\updater"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ANSI-Release|Win32'">
     <ClCompile>
@@ -235,6 +239,10 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusUnicode)\updater
+copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ANSI-Debug-xml-test|Win32'">
     <ClCompile>
@@ -255,6 +263,10 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusAnsi)\updater
+copy "$(TargetPath)" "$(TestNotepadPlusPlusAnsi)\updater"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\gpup.cpp" />

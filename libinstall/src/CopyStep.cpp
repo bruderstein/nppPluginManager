@@ -84,7 +84,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	setStatus(statusString.c_str());
 
 
-	tstring fromDir;
+	
 
 
 	tstring toPath;
@@ -114,16 +114,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 			return STEPSTATUS_FAIL;
 	}
 	
-	tstring::size_type backSlash = fromPath.find_last_of(_T("\\"));
-	if (backSlash != tstring::npos)
-	{
-		fromDir = fromPath.substr(0, backSlash + 1);
 	
-	} else
-	{
-		fromDir = basePath;
-	}
-
 	//////////// Special GPUP.EXE handling (run the new version to copy itself over the old one)
 	if (_isGpup)
 	{
@@ -134,12 +125,42 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		return STEPSTATUS_SUCCESS;
 	}
 
+	copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, windowParent); 
+
+
+	return status;
+}
+
+
+StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath, 
+					 TiXmlElement* forGpup,
+					 boost::function<void(const TCHAR*)> setStatus,
+					 boost::function<void(const int)> stepProgress, const HWND windowParent)
+{
+	StepStatus status = STEPSTATUS_SUCCESS;
+
+	tstring fromDir;
+
+	tstring::size_type backSlash = fromPath.find_last_of(_T("\\"));
+	if (backSlash != tstring::npos)
+	{
+		fromDir = fromPath.substr(0, backSlash + 1);
+	
+	} else
+	{
+		// Was basePath
+		fromDir = fromPath;
+	}
+
+
 	// For each file in fromPath, fromFileSpec, copy to [_to]\[found file]
 	WIN32_FIND_DATA foundData;
 	HANDLE hFindFile = ::FindFirstFile(fromPath.c_str(), &foundData);
 
 	tstring src;
 	tstring dest;
+	tstring statusString;
+	tstring fullFoundPath ;
 	bool copy;
 
 	
@@ -159,12 +180,41 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 				dest.append(foundData.cFileName);
 			}
 			
+			fullFoundPath = fromDir;
+			fullFoundPath.append(foundData.cFileName);
 
+			
 
 			// Exclude the . and .. directories
 			if (_tcscmp(foundData.cFileName, _T(".")) 
 				&& _tcscmp(foundData.cFileName, _T("..")))
 			{
+
+				// Check if we've found a directory, if so, then 
+				if (::PathIsDirectory(fullFoundPath.c_str()))
+				{
+					if (_recursive)
+					{
+						// If recursive, then copy everything in the child directories
+						fullFoundPath.append(_T("\\*.*"));
+
+						// Check destination directory exists
+						if (!::PathFileExists(dest.c_str()))
+						{
+							DirectoryUtil::createDirectories(dest.c_str());
+						}
+
+						// Destination must end in a backslash for directories
+						dest.append(_T("\\"));
+						// Recursively call ourselves to copy this directory
+						status = copyDirectory(fullFoundPath, dest, forGpup, setStatus, stepProgress, windowParent);
+
+					}
+
+					// Skip to next file
+					continue;
+				} 
+
 				statusString = _T("Copying ");
 				statusString.append(foundData.cFileName);
 				setStatus(statusString.c_str());
@@ -286,7 +336,6 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 	}
 
 	::FindClose(hFindFile);
-
 	return status;
 }
 

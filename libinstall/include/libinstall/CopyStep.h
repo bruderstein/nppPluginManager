@@ -57,6 +57,12 @@ private:
 	void copyGpup(const tstring& basePath, const tstring& toPath);
 	void callGpup(const TCHAR *gpupPath, const TCHAR *arguments);
 
+	StepStatus copyDirectory(tstring& fromPath, tstring& toPath, 
+					 TiXmlElement* forGpup,
+					 boost::function<void(const TCHAR*)> setStatus,
+					 boost::function<void(const int)> stepProgress, const HWND windowParent);
+
+	
 	tstring	_from;
 	tstring _to;
 	tstring _toFile;
