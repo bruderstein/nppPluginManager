@@ -6,7 +6,8 @@
 #include "libinstall/DownloadManager.h"
 #include "libinstall/WcharMbcsConverter.h"
 #include "libinstall/ProxyInfo.h"
-
+#include "libinstall/ProxyCredentialsDlg.h"
+#include "libinstall/ModuleInfo.h" 
 using namespace std;
 
 string DownloadManager::_userAgent("Plugin-Manager");
@@ -16,7 +17,6 @@ DownloadManager::DownloadManager(void)
 	curl_global_init(CURL_GLOBAL_ALL);
 	_curl = curl_easy_init();
 	curl_easy_setopt(_curl, CURLOPT_USERAGENT, DownloadManager::_userAgent.c_str());
-
 	_progressFunctionSet = FALSE;
 }
 
@@ -38,7 +38,7 @@ void DownloadManager::setProgressFunction(boost::function<void(int)> progressFun
 	_progressFunctionSet = TRUE;
 }
 
-BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo)
+BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo)
 {
 	std::tr1::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
@@ -50,41 +50,68 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 		return FALSE;
 	}
 
-	proxyInfo->setCurlOptions(_curl);
-	
-	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteCallback);
-	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, fp);
-	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
-	curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
-	curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
-	curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1);
-	CURLcode code = curl_easy_perform(_curl);
-	
-	// Get the content type
-	
-	char *contentTypeBuffer = NULL;
-	curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
-	if (contentTypeBuffer && *contentTypeBuffer)
+	long httpCode = 0;
+	CURLcode code;
+	bool cancelClicked = false;
+
+	do
 	{
-		std::tr1::shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
-		
-		contentType = tContentTypeBuffer.get();
-		tstring::size_type pos = contentType.find(_T(';'));
-		if (pos != tstring::npos)
-			contentType.erase(pos);
-	}
+		proxyInfo->setCurlOptions(_curl);
+	
+		curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteCallback);
+		curl_easy_setopt(_curl, CURLOPT_WRITEDATA, fp);
+		curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
+		curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
+		curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
+		curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1);
+		code = curl_easy_perform(_curl);
+	
+
+		curl_easy_getinfo(_curl, CURLINFO_HTTP_CODE, &httpCode);
+	
+		if (httpCode == 407)
+		{
+			ProxyCredentialsDlg proxyCreds;
+			if (!proxyCreds.getCredentials(moduleInfo, proxyInfo))
+			{
+				cancelClicked = true;
+			}
+		}
+
+	} while(cancelClicked == false && (code == CURLE_LOGIN_DENIED || httpCode == 407));
+	
+
+	
+	
 
 	fclose(fp);
 	
-	if (0 == code)
+	if (cancelClicked == false && CURLE_OK == code)
+	{
+		// Get the content type
+	
+		char *contentTypeBuffer = NULL;
+		curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
+		if (contentTypeBuffer && *contentTypeBuffer)
+		{
+			std::tr1::shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
+		
+			contentType = tContentTypeBuffer.get();
+			tstring::size_type pos = contentType.find(_T(';'));
+			if (pos != tstring::npos)
+				contentType.erase(pos);
+		}
 		return TRUE;
+	}
 	else
+	{
 		return FALSE;
+	}
 }
 
 
 
-BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, ProxyInfo *proxyInfo)
+BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo)
 {
 	std::tr1::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
@@ -100,7 +127,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, ProxyInfo *proxyI
 	curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1);
 	CURLcode code = curl_easy_perform(_curl);
 	
-	
+	// TODO: Need to check curl_easy_getinfo(HTTP_RESPONSE) for 407 (ProxyAuth)
 	
 	if (CURLE_OK == code)
 		return TRUE;

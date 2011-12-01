@@ -7,6 +7,7 @@
 #include "libinstall/WcharMbcsConverter.h"
 #include "libinstall/DirectLinkSearch.h"
 #include "libinstall/ProxyInfo.h"
+#include "libinstall/ModuleInfo.h"
 
 using namespace std;
 
@@ -22,7 +23,7 @@ DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename, ProxyInfo *p
 
 StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup, 
 								 boost::function<void(const TCHAR*)> setStatus,
-								 boost::function<void(const int)> stepProgress, const HWND windowParent)
+								 boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo)
 {
 	DownloadManager downloadManager;
 
@@ -59,7 +60,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 	tstring contentType;
 
-	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxyInfo))
+	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxyInfo, moduleInfo))
 	{
 		if (contentType == _T("text/html"))
 		{
@@ -70,7 +71,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 			if (realLink.get())
 			{
 				_url = realLink.get();
-				return perform(basePath, forGpup, setStatus, stepProgress, windowParent);
+				return perform(basePath, forGpup, setStatus, stepProgress, moduleInfo);
 			}
 			else
 				return STEPSTATUS_FAIL;

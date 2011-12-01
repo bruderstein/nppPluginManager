@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PluginInterface.h"
 #include "Plugin.h"
 #include "libinstall/ProxyInfo.h"
-
+#include "libinstall/ModuleInfo.h"
 
 
 #define PLUGINS_MD5_URL     _T("http://downloads.sourceforge.net/project/npppluginmgr/xml/plugins.md5.txt")
@@ -79,6 +79,7 @@ struct Options
 	BOOL notifyUpdates;
 	time_t lastCheck;
 	BOOL showUnstable;
+	ModuleInfo moduleInfo;
 #ifdef ALLOW_OVERRIDE_XML_URL
 	tstring downloadMD5Url;
 	tstring downloadUrl;

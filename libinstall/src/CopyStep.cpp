@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/VariableHandler.h"
 #include "libinstall/Validate.h"
 #include "libinstall/ProxyInfo.h"
+#include "libinstall/ModuleInfo.h"
 
 using namespace std;
 
@@ -72,7 +73,7 @@ void CopyStep::replaceVariables(VariableHandler *variableHandler)
 StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
 							 boost::function<void(const int)> stepProgress,
-							 const HWND windowParent)
+							 const ModuleInfo* moduleInfo)
 {
 	StepStatus status = STEPSTATUS_SUCCESS;
 
@@ -125,7 +126,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		return STEPSTATUS_SUCCESS;
 	}
 
-	copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, windowParent); 
+	copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, moduleInfo); 
 
 
 	return status;
@@ -135,7 +136,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath, 
 					 TiXmlElement* forGpup,
 					 boost::function<void(const TCHAR*)> setStatus,
-					 boost::function<void(const int)> stepProgress, const HWND windowParent)
+					 boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo)
 {
 	StepStatus status = STEPSTATUS_SUCCESS;
 
@@ -207,7 +208,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 						// Destination must end in a backslash for directories
 						dest.append(_T("\\"));
 						// Recursively call ourselves to copy this directory
-						status = copyDirectory(fullFoundPath, dest, forGpup, setStatus, stepProgress, windowParent);
+						status = copyDirectory(fullFoundPath, dest, forGpup, setStatus, stepProgress, moduleInfo);
 
 					}
 
@@ -224,7 +225,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 				copy = false;
 				if (_validate)
 				{
-					switch(Validator::validate(src, _proxyInfo))
+					switch(Validator::validate(src, _proxyInfo, moduleInfo))
 					{
 					
 						case VALIDATE_OK:
@@ -237,7 +238,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 								msg.append(foundData.cFileName);
 								msg.append(_T("' needed to install or update a plugin.  Do you want to copy this file anyway (not recommended)?"));
 								
-								int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
+								int userChoice = ::MessageBox(moduleInfo->getHParent(), msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
 								
 								if (userChoice == IDYES)
 								{
@@ -258,7 +259,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 								msg.append(foundData.cFileName);
 								msg.append(_T("' has been identified as unstable, incorrect or dangerous.  It is NOT recommended you install this file.  Do you want to install this file anyway?"));
 								
-								int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
+								int userChoice = ::MessageBox(moduleInfo->getHParent(), msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
 								
 								if (userChoice == IDYES)
 								{

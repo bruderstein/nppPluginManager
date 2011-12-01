@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/VariableHandler.h"
 #include "libinstall/tstring.h"
 #include "libinstall/Validate.h"
-
+#include "libinstall/ModuleInfo.h"
 
 using namespace std;
 
@@ -41,7 +41,7 @@ RunStep::RunStep(const TCHAR *file, const TCHAR *arguments, BOOL outsideNpp, Pro
 StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
 							 boost::function<void(const int)> stepProgress, 
-							 const HWND windowParent)
+							 const ModuleInfo* moduleInfo)
 {
 	StepStatus status = STEPSTATUS_FAIL;
 
@@ -69,7 +69,7 @@ StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup,
 
 	if(_file.find(_T("..")) != tstring::npos)
 	{
-		MessageBox(windowParent, _T("The executable path may not be within the sandbox area - this is dangerous and hence not permitted.  If you are seeing this message, please report it on the Notepad++ forums."), _T("Notepad++ Plugin Manager"), MB_ICONEXCLAMATION | MB_OK);
+		MessageBox(moduleInfo->getHParent(), _T("The executable path may not be within the sandbox area - this is dangerous and hence not permitted.  If you are seeing this message, please report it on the Notepad++ forums."), _T("Notepad++ Plugin Manager"), MB_ICONEXCLAMATION | MB_OK);
 		return STEPSTATUS_FAIL;
 	}
 
@@ -77,7 +77,7 @@ StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup,
 	tstring executable(basePath);
 	executable.append(_file);
     BOOL executeFile = FALSE;
-	switch(Validator::validate(executable, _proxyInfo))
+	switch(Validator::validate(executable, _proxyInfo, moduleInfo))
 	{
 	
 		case VALIDATE_OK:
@@ -90,7 +90,7 @@ StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup,
 				msg.append(_file);
 				msg.append(_T("' needed to install or update a plugin.  Do you want to EXECUTE this file anyway (highly not recommended)?"));
 				
-				int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
+				int userChoice = ::MessageBox(moduleInfo->getHParent(), msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
 				
 				if (userChoice == IDYES)
 				{
@@ -111,7 +111,7 @@ StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup,
 				msg.append(_file);
 				msg.append(_T("' has been identified as unstable, incorrect or dangerous.  It is NOT recommended you EXECUTE this file.  Do you want to EXECUTE this file anyway?"));
 				
-				int userChoice = ::MessageBox(windowParent, msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
+				int userChoice = ::MessageBox(moduleInfo->getHParent(), msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
 				
 				if (userChoice == IDYES)
 				{
@@ -133,7 +133,7 @@ StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup,
 	if (executeFile && execute(executable.c_str(), _arguments.c_str()))
 	{
 		status = STEPSTATUS_SUCCESS;
-		MessageBox(windowParent, _T("Press OK when the installation program has completed."), _T("Notepad++ Plugin Manager"), MB_OK | MB_ICONQUESTION);
+		MessageBox(moduleInfo->getHParent(), _T("Press OK when the installation program has completed."), _T("Notepad++ Plugin Manager"), MB_OK | MB_ICONQUESTION);
 	}
 
 	return status;

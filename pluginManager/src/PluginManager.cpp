@@ -74,6 +74,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
                        LPVOID /*lpReserved*/ )
 {
 	g_hModule = hModule;
+	g_options.moduleInfo.setHModule(static_cast<HMODULE>(hModule));
 
 	switch (reasonForCall)
 	{

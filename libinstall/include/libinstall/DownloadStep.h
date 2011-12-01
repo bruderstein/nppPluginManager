@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InstallStep.h"
 
 class ProxyInfo;
+class ModuleInfo;
 
 class DownloadStep : public InstallStep
 {
@@ -31,7 +32,7 @@ public:
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
 		boost::function<void(const TCHAR*)> setStatus,
-    	boost::function<void(const int)> stepProgress, const HWND windowParent);
+    	boost::function<void(const int)> stepProgress, const ModuleInfo *moduleInfo);
 
 private:
 	tstring	_url;

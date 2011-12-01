@@ -199,6 +199,9 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Lib>
+    <ResourceCompile>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ANSI-Debug-xml-test|Win32'">
     <ClCompile>
@@ -239,6 +242,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug-xml-test|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\src\ProxyCredentialsDlg.cpp" />
     <ClCompile Include="..\..\src\ProxyInfo.cpp" />
     <ClCompile Include="..\..\src\RunStep.cpp" />
     <ClCompile Include="..\..\src\Validate.cpp" />
@@ -257,12 +261,15 @@
     <ClInclude Include="..\..\include\libinstall\InstallStep.h" />
     <ClInclude Include="..\..\include\libinstall\InstallStepFactory.h" />
     <ClInclude Include="..\..\include\libinstall\md5.h" />
+    <ClInclude Include="..\..\include\libinstall\ModuleInfo.h" />
+    <ClInclude Include="..\..\include\libinstall\ProxyCredentialsDlg.h" />
     <ClInclude Include="..\..\include\libinstall\ProxyInfo.h" />
     <ClInclude Include="..\..\include\libinstall\RunStep.h" />
     <ClInclude Include="..\..\include\libinstall\Validate.h" />
     <ClInclude Include="..\..\include\libinstall\VariableHandler.h" />
     <ClInclude Include="..\..\include\libinstall\WcharMbcsConverter.h" />
     <ClInclude Include="..\..\src\precompiled_headers.h" />
+    <ClInclude Include="..\..\src\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\TinyXml\projects\2005\TinyXml.vcxproj">

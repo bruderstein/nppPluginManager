@@ -37,7 +37,7 @@ DeleteStep::DeleteStep(const TCHAR *file, BOOL isDirectory)
 StepStatus DeleteStep::perform(tstring& /*basePath*/, TiXmlElement* forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
 							 boost::function<void(const int)> stepProgress, 
-							 const HWND /*windowParent*/)
+							 const ModuleInfo* /*moduleInfo*/)
 {
 	StepStatus status = STEPSTATUS_FAIL;
 

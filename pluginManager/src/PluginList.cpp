@@ -736,9 +736,9 @@ void PluginList::downloadList()
 	string serverMD5;
 
 #ifdef ALLOW_OVERRIDE_XML_URL
-	BOOL downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, &g_options.proxyInfo);
+	BOOL downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
 #else
-	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo);
+	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
 #endif
 
 	std::tr1::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
@@ -750,7 +750,7 @@ void PluginList::downloadList()
 		// Also, don't unzip it - assume if it's overridden, it's a test version and hence easier to treat it 
 		// as a plain xml file
 #ifdef ALLOW_OVERRIDE_XML_URL
-		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.proxyInfo);
+		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.proxyInfo, &g_options.moduleInfo);
 #else
 		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.proxyInfo);
 
@@ -819,7 +819,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	// If not, then the user *really* ought to do that first, as the XML may have changed
 	// or, the URL for the XML may have changed
 
-
+	g_options.moduleInfo.setHParent(hMessageBoxParent);
 	std::tr1::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 
 	if (selectedPlugins.get() == NULL)
@@ -980,7 +980,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 			boost::bind(&ProgressDialog::stepComplete, progressDialog),
-			hMessageBoxParent, _variableHandler);
+			&g_options.moduleInfo, _variableHandler);
 
 		switch(status)
 		{
@@ -1051,7 +1051,8 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView)
 {
-	
+	g_options.moduleInfo.setHParent(hMessageBoxParent);
+
 	tstring configDir = _variableHandler->getVariable(_T("CONFIGDIR"));
 	
 	tstring basePath(configDir);
@@ -1095,7 +1096,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 					boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 					boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 					boost::bind(&ProgressDialog::stepComplete, progressDialog),
-					hMessageBoxParent, _variableHandler);
+					&g_options.moduleInfo, _variableHandler);
 		++pluginIter;
 	}
 

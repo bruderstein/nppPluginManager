@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/InstallStep.h"
 
 class VariableHandler;
+class ModuleInfo;
 
 enum InstallStatus {
 		INSTALL_SUCCESS,
@@ -80,7 +81,7 @@ public:
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress,
 		boost::function<void()> stepComplete,
-		const HWND windowParent,
+		const ModuleInfo* moduleInfo,
 		VariableHandler* variableHandler);
 
 	/* removal */
@@ -90,7 +91,7 @@ public:
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
-									  const HWND windowParent,
+									  const ModuleInfo* moduleInfo,
 									  VariableHandler* variableHandler);
 
 	/* dependencies */
@@ -137,7 +138,7 @@ private:
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
-									  const HWND windowParent,
+									  const ModuleInfo* moduleInfo,
 									  VariableHandler* variableHandler);
 };
 

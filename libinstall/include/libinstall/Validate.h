@@ -15,9 +15,10 @@ enum ValidateStatus
 };
 
 class ProxyInfo;
+class ModuleInfo;
 
 namespace Validator {
-	ValidateStatus validate(const tstring& file, ProxyInfo *proxyInfo);
+	ValidateStatus validate(const tstring& file, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo);
 }
 
 #endif

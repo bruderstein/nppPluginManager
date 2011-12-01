@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Plugin.h"
 #include "PluginVersion.h"
 #include "libinstall/VariableHandler.h"
+#include "libinstall/ModuleInfo.h"
+
 #include "tinyxml/tinyxml.h"
 
 using namespace std;
@@ -296,12 +298,12 @@ InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
-									  const HWND windowParent,
+									  const ModuleInfo* moduleInfo,
 									  VariableHandler* variableHandler)
 {
 	
 
-	return runSteps(_installSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, windowParent, variableHandler);
+	return runSteps(_installSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, moduleInfo, variableHandler);
 }
 
 
@@ -309,7 +311,7 @@ InstallStatus Plugin::remove(tstring& basePath, TiXmlElement* forGpup,
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
-									  const HWND windowParent,
+									  const ModuleInfo* moduleInfo,
 									  VariableHandler* variableHandler)
 {
 	
@@ -322,7 +324,7 @@ InstallStatus Plugin::remove(tstring& basePath, TiXmlElement* forGpup,
 
 	forGpup->LinkEndChild(deleteElement);	
 	
-	runSteps(_removeSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, windowParent, variableHandler);
+	runSteps(_removeSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, moduleInfo, variableHandler);
 
 	return INSTALL_NEEDRESTART;
 }
@@ -333,7 +335,7 @@ InstallStatus Plugin::runSteps(InstallStepContainer steps, tstring& basePath, Ti
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
-									  const HWND windowParent,
+									  const ModuleInfo* moduleInfo,
 									  VariableHandler* variableHandler)
 {
 	InstallStatus status = INSTALL_SUCCESS;
@@ -350,7 +352,7 @@ InstallStatus Plugin::runSteps(InstallStepContainer steps, tstring& basePath, Ti
 		if (variableHandler)
 			(*stepIterator)->replaceVariables(variableHandler);
 
-		stepStatus = (*stepIterator)->perform(basePath, forGpup, setStatus, stepProgress, windowParent);
+		stepStatus = (*stepIterator)->perform(basePath, forGpup, setStatus, stepProgress, moduleInfo);
 
 		switch(stepStatus)
 		{

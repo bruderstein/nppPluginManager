@@ -22,14 +22,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <curl/curl.h>
 
 class ProxyInfo;
+class ModuleInfo;
 
 class DownloadManager
 {
 public:
 	DownloadManager(void);
 	~DownloadManager(void);
-	BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo);
-	BOOL getUrl(const TCHAR *url, std::string& result, ProxyInfo *proxyInfo);
+	BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo);
+	BOOL getUrl(const TCHAR *url, std::string& result, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo);
 
 	void setProgressFunction(boost::function<void(int)> progressFunction);
 

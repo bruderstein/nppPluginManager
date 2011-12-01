@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tinyxml/tinyxml.h"
 
 class VariableHandler;
-
+class ModuleInfo;
 
 enum StepStatus 
 {
@@ -45,12 +45,12 @@ public:
 	virtual StepStatus perform(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress,
-		const HWND /*windowParent */) { return STEPSTATUS_SUCCESS; };
+		const ModuleInfo* /*windowParent */) { return STEPSTATUS_SUCCESS; };
 
 	virtual StepStatus remove(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress,
-		const HWND /*windowParent */) { return STEPSTATUS_SUCCESS; };
+		const ModuleInfo* /*windowParent */) { return STEPSTATUS_SUCCESS; };
 
 	virtual void replaceVariables(VariableHandler* /*variableHandler*/) { };
 

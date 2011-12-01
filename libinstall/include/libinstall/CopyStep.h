@@ -47,7 +47,7 @@ public:
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
 		 boost::function<void(const TCHAR*)> setStatus,
-	     boost::function<void(const int)> stepProgress, const HWND windowParent);
+	     boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo);
 
 	void replaceVariables(VariableHandler *variableHandler);
 
@@ -60,7 +60,7 @@ private:
 	StepStatus copyDirectory(tstring& fromPath, tstring& toPath, 
 					 TiXmlElement* forGpup,
 					 boost::function<void(const TCHAR*)> setStatus,
-					 boost::function<void(const int)> stepProgress, const HWND windowParent);
+					 boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo);
 
 	
 	tstring	_from;

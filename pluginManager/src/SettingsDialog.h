@@ -11,9 +11,8 @@ public:
 	SettingsDialog() {};
 	~SettingsDialog() {};    
     
-
-   	void doModal(HWND parent);
-
+	void doModal(HWND parent);
+   	
     
 
 protected :

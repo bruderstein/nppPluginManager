@@ -433,6 +433,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusAnsi)\plugins"</Command>
     <ClInclude Include="..\..\src\WcharMbcsConverter.h" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="..\..\..\libinstall\src\libinstall.rc" />
     <ResourceCompile Include="..\..\src\PluginManager.rc" />
     <ResourceCompile Include="..\..\src\version.rc" />
   </ItemGroup>
