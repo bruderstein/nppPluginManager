@@ -96,10 +96,12 @@ void SettingsDialog::initialiseOptions()
 		::SetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYPORT), "");	
 
 	::SendMessage(GetDlgItem(_hSelf, IDC_NOTIFY), BM_SETCHECK, g_options.notifyUpdates ? BST_CHECKED : BST_UNCHECKED, 0);
-
+	
 	::SendMessage(GetDlgItem(_hSelf, IDC_SHOWUNSTABLE), BM_SETCHECK, g_options.showUnstable ? BST_CHECKED : BST_UNCHECKED, 0);
 
-
+	
+	_ltoa_s(g_options.daysToCheck, tmp, 15, 10);
+	::SetWindowTextA(GetDlgItem(_hSelf, IDC_DAYSTOCHECK), tmp);
 
 	::SendMessage(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), BM_SETCHECK, g_options.installLocation == INSTALLLOC_APPDATA ? BST_UNCHECKED : BST_CHECKED, 0);
 
@@ -115,6 +117,10 @@ void SettingsDialog::setOptions()
 	::GetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYPORT), address, MAX_PATH);
 	g_options.proxyInfo.setProxyPort(atol(address));
 	
+
+	::GetWindowTextA(GetDlgItem(_hSelf, IDC_DAYSTOCHECK), address, MAX_PATH);
+	g_options.daysToCheck = atol(address);
+
 	LRESULT result = ::SendMessage(GetDlgItem(_hSelf, IDC_NOTIFY), BM_GETCHECK, 0, 0);
 	if (BST_CHECKED == result)
 		g_options.notifyUpdates = TRUE;
