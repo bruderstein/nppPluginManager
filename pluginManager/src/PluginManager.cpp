@@ -251,6 +251,12 @@ void loadSettings(void)
 
 	g_options.showUnstable = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_SHOWUNSTABLE, 0, iniFilePath);
 
+	g_options.daysToCheck = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_DAYSTOCHECK, DAYSCHECK_DEFAULT, iniFilePath);
+	if (g_options.daysToCheck < DAYSCHECK_MIN)
+	{
+		g_options.daysToCheck = DAYSCHECK_MIN;
+	}
+
 	g_options.installLocation = static_cast<INSTALLLOCATION>(::GetPrivateProfileInt(SETTINGS_GROUP, KEY_INSTALLLOCATION, 2, iniFilePath));
 	g_options.appDataPluginsSupported = static_cast<BOOL>(::SendMessage(nppData._nppHandle, NPPM_GETAPPDATAPLUGINSALLOWED, 0, 0));
 	// TODO Test
@@ -310,6 +316,13 @@ void saveSettings(void)
 	// Install location
 	_itot_s(g_options.installLocation, temp, 16, 10);
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_INSTALLLOCATION, temp, iniFilePath);
+	
+	if (g_options.daysToCheck != DAYSCHECK_DEFAULT)
+	{
+		_itot_s(g_options.daysToCheck, temp, 16, 10);
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_DAYSTOCHECK, temp, iniFilePath);
+	}
+
 
 	boost::shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername());
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, username.get(), iniFilePath);
@@ -408,7 +421,7 @@ UINT startupChecks(LPVOID /*param*/)
 	time_t ltime;
 	time(&ltime);
 
-	if (g_options.notifyUpdates && ((ltime - g_options.lastCheck) > 259200))
+	if (g_options.notifyUpdates && ((ltime - g_options.lastCheck) > (86400 * g_options.daysToCheck)))
 	{
 		// Store the check time
 		TCHAR tmp[20];

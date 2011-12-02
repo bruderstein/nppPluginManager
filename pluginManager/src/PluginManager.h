@@ -49,12 +49,15 @@ CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
 #define KEY_PROXYUSERNAME  _T("ProxyUsername")
 #define KEY_PROXYPASSWORD  _T("ProxyPassword")
 #define KEY_SAVECRED	   _T("SaveCredentials")
+#define KEY_DAYSTOCHECK	   _T("DaysToCheck")
 #define KEY_KEY            _T("Key")
 #ifdef ALLOW_OVERRIDE_XML_URL
 #define KEY_OVERRIDEMD5URL  _T("md5url")
 #define KEY_OVERRIDEURL     _T("xmlurl")
 #endif
 
+#define DAYSCHECK_MIN       5
+#define DAYSCHECK_DEFAULT   14
 
 
 
@@ -91,6 +94,7 @@ struct Options
 	INSTALLLOCATION installLocation;
 	BOOL appDataPluginsSupported;
 	ModuleInfo moduleInfo;
+	int daysToCheck;
 #ifdef ALLOW_OVERRIDE_XML_URL
 	tstring downloadMD5Url;
 	tstring downloadUrl;
