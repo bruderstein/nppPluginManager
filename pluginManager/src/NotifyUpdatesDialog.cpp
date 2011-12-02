@@ -96,7 +96,7 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			{
 				case IDC_IGNORE:
 					{
-						std::tr1::shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
+						boost::shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
 						tstring pluginConfigFilename(_pluginList->getVariableHandler()->getVariable(_T("CONFIGDIR")));
 						pluginConfigFilename.append(_T("\\PluginManager.ini"));
 						

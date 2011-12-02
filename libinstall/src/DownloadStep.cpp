@@ -65,7 +65,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		if (contentType == _T("text/html"))
 		{
 			DirectLinkSearch linkSearch(downloadFilename.c_str());
-			std::tr1::shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
+			boost::shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
 			
 
 			if (realLink.get())

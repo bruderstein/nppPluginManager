@@ -303,7 +303,7 @@ BOOL processActionsFile(const tstring& actionsFile)
 			while (step)
 			{
 				// TODO: NEED TO FIX THIS - Need proxy info somehow
-				std::tr1::shared_ptr<InstallStep> installStep = installStepFactory.create(step, NULL);
+				boost::shared_ptr<InstallStep> installStep = installStepFactory.create(step, NULL);
 
 
 				StepStatus stepStatus;

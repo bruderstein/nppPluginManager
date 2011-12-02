@@ -380,7 +380,7 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 		else 
 		{
 
-			std::tr1::shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, &g_options.proxyInfo);
+			boost::shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, &g_options.proxyInfo);
 			if (installStep.get()) 
 			{
 				if (INSTALL == ior)
@@ -757,10 +757,10 @@ BOOL PluginList::isInstallOrUpgrade(const tstring& name)
 
 
 
-shared_ptr< list<tstring> > PluginList::calculateDependencies(std::tr1::shared_ptr< list<Plugin*> > selectedPlugins)
+boost::shared_ptr< list<tstring> > PluginList::calculateDependencies(boost::shared_ptr< list<Plugin*> > selectedPlugins)
 {
 	set<tstring> toBeInstalled;
-	std::tr1::shared_ptr< list<tstring> > installDueToDepends(new list<tstring>);
+	boost::shared_ptr< list<tstring> > installDueToDepends(new list<tstring>);
 
 
 	// First add all selected plugins to a name map
@@ -837,7 +837,7 @@ void PluginList::downloadList()
 	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
 #endif
 
-	std::tr1::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
+	boost::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
 
 	
 	if (downloadResult && serverMD5 != cHashBuffer.get())
@@ -914,7 +914,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	// or, the URL for the XML may have changed
 
 	g_options.moduleInfo.setHParent(hMessageBoxParent);
-	std::tr1::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+	boost::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 
 	if (selectedPlugins.get() == NULL)
 	{
@@ -976,7 +976,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	
 	
 
-	std::tr1::shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
+	boost::shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
 		
 	if (!installDueToDepends->empty())
 	{
@@ -1198,7 +1198,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str());
 	TiXmlElement*  installElement = forGpupDoc->FirstChildElement(_T("install"));
 
-	std::tr1::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+	boost::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 		
 
 	if (selectedPlugins.get() == NULL)

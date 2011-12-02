@@ -45,7 +45,7 @@ public:
 	void	setMessage(TCHAR *msg);
 	LRESULT notify(WPARAM wParam, LPARAM lParam);
 	Plugin* getCurrentPlugin();
-	std::tr1::shared_ptr< std::list<Plugin*> > getSelectedPlugins();
+	boost::shared_ptr< std::list<Plugin*> > getSelectedPlugins();
 	BOOL    empty();
 	
 

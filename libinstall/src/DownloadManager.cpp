@@ -28,7 +28,7 @@ DownloadManager::~DownloadManager(void)
 
 void DownloadManager::setUserAgent(const TCHAR* userAgent)
 {
-	std::tr1::shared_ptr<char> ua = WcharMbcsConverter::tchar2char(userAgent);
+	boost::shared_ptr<char> ua = WcharMbcsConverter::tchar2char(userAgent);
 	_userAgent = ua.get();
 }
 
@@ -40,7 +40,7 @@ void DownloadManager::setProgressFunction(boost::function<void(int)> progressFun
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo)
 {
-	std::tr1::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
+	boost::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
 
 	FILE *fp;
@@ -94,7 +94,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 		curl_easy_getinfo(_curl, CURLINFO_CONTENT_TYPE, &contentTypeBuffer);
 		if (contentTypeBuffer && *contentTypeBuffer)
 		{
-			std::tr1::shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
+			boost::shared_ptr<TCHAR> tContentTypeBuffer = WcharMbcsConverter::char2tchar(contentTypeBuffer);
 		
 			contentType = tContentTypeBuffer.get();
 			tstring::size_type pos = contentType.find(_T(';'));
@@ -113,7 +113,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo)
 {
-	std::tr1::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
+	boost::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
 	CURLcode code;
 	int httpCode = 0;

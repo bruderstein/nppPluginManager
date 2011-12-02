@@ -55,7 +55,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <tchar.h>
 
 #include <map>
+#include <boost/shared_ptr.hpp>
 
-
-
-// TODO: reference additional headers your program requires here

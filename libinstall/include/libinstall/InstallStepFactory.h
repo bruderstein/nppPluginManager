@@ -30,7 +30,7 @@ class InstallStepFactory
 public:
 	InstallStepFactory(VariableHandler* handler);
 
-	std::tr1::shared_ptr<InstallStep> create(TiXmlElement* element, ProxyInfo *proxyInfo);
+	boost::shared_ptr<InstallStep> create(TiXmlElement* element, ProxyInfo *proxyInfo);
 
 private:
 	VariableHandler* _variableHandler;

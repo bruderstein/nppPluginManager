@@ -19,5 +19,6 @@
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
 
 typedef std::basic_string<TCHAR>			tstring;

@@ -32,3 +32,4 @@ typedef std::basic_string<TCHAR>			tstring;
 #pragma warning (pop)
 
 #include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>

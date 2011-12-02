@@ -299,7 +299,7 @@ void saveSettings(void)
 	const char *proxy = g_options.proxyInfo.getProxy();
 	if (proxy && *proxy)
 	{
-		std::tr1::shared_ptr<TCHAR> tproxy = WcharMbcsConverter::char2tchar(proxy);
+		boost::shared_ptr<TCHAR> tproxy = WcharMbcsConverter::char2tchar(proxy);
 		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, tproxy.get(), iniFilePath);
 	}
 	else
@@ -311,7 +311,7 @@ void saveSettings(void)
 	_itot_s(g_options.installLocation, temp, 16, 10);
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_INSTALLLOCATION, temp, iniFilePath);
 
-	std::tr1::shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername());
+	boost::shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername());
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, username.get(), iniFilePath);
 	
 	const char *pass = g_options.proxyInfo.getPassword();
@@ -330,7 +330,7 @@ void saveSettings(void)
 		}
 		else 
 		{
-			shared_ptr<TCHAR> tpass = WcharMbcsConverter::char2tchar((const char *)pass);
+			boost::shared_ptr<TCHAR> tpass = WcharMbcsConverter::char2tchar((const char *)pass);
 			::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, tpass.get(), iniFilePath);
 		}
 	}

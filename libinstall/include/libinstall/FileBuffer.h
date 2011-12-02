@@ -35,7 +35,7 @@ public:
 
 private:
 	ifstream _file;
-	std::tr1::shared_ptr<char> _buffer;
+	boost::shared_ptr<char> _buffer;
 
 	size_t _currentBufferStart;
 	size_t _bufferLength;

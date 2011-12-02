@@ -34,7 +34,7 @@ public:
 	DirectLinkSearch(const TCHAR *filename);
 	~DirectLinkSearch();
 
-	std::tr1::shared_ptr<TCHAR> search(const TCHAR *filename);
+	boost::shared_ptr<TCHAR> search(const TCHAR *filename);
 
 
 private:

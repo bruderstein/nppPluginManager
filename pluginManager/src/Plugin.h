@@ -78,7 +78,7 @@ public:
 	void			addBadVersion(const PluginVersion &version, const TCHAR* report);
 
 	/* installation */
-	void			addInstallStep(std::tr1::shared_ptr<InstallStep> step);
+	void			addInstallStep(boost::shared_ptr<InstallStep> step);
 	size_t				getInstallStepCount();
 	InstallStatus   install(tstring& basePath, TiXmlElement* forGpup, 
 		boost::function<void(const TCHAR*)> setStatus,
@@ -89,7 +89,7 @@ public:
 
 	/* removal */
 	size_t getRemoveStepCount();
-	void addRemoveStep(std::tr1::shared_ptr<InstallStep> step);
+	void addRemoveStep(boost::shared_ptr<InstallStep> step);
 	InstallStatus remove(tstring& basePath, TiXmlElement* forGpup, 
 									  boost::function<void(const TCHAR*)> setStatus,
 									  boost::function<void(const int)> stepProgress,
@@ -129,7 +129,7 @@ private:
 	std::map<tstring, PluginVersion>  _versionMap;
 	std::map<PluginVersion, tstring>  _badVersionMap;
 
-	typedef std::list<std::tr1::shared_ptr<InstallStep> > InstallStepContainer;
+	typedef std::list<boost::shared_ptr<InstallStep> > InstallStepContainer;
 
 	InstallStepContainer	_installSteps;
 	InstallStepContainer	_removeSteps;

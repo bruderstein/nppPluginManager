@@ -25,10 +25,10 @@ Modified for inclusion in VS2010 project "Python Script"
 using namespace std;
 
 
-shared_ptr<wchar_t> WcharMbcsConverter::char2wchar(const char* mbStr)
+boost::shared_ptr<wchar_t> WcharMbcsConverter::char2wchar(const char* mbStr)
 {
 	
-	std::tr1::shared_ptr<wchar_t> wideCharStr;
+	boost::shared_ptr<wchar_t> wideCharStr;
 
 	int len = ::MultiByteToWideChar(CP_UTF8, 0, mbStr, -1, NULL, 0);
 	
@@ -48,10 +48,10 @@ shared_ptr<wchar_t> WcharMbcsConverter::char2wchar(const char* mbStr)
 }
 
 
-shared_ptr<char> WcharMbcsConverter::wchar2char(const wchar_t* wcStr)
+boost::shared_ptr<char> WcharMbcsConverter::wchar2char(const wchar_t* wcStr)
 {
 
-	std::tr1::shared_ptr<char> multiByteStr;
+	boost::shared_ptr<char> multiByteStr;
 
 	int len = WideCharToMultiByte(CP_UTF8, 0, wcStr, -1, NULL, 0, NULL, NULL);
 
@@ -69,27 +69,27 @@ shared_ptr<char> WcharMbcsConverter::wchar2char(const wchar_t* wcStr)
 	return multiByteStr;
 }
 
-	//static std::tr1::shared_ptr<const TCHAR>   char2tchar(const char* mbStr);
-	//static std::tr1::shared_ptr<const char>    tchar2char(const TCHAR* tStr);
-shared_ptr<TCHAR> WcharMbcsConverter::char2tchar(const char* mbStr)
+	//static boost::shared_ptr<const TCHAR>   char2tchar(const char* mbStr);
+	//static boost::shared_ptr<const char>    tchar2char(const TCHAR* tStr);
+boost::shared_ptr<TCHAR> WcharMbcsConverter::char2tchar(const char* mbStr)
 {
 #ifdef _UNICODE
 	return char2wchar(mbStr);
 #else
 	int len = strlen(mbStr) + 1;
-	std::tr1::shared_ptr<TCHAR> result(new TCHAR[len]);
+	boost::shared_ptr<TCHAR> result(new TCHAR[len]);
 	strcpy_s(result.get(), len, mbStr);
 	return result;
 #endif
 }
 
-shared_ptr<char> WcharMbcsConverter::tchar2char(const TCHAR* tStr)
+boost::shared_ptr<char> WcharMbcsConverter::tchar2char(const TCHAR* tStr)
 {
 #ifdef _UNICODE
 	return wchar2char(tStr);
 #else
 	int len = _tcslen(tStr) + 1;
-	std::tr1::shared_ptr<TCHAR> result(new TCHAR[len]);
+	boost::shared_ptr<TCHAR> result(new TCHAR[len]);
 	strcpy_s(result.get(), len, tStr);
 	return result;
 #endif

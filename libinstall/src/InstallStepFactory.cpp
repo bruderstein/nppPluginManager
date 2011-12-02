@@ -37,9 +37,9 @@ InstallStepFactory::InstallStepFactory(VariableHandler* variableHandler)
 
 
 
-shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, ProxyInfo *proxyInfo)
+boost::shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, ProxyInfo *proxyInfo)
 {
-	std::tr1::shared_ptr<InstallStep> installStep;
+	boost::shared_ptr<InstallStep> installStep;
 
 	if (!_tcscmp(element->Value(), _T("download")) && element->FirstChild())
 	{

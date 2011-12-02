@@ -281,12 +281,12 @@ void Plugin::addBadVersion(const PluginVersion &version, const TCHAR* report)
 }
 
 
-void Plugin::addInstallStep(std::tr1::shared_ptr<InstallStep> step)
+void Plugin::addInstallStep(boost::shared_ptr<InstallStep> step)
 {
 	_installSteps.push_back(step);
 }
 
-void Plugin::addRemoveStep(std::tr1::shared_ptr<InstallStep> step)
+void Plugin::addRemoveStep(boost::shared_ptr<InstallStep> step)
 {
 	_removeSteps.push_back(step);
 }
