@@ -42,7 +42,8 @@ public:
 	void reparseFile(const tstring& pluginsListFilename);
 
 	BOOL parsePluginFile(CONST TCHAR *filename);
-	BOOL checkInstalledPlugins(TCHAR *nppDirectory);
+	BOOL checkInstalledPlugins();
+	
 	PluginListContainer& getInstalledPlugins();
 	PluginListContainer& getUpdateablePlugins();
 	PluginListContainer& getAvailablePlugins();
@@ -80,6 +81,7 @@ public:
 	/* Returns true if the lists have been downloaded and processed already */
 	BOOL listsAvailable();
 
+
 private:
 	/* Plugin name map */
 	PluginContainer _plugins;
@@ -114,6 +116,9 @@ private:
 	
 
 	TiXmlDocument* getGpupDocument(const TCHAR* filename);
+
+	BOOL checkInstalledPlugins(const TCHAR *nppDirectory, BOOL allUsers);
+	void addAvailablePlugins();
 
 	void installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade);
 	void removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView);

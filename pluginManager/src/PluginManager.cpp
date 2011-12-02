@@ -220,12 +220,16 @@ void loadSettings(void)
 	g_options.proxyInfo.setProxy(WcharMbcsConverter::tchar2char(tmp).get());
 
 	g_options.proxyInfo.setProxyPort(::GetPrivateProfileInt(SETTINGS_GROUP, KEY_PROXYPORT, 0, iniFilePath));
+	g_options.proxyInfo.setSaveCredentials(static_cast<SAVECRED>(::GetPrivateProfileInt(SETTINGS_GROUP, KEY_SAVECRED, (int)SAVECRED_UNKNOWN, iniFilePath)));
 
 	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, _T(""), tmp, MAX_PATH, iniFilePath);
 	g_options.proxyInfo.setUsername(WcharMbcsConverter::tchar2char(tmp).get());
 
 	TCHAR encBuffer[1000];
 	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, _T(""), encBuffer, 1000, iniFilePath);
+
+
+
 	if ((g_winVer >= WV_W2K || g_winVer == WV_UNKNOWN) 
 		&& encBuffer[0])
 	{
@@ -246,6 +250,22 @@ void loadSettings(void)
 	g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
 
 	g_options.showUnstable = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_SHOWUNSTABLE, 0, iniFilePath);
+
+	g_options.installLocation = static_cast<INSTALLLOCATION>(::GetPrivateProfileInt(SETTINGS_GROUP, KEY_INSTALLLOCATION, 2, iniFilePath));
+	g_options.appDataPluginsSupported = static_cast<BOOL>(::SendMessage(nppData._nppHandle, NPPM_GETAPPDATAPLUGINSALLOWED, 0, 0));
+	// TODO Test
+
+
+
+	// If AppData plugins are not supported, then reset the install location.
+	if (FALSE == g_options.appDataPluginsSupported)
+	{
+		if (g_options.installLocation == INSTALLLOC_APPDATA
+			|| g_options.installLocation == INSTALLLOC_ALLUSERS)
+		{
+			g_options.installLocation = INSTALLLOC_ALLUSERSNOAPPDATA;
+		}
+	}
 
 	TCHAR tmpLastCheck[20];
 	::GetPrivateProfileString(SETTINGS_GROUP, KEY_LASTCHECK, _T("0"), tmpLastCheck, 20, iniFilePath);
@@ -286,12 +306,16 @@ void saveSettings(void)
 	{
 		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), iniFilePath);
 	}
+	
+	// Install location
+	_itot_s(g_options.installLocation, temp, 16, 10);
+	::WritePrivateProfileString(SETTINGS_GROUP, KEY_INSTALLLOCATION, temp, iniFilePath);
 
 	std::tr1::shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername());
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, username.get(), iniFilePath);
 	
 	const char *pass = g_options.proxyInfo.getPassword();
-	if (pass && pass[0])
+	if (g_options.proxyInfo.getSaveCredentials() == SAVECRED_YES && pass && pass[0])
 	{
 		if (g_winVer >= WV_W2K || g_winVer == WV_UNKNOWN)
 		{
@@ -310,6 +334,14 @@ void saveSettings(void)
 			::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, tpass.get(), iniFilePath);
 		}
 	}
+
+	if (g_options.proxyInfo.getSaveCredentials() != SAVECRED_UNKNOWN)
+	{
+		_itot_s(g_options.proxyInfo.getSaveCredentials(), temp, 16, 10);
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_SAVECRED, temp, iniFilePath);
+	}
+
+
 
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername()).get(), iniFilePath);
 	_itot_s(g_options.notifyUpdates, temp, 16, 10);

@@ -126,6 +126,11 @@ void Plugin::setInstalledVersionFromHash(const tstring &hash)
 	_isInstalled = TRUE;
 }
 
+void Plugin::setInstalledForAllUsers(BOOL installedForAllUsers)
+{
+	_installedForAllUsers = installedForAllUsers;
+}
+
 /* Getters */
 
 tstring& Plugin::getDescription()
@@ -250,6 +255,12 @@ tstring& Plugin::getLatestUpdate()
 {
 	return _latestUpdate;
 }
+
+BOOL Plugin::getInstalledForAllUsers()
+{
+	return _installedForAllUsers;
+}
+
 
 BOOL Plugin::isInstalled()
 {

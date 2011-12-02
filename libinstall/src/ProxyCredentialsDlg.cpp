@@ -88,6 +88,15 @@ void ProxyCredentialsDlg::initialiseCredentials()
 		::SetFocus(GetDlgItem(_hSelf, IDC_USERNAME));
 	}
 
+	if (_proxyInfo->getSaveCredentials() == SAVECRED_UNKNOWN
+		|| _proxyInfo->getSaveCredentials() == SAVECRED_YES)
+	{
+		::SendMessage(GetDlgItem(_hSelf, IDC_SAVECREDS), BM_SETCHECK, BST_CHECKED, 0);
+	}
+	else
+	{
+		::SendMessage(GetDlgItem(_hSelf, IDC_SAVECREDS), BM_SETCHECK, BST_UNCHECKED, 0);
+	}
 }
 
 void ProxyCredentialsDlg::setCredentials()
@@ -99,6 +108,15 @@ void ProxyCredentialsDlg::setCredentials()
 	::GetWindowTextA(GetDlgItem(_hSelf, IDC_PASSWORD), tmp, MAX_PATH);
 	_proxyInfo->setPassword(tmp);
 
+	LRESULT result = ::SendMessage(GetDlgItem(_hSelf, IDC_SAVECREDS), BM_GETCHECK, 0, 0);
+	if (result == BST_CHECKED)
+	{
+		_proxyInfo->setSaveCredentials(SAVECRED_YES);
+	}
+	else
+	{
+		_proxyInfo->setSaveCredentials(SAVECRED_NO);
+	}
 
 }
 		

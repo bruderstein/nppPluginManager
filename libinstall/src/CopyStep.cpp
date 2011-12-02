@@ -126,10 +126,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		return STEPSTATUS_SUCCESS;
 	}
 
-	copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, moduleInfo); 
-
-
-	return status;
+	return copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, moduleInfo); 
 }
 
 

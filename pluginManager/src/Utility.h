@@ -22,7 +22,7 @@ class Utility
 {
 public:
 	static BOOL removeDirectory(const TCHAR* directory);
-	static void startGpup(const HWND errorParent, const TCHAR* nppDir, const TCHAR* arguments, BOOL needAdmin);
+	static void startGpup(const HWND errorParent, const TCHAR* nppDir, const TCHAR* arguments, bool needAdmin);
 	
 };
 

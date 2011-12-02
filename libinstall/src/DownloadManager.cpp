@@ -115,21 +115,37 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, ProxyInfo *proxyI
 {
 	std::tr1::shared_ptr<char> charUrl = WcharMbcsConverter::tchar2char(url);
 	curl_easy_setopt(_curl, CURLOPT_URL, charUrl.get());
+	CURLcode code;
+	int httpCode = 0;
+	bool cancelClicked = false;
 
-	proxyInfo->setCurlOptions(_curl);
+	do
+	{
+		proxyInfo->setCurlOptions(_curl);
 
 	
-	curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteStringCallback);
-	curl_easy_setopt(_curl, CURLOPT_WRITEDATA, &result);
-	curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
-	curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
-	curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
-	curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1);
-	CURLcode code = curl_easy_perform(_curl);
+		curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, DownloadManager::curlWriteStringCallback);
+		curl_easy_setopt(_curl, CURLOPT_WRITEDATA, &result);
+		curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
+		curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
+		curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
+		curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1);
+		code = curl_easy_perform(_curl);
 	
-	// TODO: Need to check curl_easy_getinfo(HTTP_RESPONSE) for 407 (ProxyAuth)
+		curl_easy_getinfo(_curl, CURLINFO_HTTP_CODE, &httpCode);
 	
-	if (CURLE_OK == code)
+		if (httpCode == 407)
+		{
+			ProxyCredentialsDlg proxyCreds;
+			if (!proxyCreds.getCredentials(moduleInfo, proxyInfo))
+			{
+				cancelClicked = true;
+			}
+		}
+	
+	} while(cancelClicked == false && (code == CURLE_LOGIN_DENIED || httpCode == 407));
+
+	if (CURLE_OK == code && cancelClicked == false)
 		return TRUE;
 	else
 		return FALSE;

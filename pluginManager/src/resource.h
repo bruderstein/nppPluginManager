@@ -33,6 +33,7 @@
 #define IDC_NOTIFY2                     1019
 #define IDC_SHOWUNSTABLE                1019
 #define IDC_IGNORE                      1020
+#define IDC_INSTALLALLUSERS             1020
 #define IDC_BUTTON3                     1021
 #define IDC_REINSTALL                   1021
 #define IDC_BUTTON2                     1022
@@ -48,4 +49,3 @@
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
-

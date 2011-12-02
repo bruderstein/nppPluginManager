@@ -99,6 +99,11 @@ void SettingsDialog::initialiseOptions()
 
 	::SendMessage(GetDlgItem(_hSelf, IDC_SHOWUNSTABLE), BM_SETCHECK, g_options.showUnstable ? BST_CHECKED : BST_UNCHECKED, 0);
 
+
+
+	::SendMessage(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), BM_SETCHECK, g_options.installLocation == INSTALLLOC_APPDATA ? BST_UNCHECKED : BST_CHECKED, 0);
+
+	::EnableWindow(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), g_options.appDataPluginsSupported);
 }
 
 void SettingsDialog::setOptions()
@@ -122,5 +127,17 @@ void SettingsDialog::setOptions()
 	else
 		g_options.showUnstable = FALSE;
 
+	if (g_options.appDataPluginsSupported)
+	{
+		result = ::SendMessage(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), BM_GETCHECK, 0, 0);
+		if (BST_CHECKED == result)
+			g_options.installLocation = INSTALLLOC_ALLUSERS;
+		else
+			g_options.installLocation = INSTALLLOC_APPDATA;
+	}
+	else
+	{
+		g_options.installLocation = INSTALLLOC_ALLUSERSNOAPPDATA;
+	}
 }
 		

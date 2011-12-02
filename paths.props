@@ -6,7 +6,7 @@
     <BoostPath>e:\libs\boost</BoostPath>
     <CurlPath>e:\libs\curl-7.19.5</CurlPath>
 	<ZlibPath>e:\libs\zlib-1.2.3</ZlibPath>
-	<TestNotepadPlusPlusUnicode>e:\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
+	<TestNotepadPlusPlusUnicode>E:\NotepadTest\unicodeAppDataPlugins</TestNotepadPlusPlusUnicode>
 	<TestNotepadPlusPlusAnsi>e:\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
   </PropertyGroup>
   

@@ -56,6 +56,7 @@ public:
 	void	setCategory(const TCHAR* category);
 	void	setLatestUpdate(const TCHAR* latestUpdate);
 	void	setStability(const TCHAR* stability);
+	void    setInstalledForAllUsers(BOOL installedForAllUsers);
 
 	/* Getters */
 	tstring&		getName();
@@ -68,9 +69,11 @@ public:
 	tstring&		getLatestUpdate();
 	tstring&		getStability();
 	tstring&        getUpdateDescription();
+	BOOL			getInstalledForAllUsers();
 
 	/* General methods */
 	BOOL			isInstalled();
+	
 	void			addVersion(const TCHAR* hash, const PluginVersion &version);
 	void			addBadVersion(const PluginVersion &version, const TCHAR* report);
 
@@ -118,6 +121,7 @@ private:
 	BOOL					_isInstalled;
 	BOOL					_detailsAdded;
 	BOOL					_updateDetailsAdded;
+	BOOL					_installedForAllUsers;
 
 	/* Dependencies on other plugins */
 	std::list<tstring>		_dependencies;

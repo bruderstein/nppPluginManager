@@ -64,7 +64,7 @@ void PluginList::init(NppData *nppData)
 	_nppData = nppData;
 	TCHAR configDir[MAX_PATH];
 	TCHAR nppDir[MAX_PATH];
-	TCHAR pluginDir[MAX_PATH];
+	TCHAR allUsersPluginDir[MAX_PATH];
 
 	::SendMessage(nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, reinterpret_cast<LPARAM>(configDir));
 	::SendMessage(nppData->_nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDir));
@@ -86,18 +86,46 @@ void PluginList::init(NppData *nppData)
 	}
 
 	_nppVersion = versionString;
-		
-
-	_tcscpy_s(pluginDir, MAX_PATH, nppDir);
-	_tcscat_s(pluginDir, MAX_PATH, _T("\\plugins"));
+	
+	_tcscpy_s(allUsersPluginDir, MAX_PATH, nppDir);	
+	::PathAppend(allUsersPluginDir, _T("plugins"));
 	
 	_variableHandler = new VariableHandler();
 	_variableHandler->setVariable(_T("NPPDIR"), nppDir);
-	_variableHandler->setVariable(_T("PLUGINDIR"), pluginDir);
+	_variableHandler->setVariable(_T("ALLUSERSPLUGINDIR"), allUsersPluginDir);
+	
+	ITEMIDLIST *pidl;
+	HRESULT result = SHGetSpecialFolderLocation(NULL, CSIDL_APPDATA, &pidl);
+	if (result == S_OK)
+	{
+		TCHAR appDataPluginDir[MAX_PATH];
+		
+		if (SHGetPathFromIDList(pidl, appDataPluginDir))
+		{
+			PathAppend(appDataPluginDir, _T("Notepad++\\plugins"));
+			_variableHandler->setVariable(_T("USERPLUGINDIR"), appDataPluginDir);
+		}
+		else
+		{
+			_variableHandler->setVariable(_T("USERPLUGINDIR"), allUsersPluginDir);
+		}
+	}
+	else
+	{
+		_variableHandler->setVariable(_T("USERPLUGINDIR"), allUsersPluginDir);
+	}
+
+	if (g_options.installLocation == INSTALLLOC_APPDATA)
+	{
+		_variableHandler->setVariable(_T("PLUGINDIR"), _variableHandler->getVariable(_T("USERPLUGINDIR")).c_str());
+	}
+	else
+	{
+		_variableHandler->setVariable(_T("PLUGINDIR"), _variableHandler->getVariable(_T("ALLUSERSPLUGINDIR")).c_str());
+	}
+
 	_variableHandler->setVariable(_T("CONFIGDIR"), configDir);
 
-
-	
 }
 
 
@@ -369,14 +397,39 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 	}
 }
 
-
-BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
+BOOL PluginList::checkInstalledPlugins()
 {
-	tstring pluginsFullPathFilter;
-	
-	pluginsFullPathFilter.append(pluginPath);
+	const tstring& nppDirectory = _variableHandler->getVariable(_T("ALLUSERSPLUGINDIR"));
+	_installedPlugins.clear();
+	_availablePlugins.clear();
+	_updateablePlugins.clear();
+	// Check in the default location
+	checkInstalledPlugins(nppDirectory.c_str(), TRUE);
 
-	pluginsFullPathFilter += _T("\\plugins\\*.dll");
+	if (g_options.appDataPluginsSupported)
+	{
+		const tstring& appDataPluginDir = _variableHandler->getVariable(_T("USERPLUGINDIR"));
+
+		if (!::PathFileExists(appDataPluginDir.c_str()))
+		{
+			DirectoryUtil::createDirectories(appDataPluginDir.c_str());
+		}
+		else
+		{
+			// No point checking what's installed if we've just created the directory!
+			checkInstalledPlugins(appDataPluginDir.c_str(), FALSE);
+		}
+	}
+	addAvailablePlugins();
+	return TRUE;
+}
+
+
+BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
+{
+	tstring pluginsFullPathFilter(pluginPath);
+	
+	pluginsFullPathFilter += _T("\\*.dll");
 
 	WIN32_FIND_DATA foundData;
 	HANDLE hFindFile = ::FindFirstFile(pluginsFullPathFilter.c_str(), &foundData);
@@ -388,7 +441,7 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 		{
 			
 			tstring pluginFilename(pluginPath);
-			pluginFilename += _T("\\plugins\\");
+			pluginFilename += _T("\\");
 			pluginFilename += foundData.cFileName;
 			BOOL pluginOK = false;
 			tstring pluginName;
@@ -451,6 +504,8 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 
 					setInstalledVersion(pluginFilename, plugin);
 					
+					plugin->setInstalledForAllUsers(allUsers);
+
 					TCHAR hashBuffer[(MD5LEN * 2) + 1];
 					
 					if (MD5::hash(pluginFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1))
@@ -459,6 +514,44 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 						plugin->setInstalledVersionFromHash(hash);
 					}
 				
+					// If this is a user's plugin (in AppData), and there's already a version 
+					// for all users, and AppData plugins are supported, then remove the 
+					// allusers version of the plugin, as the appdata one will take precedence
+					if (g_options.appDataPluginsSupported && FALSE == allUsers)
+					{
+						list<Plugin*>::iterator it = _installedPlugins.begin();
+						while (it != _installedPlugins.end())
+						{
+							if (plugin->getName() == (*it)->getName()
+								&& (*it)->getInstalledForAllUsers())
+							{
+								it = _installedPlugins.erase(it);
+							}
+							else 
+							{
+								++it;
+							}
+						}
+
+						// Remove the plugin from updateable plugins too, as whether or not it can be 
+						// updated depends on THIS version, not the all users version
+						it = _updateablePlugins.begin();
+						while (it != _updateablePlugins.end())
+						{
+							if (plugin->getName() == (*it)->getName()
+								&& (*it)->getInstalledForAllUsers())
+							{
+								it = _updateablePlugins.erase(it);
+							}
+							else
+							{
+								++it;
+							}
+						}
+
+					}
+						
+
 					if (plugin->getInstalledVersion().getIsBad() 
 						|| plugin->getVersion() > plugin->getInstalledVersion())
 						_updateablePlugins.push_back(plugin);
@@ -482,17 +575,7 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 			
 		} while(::FindNextFile(hFindFile, &foundData));
 
-		PluginContainer::iterator iter = _plugins.begin();
-		while (iter != _plugins.end())
-		{
-			if (!iter->second->isInstalled())
-			{
-				if (g_options.showUnstable || iter->second->getStability() == _T("Good"))
-					_availablePlugins.push_back(iter->second);
-			}
-			++iter;
-		}
-
+		
 
 	}
 
@@ -500,6 +583,19 @@ BOOL PluginList::checkInstalledPlugins(TCHAR *pluginPath)
 	return TRUE;
 }
 
+void PluginList::addAvailablePlugins()
+{
+	PluginContainer::iterator iter = _plugins.begin();
+	while (iter != _plugins.end())
+	{
+		if (!iter->second->isInstalled())
+		{
+			if (g_options.showUnstable || iter->second->getStability() == _T("Good"))
+				_availablePlugins.push_back(iter->second);
+		}
+		++iter;
+	}
+}
 
 tstring PluginList::getPluginName(tstring pluginFilename)
 {
@@ -767,10 +863,8 @@ void PluginList::downloadList()
 	parsePluginFile(pluginsListFilename.c_str());
 	
 	// Check for what is installed
-	TCHAR nppDirectory[MAX_PATH];
-	::SendMessage(_nppData->_nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDirectory));
-
-	checkInstalledPlugins(nppDirectory);
+	checkInstalledPlugins();
+		
 
 	::SetEvent(_hListsAvailableEvent);
 	
@@ -785,7 +879,7 @@ void PluginList::reparseFile(const tstring& pluginsListFilename)
 	TCHAR nppDirectory[MAX_PATH];
 	::SendMessage(_nppData->_nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDirectory));
 
-	checkInstalledPlugins(nppDirectory);
+	checkInstalledPlugins();
 }
 
 
@@ -927,6 +1021,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	BOOL somethingInstalled = FALSE;
 
 	TCHAR pluginCountChar[10];
+	bool needAdmin = false;
 
 	while(pluginIter != selectedPlugins->end())
 	{
@@ -954,8 +1049,28 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		pluginTemp.append(_T("\\"));
 		
 
+		/* If we're upgrading, and 
+		   either:
+		      The current plugin is installed in appdata, and the new one will be installed in appdata
+		   or:
+		      The current plugin is installed for all users, and the new one will be installed for all users
 
-		if (isUpgrade)
+		   If the old version is in all users, and the new one going to appdata, then we don't need to remove it,
+		   so that a normal user can install an upgrade (when this feature is enabled by the admin)
+		   N++ will use the plugin in AppData to override N++\plugins dir
+		*/
+		if (isUpgrade 
+			&& (   ((*pluginIter)->getInstalledForAllUsers() == FALSE
+			         && g_options.installLocation == INSTALLLOC_APPDATA
+			       )
+		       || 
+			  
+			     ((*pluginIter)->getInstalledForAllUsers() == TRUE
+			         && g_options.installLocation != INSTALLLOC_APPDATA
+			       )
+			     
+			   )
+			)
 		{
 			/* Remove the existing file if is an upgrade
 			 * This will be done in gpup, but the copy will come afterwards, also in gpup
@@ -968,12 +1083,24 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 			TiXmlElement* removeElement = new TiXmlElement(_T("delete"));
 			
-			tstring fullFilename(pluginDir);
+			tstring fullFilename;
+			if ((*pluginIter)->getInstalledForAllUsers())
+			{
+				// If the old plugin is installed for all users, then we need admin rights to remove it
+				needAdmin = true;
+				fullFilename.append(_variableHandler->getVariable(_T("ALLUSERSPLUGINDIR")));
+			}
+			else
+			{
+				fullFilename.append(_variableHandler->getVariable(_T("USERPLUGINDIR")));
+			}
+
 			fullFilename.push_back(_T('\\'));
 			fullFilename.append((*pluginIter)->getFilename());
 
 			removeElement->SetAttribute(_T("file"), fullFilename.c_str());
 			installElement->LinkEndChild(removeElement);
+			
 		}
 
 		InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
@@ -985,11 +1112,19 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		switch(status)
 		{
 			case INSTALL_SUCCESS:
+				if (g_options.installLocation != INSTALLLOC_APPDATA)
+				{
+					needAdmin =true;
+				}
 				Utility::removeDirectory(pluginTemp.c_str());
 				somethingInstalled = TRUE;
 				break;
 
 			case INSTALL_NEEDRESTART:
+				if (g_options.installLocation != INSTALLLOC_APPDATA)
+				{
+					needAdmin =true;
+				}
 				needRestart = TRUE;
 				somethingInstalled = TRUE;
 				break;
@@ -1029,7 +1164,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			gpupArguments.append(gpupFile);
 			gpupArguments.append(_T("\""));
 
-			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str(), TRUE);
+			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str(), needAdmin);
 		}
 	}
 	else if (somethingInstalled)
@@ -1039,7 +1174,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		int restartNow = ::MessageBox(hMessageBoxParent, _T("Notepad++ needs to be restarted for changes to take effect.  Would you like to do this now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 		if (restartNow == IDYES)
 		{
-			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), _T(""), FALSE);
+			Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), _T(""), needAdmin);
 		}
 	}
 	else
@@ -1088,9 +1223,13 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	tstring removeBasePath;
 
 	pluginIter = selectedPlugins->begin();
-	
+	bool needAdmin = false;
 	while(pluginIter != selectedPlugins->end())
 	{
+		if ((*pluginIter)->getInstalledForAllUsers())
+		{
+			needAdmin = true;
+		}
 		
 		(*pluginIter)->remove(removeBasePath, installElement, 
 					boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
@@ -1116,7 +1255,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 		gpupArguments.append(gpupFile);
 		gpupArguments.append(_T("\""));
 
-		Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str(), TRUE);
+		Utility::startGpup(hMessageBoxParent, _variableHandler->getVariable(_T("NPPDIR")).c_str(), gpupArguments.c_str(), needAdmin);
 	}
 	else
 	{

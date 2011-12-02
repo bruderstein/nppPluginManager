@@ -415,6 +415,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusAnsi)\plugins"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\libinstall\src\resource.h" />
     <ClInclude Include="..\..\src\Encrypter.h" />
     <ClInclude Include="..\..\src\Plugin.h" />
     <ClInclude Include="..\..\src\PluginList.h" />
