@@ -752,7 +752,7 @@ void PluginList::downloadList()
 #ifdef ALLOW_OVERRIDE_XML_URL
 		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.proxyInfo, &g_options.moduleInfo);
 #else
-		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.proxyInfo);
+		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.proxyInfo, &g_options.moduleInfo);
 
 		// Unzip the plugins.zip to PluginManagerPlugins.xml
 		tstring unzipPath(pluginConfig);

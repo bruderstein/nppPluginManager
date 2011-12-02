@@ -42,7 +42,7 @@ BOOL ProxyCredentialsDlg::run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		case WM_INITDIALOG:
 			_hSelf = hWnd;
 			initialiseCredentials();
-			return TRUE;
+			return FALSE;
 
 		case WM_COMMAND:
 		{
@@ -71,8 +71,22 @@ BOOL ProxyCredentialsDlg::run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 void ProxyCredentialsDlg::initialiseCredentials()
 {
-	::SetWindowTextA(GetDlgItem(_hSelf, IDC_USERNAME), _proxyInfo->getUsername());
-	::SetWindowTextA(GetDlgItem(_hSelf, IDC_PASSWORD), _proxyInfo->getPassword());
+	const char *username = _proxyInfo->getUsername();
+	const char *password = _proxyInfo->getPassword();
+
+	
+	::SetWindowTextA(GetDlgItem(_hSelf, IDC_USERNAME), username);
+
+	::SetWindowTextA(GetDlgItem(_hSelf, IDC_PASSWORD), password);
+	if (username && *username)
+	{
+		Edit_SetSel(GetDlgItem(_hSelf, IDC_PASSWORD), 0, strlen((const char *)password));
+		::SetFocus(GetDlgItem(_hSelf, IDC_PASSWORD));
+	}
+	else
+	{
+		::SetFocus(GetDlgItem(_hSelf, IDC_USERNAME));
+	}
 
 }
 

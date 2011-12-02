@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Utility.h"
 #include "WcharMbcsConverter.h"
 #include "libinstall/DownloadManager.h"
+#include "Encrypter.h"
 
 /* information for notepad */
 CONST INT	nbFunc	= 2;
@@ -224,11 +225,23 @@ void loadSettings(void)
 	g_options.proxyInfo.setUsername(WcharMbcsConverter::tchar2char(tmp).get());
 
 	TCHAR encBuffer[1000];
-	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, _T(""), encBuffer, MAX_PATH, iniFilePath);
-	
-	//decrypt(encBuffer, tmp, MAX_PATH);
-	g_options.proxyInfo.setPassword(WcharMbcsConverter::tchar2char(tmp).get());
-	
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, _T(""), encBuffer, 1000, iniFilePath);
+	if ((g_winVer >= WV_W2K || g_winVer == WV_UNKNOWN) 
+		&& encBuffer[0])
+	{
+		Encrypter encrypter;
+		unsigned char decBuffer[100];
+		int length = encrypter.decryptHex(encBuffer, decBuffer, 100);
+		if (length > 0)
+		{
+			g_options.proxyInfo.setPassword((const char *)decBuffer);
+		}
+	}
+	else if (encBuffer[0])
+	{
+		// Less than Win2k, but still got a password, so saved unencrypted
+		g_options.proxyInfo.setPassword(WcharMbcsConverter::tchar2char(tmp).get());
+	}
 
 	g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
 
@@ -251,105 +264,6 @@ void loadSettings(void)
 
 }
 
-void generateKey(unsigned char *buffer, int bufferSize)
-{
-	HCRYPTPROV hProv;
-	CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_AES, CRYPT_VERIFYCONTEXT);
-	CryptGenRandom(hProv, bufferSize, buffer);
-	CryptReleaseContext(hProv, NULL);
-}
-
-int encryptKey(unsigned const char *keyBuffer, const int keyLength, unsigned char *encKeyBuffer, const int encKeyBufferLength)
-{
-	int retVal = 0;
-
-	DATA_BLOB pDataOut;
-	DATA_BLOB pDataIn;
-	pDataIn.cbData = keyLength;
-	pDataIn.pbData = static_cast<BYTE *>(const_cast<unsigned char *>(keyBuffer));
-
-	CryptProtectData(&pDataIn, NULL, NULL, NULL, NULL, NULL, &pDataOut);
-	if (encKeyBufferLength >= static_cast<int>(pDataOut.cbData))
-	{
-		memcpy(encKeyBuffer, pDataOut.pbData, pDataOut.cbData);
-		retVal = pDataOut.cbData;
-	}
-
-	LocalFree(pDataOut.pbData);
-	return retVal;
-}
-
-bool convertToHex(const unsigned char *source, int sourceLength, TCHAR *hex, int bufferLength)
-{
-	if (bufferLength < ((sourceLength * 2) + 1))
-	{
-		return false;
-	}
-
-	for (int pos = 0; pos < sourceLength; pos++)
-	{
-		_stprintf_s((hex + (pos*2)), bufferLength, _T("%02x"), source[pos]);
-	}
-
-	hex[sourceLength * 2] = '\0';
-	return true;
-}
-
-void convertFromHex(const TCHAR *hex, int hexLength, unsigned char *result, int resultLength)
-{
-	
-	for(int pos = 0, resultPos = 0; pos < hexLength && resultPos < resultLength; pos += 2)
-	{
-		result[resultPos] = ((hex[pos] & 0x0F) + ((hex[pos] & 0x40) ? 9 : 0)) << 4;
-		result[resultPos++] |= (hex[pos+1] & 0x0F) + ((hex[pos+1] & 0x40) ? 9 : 0);
-	}
-
-}
-
-
-
-void decryptKey(const unsigned char *encKeyBuffer, unsigned char *keyBuffer, int keyLength)
-{
-
-}
-
-bool getKey(unsigned char *buffer, int bufferSize)
-{
-	TCHAR encKeyBufferHex[1000];
-	unsigned char encKeyBuffer[500];
-	unsigned char keyBuffer[16];
-
-	int len = ::GetPrivateProfileString(SETTINGS_GROUP, KEY_KEY, _T(""), encKeyBufferHex, 1000, iniFilePath);
-	if (len == 0)
-	{
-		generateKey(keyBuffer, 16);
-		int encryptedSize = encryptKey(keyBuffer, 16, encKeyBuffer, 500);
-		convertToHex(encKeyBuffer, encryptedSize, encKeyBufferHex, 1000);
-		::WritePrivateProfileString(SETTINGS_GROUP, KEY_KEY, encKeyBufferHex, iniFilePath);
-	}
-	else
-	{
-		convertFromHex(encKeyBufferHex, _tcslen(encKeyBufferHex), encKeyBuffer, 500);
-		decryptKey(encKeyBuffer, keyBuffer, 16);	
-	}
-
-	if (bufferSize >= 16)
-	{
-		memcpy(buffer, keyBuffer, 16);
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-
-bool encrypt(const char *dataIn, TCHAR *output, int inputLength)
-{
-	//strcpy_s(output, inputLength, static_cast<const char *>(dataIn));
-	return false;
-}
 
 /***
  *	saveSettings()
@@ -364,21 +278,37 @@ void saveSettings(void)
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPORT, temp, iniFilePath);
 	const char *proxy = g_options.proxyInfo.getProxy();
 	if (proxy && *proxy)
-		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), iniFilePath);
-	else
 	{
-		
 		std::tr1::shared_ptr<TCHAR> tproxy = WcharMbcsConverter::char2tchar(proxy);
 		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, tproxy.get(), iniFilePath);
+	}
+	else
+	{
+		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), iniFilePath);
 	}
 
 	std::tr1::shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername());
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, username.get(), iniFilePath);
 	
-	TCHAR buffer[1000];
-	if (encrypt(g_options.proxyInfo.getPassword(), buffer, 1000))
+	const char *pass = g_options.proxyInfo.getPassword();
+	if (pass && pass[0])
 	{
-		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, buffer, iniFilePath);
+		if (g_winVer >= WV_W2K || g_winVer == WV_UNKNOWN)
+		{
+			Encrypter encrypter;
+			TCHAR buffer[1000];
+			int resultLength = encrypter.encryptToHex((unsigned char *)pass, strlen(pass), buffer, 1000);
+			if (resultLength)
+			{
+				::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, buffer, iniFilePath);
+			}
+
+		}
+		else 
+		{
+			shared_ptr<TCHAR> tpass = WcharMbcsConverter::char2tchar((const char *)pass);
+			::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, tpass.get(), iniFilePath);
+		}
 	}
 
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername()).get(), iniFilePath);

@@ -415,6 +415,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusAnsi)\plugins"</Command>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\Encrypter.h" />
     <ClInclude Include="..\..\src\Plugin.h" />
     <ClInclude Include="..\..\src\PluginList.h" />
     <ClInclude Include="..\..\src\PluginListView.h" />
@@ -438,6 +439,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusAnsi)\plugins"</Command>
     <ResourceCompile Include="..\..\src\version.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\Encrypter.cpp" />
     <ClCompile Include="..\..\src\Plugin.cpp" />
     <ClCompile Include="..\..\src\PluginList.cpp" />
     <ClCompile Include="..\..\src\PluginListView.cpp" />

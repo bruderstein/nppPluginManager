@@ -12,6 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NppPlugin", "..\..\..\NppPl
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpup", "..\..\..\gpup\projects\2005\gpup.vcxproj", "{182656A0-B2AE-4955-9A2D-D8705FA52B27}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EncryptionTest", "..\..\..\EncryptionTest\EncryptionTest.vcxproj", "{31C6B295-C108-407E-9FB8-80662B8A248B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ANSI-Debug|Any CPU = ANSI-Debug|Any CPU
@@ -244,6 +246,36 @@ Global
 		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Release|Win32.ActiveCfg = Release|Win32
 		{182656A0-B2AE-4955-9A2D-D8705FA52B27}.Release|Win32.Build.0 = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug|Any CPU.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug|Win32.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug|Win32.Build.0 = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug-xml-test|Any CPU.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug-xml-test|Mixed Platforms.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug-xml-test|Mixed Platforms.Build.0 = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug-xml-test|Win32.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Debug-xml-test|Win32.Build.0 = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Release|Any CPU.ActiveCfg = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Release|Mixed Platforms.Build.0 = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Release|Win32.ActiveCfg = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.ANSI-Release|Win32.Build.0 = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug|Win32.Build.0 = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug-xml-test|Any CPU.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug-xml-test|Mixed Platforms.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug-xml-test|Mixed Platforms.Build.0 = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug-xml-test|Win32.ActiveCfg = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Debug-xml-test|Win32.Build.0 = Debug|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Release|Any CPU.ActiveCfg = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Release|Win32.ActiveCfg = Release|Win32
+		{31C6B295-C108-407E-9FB8-80662B8A248B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
