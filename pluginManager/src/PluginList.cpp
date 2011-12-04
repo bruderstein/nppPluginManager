@@ -832,7 +832,15 @@ void PluginList::downloadList()
 	string serverMD5;
 
 #ifdef ALLOW_OVERRIDE_XML_URL
-	BOOL downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
+	BOOL downloadResult;
+	if (!g_options.downloadMD5Url.empty())
+	{
+		downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
+	}
+	else
+	{
+		downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
+	}
 #else
 	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
 #endif
@@ -846,15 +854,21 @@ void PluginList::downloadList()
 		// Also, don't unzip it - assume if it's overridden, it's a test version and hence easier to treat it 
 		// as a plain xml file
 #ifdef ALLOW_OVERRIDE_XML_URL
+	if (!g_options.downloadUrl.empty())
+	{
 		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.proxyInfo, &g_options.moduleInfo);
-#else
+	}
+	else
+#endif
+	{
 		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.proxyInfo, &g_options.moduleInfo);
 
 		// Unzip the plugins.zip to PluginManagerPlugins.xml
 		tstring unzipPath(pluginConfig);
 		unzipPath.append(_T("\\"));
 		Decompress::unzip(pluginsListZipFilename, unzipPath);
-#endif
+	}
+
 	}
 
 

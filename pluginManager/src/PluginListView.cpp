@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "precompiled_headers.h"
 #include "PluginListView.h"
 #include "PluginList.h"
-
+#include "PluginVersion.h"
 using namespace std;
 
 
@@ -100,6 +100,50 @@ LRESULT PluginListView::notify(WPARAM /*wParam*/, LPARAM lParam)
 			}
 			break;
 		}
+
+		case LVN_COLUMNCLICK:
+			{
+				NMLISTVIEW *colInfo = reinterpret_cast<NMLISTVIEW*>(lParam);
+				int (CALLBACK *compareFunc)(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) = NULL;
+				LVSORTCOLUMN sortColumn = LVSORTCOLUMN_NAME;
+
+				if (colInfo->iSubItem < 2 || colInfo->iSubItem == _nVersionColumns + 2)
+				{
+					compareFunc = PluginListView::stringComparer;
+					
+					if (colInfo->iSubItem == 1)
+					{
+						sortColumn = LVSORTCOLUMN_CATEGORY;
+					}
+					else if (colInfo->iSubItem == _nVersionColumns + 2)
+					{
+						sortColumn = LVSORTCOLUMN_STABILITY;
+					}
+				}
+				else
+				{
+					compareFunc = PluginListView::versionComparer;
+					
+					switch(_columns[colInfo->iSubItem - 2])
+					{
+						case VERSION_AVAILABLE:
+							sortColumn = LVSORTCOLUMN_VERSIONAVAILABLE;
+							break;
+
+						case VERSION_INSTALLED:
+							sortColumn = LVSORTCOLUMN_VERSIONINSTALLED;
+							break;
+							
+						// Just in case there's another one introduced at some point (beta version or something)
+						default:
+							sortColumn = LVSORTCOLUMN_VERSIONAVAILABLE;
+							break;
+					}
+				}
+
+				ListView_SortItems(_hListView, compareFunc, static_cast<LPARAM>(sortColumn));
+			}
+			break;
 
 		case NM_CLICK:
 			if (_hDescription && lParam)
@@ -214,7 +258,7 @@ void PluginListView::setList(PluginListContainer &list)
 		++iter;
 	}
 
-	ListView_SortItems(_hListView, PluginListView::itemComparer, NULL);
+	ListView_SortItems(_hListView, PluginListView::stringComparer, LVSORTCOLUMN_NAME);
 	
 }
 
@@ -334,7 +378,63 @@ BOOL PluginListView::empty()
 	return (ListView_GetItemCount(_hListView) == 0);
 }
 
-int CALLBACK PluginListView::itemComparer(LPARAM lParam1, LPARAM lParam2, LPARAM /*lParamSort*/)
+int CALLBACK PluginListView::stringComparer(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
-	return _tcscmp(reinterpret_cast<Plugin*>(lParam1)->getName().c_str(), reinterpret_cast<Plugin*>(lParam2)->getName().c_str());
+	const TCHAR *text1;
+	const TCHAR *text2;
+
+	switch(static_cast<LVSORTCOLUMN>(lParamSort))
+	{
+		case LVSORTCOLUMN_NAME:
+			text1 = reinterpret_cast<Plugin*>(lParam1)->getName().c_str();
+			text2 = reinterpret_cast<Plugin*>(lParam2)->getName().c_str();
+			break;
+
+		case LVSORTCOLUMN_STABILITY:
+			text1 = reinterpret_cast<Plugin*>(lParam1)->getStability().c_str();
+			text2 = reinterpret_cast<Plugin*>(lParam2)->getStability().c_str();
+			break;
+
+		case LVSORTCOLUMN_CATEGORY:
+			text1 = reinterpret_cast<Plugin*>(lParam1)->getCategory().c_str();
+			text2 = reinterpret_cast<Plugin*>(lParam2)->getCategory().c_str();
+			break;
+
+		default:
+			text1 = _T("");
+			text2 = _T("");
+			break;
+	}
+
+	
+	return _tcsicmp(text1, text2);
+}
+
+
+int CALLBACK PluginListView::versionComparer(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	PluginVersion version1, version2;
+
+	switch(static_cast<LVSORTCOLUMN>(lParamSort))
+	{
+		case LVSORTCOLUMN_VERSIONAVAILABLE:
+			version1 = reinterpret_cast<Plugin*>(lParam1)->getVersion();
+			version2 = reinterpret_cast<Plugin*>(lParam2)->getVersion();
+			break;
+
+		case LVSORTCOLUMN_VERSIONINSTALLED:
+			version1 = reinterpret_cast<Plugin*>(lParam1)->getInstalledVersion();
+			version2 = reinterpret_cast<Plugin*>(lParam2)->getInstalledVersion();
+			break;
+
+	}
+
+	int retVal = 0;
+
+	if (version1 < version2)
+		retVal = -1;
+	else if (version1 > version2)
+		retVal = 1;
+
+	return retVal;
 }

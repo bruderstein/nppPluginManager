@@ -272,6 +272,12 @@ void loadSettings(void)
 			g_options.installLocation = INSTALLLOC_ALLUSERSNOAPPDATA;
 		}
 	}
+	// Else, if we've "upgraded" to support for all users, assume we want appdata plugins
+	else if (TRUE == g_options.appDataPluginsSupported
+		&& g_options.installLocation == INSTALLLOC_ALLUSERSNOAPPDATA)
+	{
+		g_options.installLocation = INSTALLLOC_APPDATA;
+	}
 
 	TCHAR tmpLastCheck[20];
 	::GetPrivateProfileString(SETTINGS_GROUP, KEY_LASTCHECK, _T("0"), tmpLastCheck, 20, iniFilePath);
@@ -280,10 +286,10 @@ void loadSettings(void)
 
 #ifdef ALLOW_OVERRIDE_XML_URL	
 	TCHAR tmpUrl[MAX_PATH];
-	::GetPrivateProfileString(SETTINGS_GROUP, KEY_OVERRIDEMD5URL, PLUGINS_MD5_URL, tmpUrl, MAX_PATH, iniFilePath);
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_OVERRIDEMD5URL, _T(""), tmpUrl, MAX_PATH, iniFilePath);
 	g_options.downloadMD5Url = tmpUrl;
 
-	::GetPrivateProfileString(SETTINGS_GROUP, KEY_OVERRIDEURL, PLUGINS_URL, tmpUrl, MAX_PATH, iniFilePath);
+	::GetPrivateProfileString(SETTINGS_GROUP, KEY_OVERRIDEURL, _T(""), tmpUrl, MAX_PATH, iniFilePath);
 	g_options.downloadUrl = tmpUrl;
 #endif
 

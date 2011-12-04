@@ -23,8 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SettingsDialog.h"
 #include "resource.h"
 
-void SettingsDialog::doModal(HWND parent)
+void SettingsDialog::doModal(NppData *nppData, HWND parent)
 {
+	_nppData = nppData;
 	::DialogBoxParam((HINSTANCE)g_hModule, MAKEINTRESOURCE(IDD_CONFIGDIALOG), parent, SettingsDialog::dlgProc, reinterpret_cast<LPARAM>(this));
 }
 
@@ -106,6 +107,24 @@ void SettingsDialog::initialiseOptions()
 	::SendMessage(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), BM_SETCHECK, g_options.installLocation == INSTALLLOC_APPDATA ? BST_UNCHECKED : BST_CHECKED, 0);
 
 	::EnableWindow(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), g_options.appDataPluginsSupported);
+
+	tstring info(_T("Plugin Config path is:\r\n"));
+	TCHAR path[MAX_PATH];
+	path[0] = _T('\0');
+	::SendMessage(_nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, reinterpret_cast<LPARAM>(path));
+	info.append(path);
+	info.append(_T("\r\n"));
+	if (g_options.appDataPluginsSupported)
+	{
+		info.append(_T("Plugins in user's AppData directory are enabled. Remove the allowAppDataPlugins.xml file from the Notepad++ directory to disable."));
+	}
+	else
+	{
+		info.append(_T("Plugins in user's AppData directory are disabled - to enable in Notepad++ version 5.9.7 onwards place an empty file called allowAppDataPlugins.xml in the Notepad++ directory."));
+	}
+	
+	SetWindowText(GetDlgItem(_hSelf, IDC_INFOTEXT), info.c_str());
+
 }
 
 void SettingsDialog::setOptions()

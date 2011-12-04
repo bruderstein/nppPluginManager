@@ -75,7 +75,18 @@ private:
 	void	initColumns(void);
 	int		getCurrentSelectedIndex();
 	void    setAllCheckState(BOOL checked);
-	static int CALLBACK itemComparer(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
+
+	enum LVSORTCOLUMN
+	{
+		LVSORTCOLUMN_NAME,
+		LVSORTCOLUMN_VERSIONAVAILABLE,
+		LVSORTCOLUMN_VERSIONINSTALLED,
+		LVSORTCOLUMN_CATEGORY,
+		LVSORTCOLUMN_STABILITY
+	};
+
+	static int CALLBACK stringComparer(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
+	static int CALLBACK versionComparer(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
 };
 
 

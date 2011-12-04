@@ -1,6 +1,7 @@
 #ifndef _SETTINGSDIALOG_H
 #define _SETTINGSDIALOG_H
 
+struct NppData;
 
 
 
@@ -11,7 +12,7 @@ public:
 	SettingsDialog() {};
 	~SettingsDialog() {};    
     
-	void doModal(HWND parent);
+	void doModal(NppData *nppData, HWND parent);
    	
     
 
@@ -26,7 +27,7 @@ private:
 	void initialiseOptions();
 	void setOptions();
 
-
+	NppData *_nppData;
 	HWND   _hSelf;
 };
 

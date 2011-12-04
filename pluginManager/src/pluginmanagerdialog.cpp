@@ -438,7 +438,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 					std::string oldProxy (g_options.proxyInfo.getProxy());
 					int oldProxyPort = g_options.proxyInfo.getProxyPort();
 
-					settingsDlg.doModal(_hSelf);
+					settingsDlg.doModal(&_nppData, _hSelf);
 
 					std::string newProxy (g_options.proxyInfo.getProxy());
 					if (oldProxyPort != g_options.proxyInfo.getProxyPort()
