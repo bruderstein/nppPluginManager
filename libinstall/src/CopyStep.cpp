@@ -75,7 +75,6 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 							 boost::function<void(const int)> stepProgress,
 							 const ModuleInfo* moduleInfo)
 {
-	StepStatus status = STEPSTATUS_SUCCESS;
 
 	tstring fromPath = basePath;
 	

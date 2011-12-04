@@ -277,16 +277,6 @@
     <ClInclude Include="..\..\src\precompiled_headers.h" />
     <ClInclude Include="..\..\src\resource.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\TinyXml\projects\2005\TinyXml.vcxproj">
-      <Project>{c83e2a6f-9747-4855-9d61-a88359450ed6}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\unzip\projects\2005\unzip.vcxproj">
-      <Project>{e3dcabe9-3953-4a81-8b71-def9ad21753b}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
