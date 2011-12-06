@@ -174,7 +174,7 @@
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurld.lib;crypt32.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurld.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -205,7 +205,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurl.lib;crypt32.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurl.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -233,7 +233,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurld.lib;crypt32.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurld.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -261,7 +261,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusAnsi)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurl.lib;crypt32.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurl.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -289,7 +289,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusAnsi)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurld.lib;crypt32.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurld.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -321,7 +321,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurld.lib;crypt32.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;libcurld.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
