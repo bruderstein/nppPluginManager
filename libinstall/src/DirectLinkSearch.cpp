@@ -43,9 +43,15 @@ DirectLinkSearch::~DirectLinkSearch()
 
 boost::shared_ptr<TCHAR> DirectLinkSearch::search(const TCHAR *filename)
 {
+	if (!filename || !(*filename))
+	{
+		boost::shared_ptr<TCHAR> empty;
+		return empty;
+	}
+	
 	size_t patternLength = _tcslen(filename);
     size_t shiftTable[256];
-
+	
     for (int position = 0; position < 256; position++)
     {
        shiftTable[position] = patternLength;

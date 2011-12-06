@@ -19,9 +19,8 @@ from Notepad++.  A centrally hosted XML file holds the list of plugins, that the
 downloads and processes against the list of installed plugins.
 <br/><br/>
 <font color="#F00000">Important note for Vista / Windows 7: </font>
-In order to update the plugin manager from 0.9.3 to 0.9.3.1 (which fixes the issue with 
-Win7 and Vista), you need to run Notepad++ as administrator, update plugin manager, then 
-everything will run properly under a normal user.
+In order to update the plugin manager to 1.0.2 , you need to run Notepad++ as administrator, update plugin manager, then 
+everything will run properly under a normal user.  Future updates to Plugin Manager will automatically run as administrator.
 <a name="features"></a>
 <h3>Features</h3>
 
@@ -48,6 +47,23 @@ everything will run properly under a normal user.
 <br/><br/>
 <a name="changes"></a>
 <h3>Changes</h3>
+1.0.2
+<br><ul>
+<li>Support for authenticated proxies (SSPI (windows automatic) authenticated proxies are not supported)</li>
+<li>Plugin list now hosted on sourceforge's file distribution system</li>
+<li>Plugin list now zipped, reducing its size from (currently 120KiB to 29KiB)</li>
+<li>Improved handling for UAC on Windows Vista and above</li>
+<li>Support for the new AppData plugins - Notepad++ 5.9.7 and above</li>
+<li>Improved download support - better recognition of .zip files, and ability to download files as "naked" files</li>
+<li>Basic support for plugin removal steps added (meaning that removal of a plugin should any secondary files)</li>
+<li>Improved Notepad++ restart handling - faster restarts</li>
+<li>Initial support for a "run" install step added</li>
+<li>Recursive copy support</li>
+<li>Option to set how often plugin manager should check for plugin updates - minimum 5 days</li>
+<li>Column headers can now be clicked to sort the plugin in lists in different orders</li>
+<li>Path for plugin config files shown in settings dialog, making it easier to identify the type of installation you have</li>
+</ul>
+<br/>
 0.9.3.1
 <br><ul>
 <li>Fixed issue with Windows 7 / Vista, so you now get a UAC prompt on restart of N++
@@ -120,51 +136,25 @@ from the update tab (or when you get the notification that the update has happen
 <br/><br/>
 <a name="download"></a>
 <h3>Download links</h3>
-Official home: <a href="http://sourceforge.net/projects/npp-plugins/files">http://sourceforge.net/projects/npp-plugins/files</a>
+Official home: <a href="http://sourceforge.net/projects/npppluginmgr/files/v1.0.2">http://sourceforge.net/projects/npppluginmgr/files/v1.0.2</a>
 <br/>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_UNI.zip</a>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.2_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_UNI.zip</a>
 <br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_ANSI.zip</a>
+ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.2_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_ANSI.zip</a>
 <br/>
 Source code is on github: <a href="http://github.com/davegb3/nppPluginManager">http://github.com/davegb3/nppPluginManager</a>
 <br/>
 MD5 Sums:
-<br/>c5dda18f55bfad2b168a7313d7e98532  PluginManager_0.9.3.1_ANSI.zip
-<br/>b32ae069e7ee1498f8b6e6c353c33a09  PluginManager_0.9.3.1_UNI.zip
-
+<br/>96f96623bc66713c6b7d13522f282f95 PluginManager_1.0.2_ANSI.zip
+<br/>b646aae090998a1901bb04f816ee1372 PluginManager_1.0.2_UNI.zip
 <br/><br/>
 <u>Older versions</u>
-<br/><u>0.9.3.0</u>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3_UNI.zip</a>
-<br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3_ANSI.zip</a>
-<br/>
-
-<br/><u>0.9.2.1</u>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_UNI.zip</a>
-<br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2.1_ANSI.zip</a>
-<br/>
-
-<br/><u>0.9.2</u>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_UNI.zip</a>
-<br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.2_ANSI.zip</a>
-<br/>
-<br/><u>0.9</u>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_UNI.zip</a>
-<br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9_ANSI.zip</a>
-<br/>
-<br/><u>0.8</u>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_UNI.zip</a>
-<br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.8_ANSI.zip</a>
-<br/>
+Older versions can be obtained from <a href="http://sourceforge.net/projects/npppluginmgr/files/">http://sourceforge.net/projects/npppluginmgr/files/</a>
 <hr/>
 <a name="XML"></a>
 <h3>XML File Structure and Features</h3>
-The XML file is currently hosted on my own server, which will probably change to somewhere on SourceForge soon.
+<i><b>The XML structure is documented here for completeness.  To edit the XML please use the </b></i><a href="http://www.brotherstone.co.uk/npp/pm/admin">administration system</a>
+
 <br/><br/>
 The XML file consists of &lt;plugin&gt; elements, each with a name attribute, containing the information about each plugin.  
 The name attribute must match (include case) the name provided by the plugins getName() function, i.e.
@@ -240,6 +230,8 @@ The following elements can be contained within the plugin element(all are option
 		This will install normally (as toFile will spot that &quot;$PLUGINDIR$\&quot; is an existing directory,
 		so copy the file as ThePlugin.dll, but updates will copy &quot;ThePlugin.dll&quot; to whatever that
 		instance of the plugin is installed as (e.g. ThePlugin_Copy1.dll).
+		<br/>
+		If the <b>recursive</b> attribute is 'true', then all files in child directories are copied.
 		</li>
 </ul>
 </li>
@@ -321,13 +313,13 @@ If you're a plugin developer or maintainer, and you don't want your plugin in th
 want to wait a while until it's stable, then just let me know.  I won't be releasing any updated
 plugins as soon as they are released, only after 
 a few days when any bug reports have had chance to come in - unless there's a very good reason. 
-If you don't see your plugin listed after releasing it, feel 
-free to drop me a mail or find me on #notepad++ on freenode (as davegb3) to give me a nudge.
+<br><br>
+There's a web based system for adding or updating your plugin - please use this to update your plugin
 <br><br>
 <h4>How to get your plugin listed</h4>
 Make an announcement on the <a href="http://sourceforge.net/projects/notepad-plus/forums/forum/482781/">
 Plugin Development forum</a> of the Notepad++ project.  I monitor this forum closely, and take the updates 
-from there.  Ideally, especially for new plugins, you can write your own XML, see <a href="#submitting">below</a>. 
+from there.  
 
 <br>
 <b>IMPORTANT:</b> If you haven't announced your plugin (or new version)
@@ -341,73 +333,52 @@ This eases the burden on testing, and also means that the XML isn't downloaded b
 <hr/>
 <a name="submitting"></a>
 <h3>Submitting changes to the XML Plugin List</h3>
-If something is not right, or you wish to add a plugin to the list, you are more than welcome to
-send me (davegb at pobox.com) your update, but ideally you can fork the plugins.xml repository
-from github, and send me a pull request, so I can merge your changes.  There are lots of videos
-and guides on github to get you started if you've not used it before.
+As of October 2011, there's a new web based system for plugin developers and maintainers to update and add their plugins.  
+<br>This system was kindly developed and donated by Pedro Sland, and I'm very grateful for his work on it.
 <br/><br/>
-<b>Please remember</b> to update the <b>files.sql</b> file as well as the plugins.xml file - this file
-has a very obvious format, and contains the MD5sums of all the valid binary files. Nothing gets removed, only added.
+Plugin developers and maintainers and welcome to register for an account at <a href="http://www.brotherstone.co.uk/npp/pm/admin">http://www.brotherstone.co.uk/npp/pm/admin</a>
 
 <br/><br/>
-We use the "next" and "live" branches.  Branch off the next branch to do your update, and send
-me a pull request.  I'll merge your changes and push them out in the next update.
 
-So it goes something like: (assuming you've got a github account or similar)
-<pre>
-git checkout -b myplugin_1.3 next
-[edit plugins.xml]
-[edit files.sql]
-git commit -m "Updated MyPlugin to version 1.3"
-git push origin myplugin_1.3
+<br/><br/>
 
-[send pull request for myplugin_1.3]
-</pre>
-<br/><br/>
-Repository: <br/>
-<a href="http://github.com/davegb3/nppPlugins">http://github.com/davegb3/nppPlugins</a>
-<br/><br/>
-It's obviously important to test that your XML modifications work, so for that we have a 
+It's obviously important to test that your modifications work, so for that we have a 
 testing version of the Plugin Manager.  This version allows you to override the 
 URL of the XML and MD5 file. Just set xmlurl and md5url settings in the PluginManager.ini.
+
 <br/>Note these are URLs, so you need to use something like
 <pre>
 xmlurl=file:///d:/work/npp/pluginsxml/plugins.xml
 md5url=file:///d:/work/npp/pluginsxml/plugins.md5.txt
 </pre>
+<br/>You can download a new version of plugins.xml (with your modifications) from the <a href="http://www.brotherstone.co.uk/npp/pm/admin">administration system</a>
 <br/>The testing version of the Plugin Manager is here:  <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_UNI.zip">Unicode</a> / <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_ANSI.zip">ANSI</a>
-<br/><br/>This is also a "debug" build, so if something goes wrong, you can step through it. - Let me know if you need the pdbs.
-<br/><font color="#F00000">If you've NOT tested your updates with this, then please let me know in the pull request,
-then I know I need to test it as well. - Thanks!</font>
-<br/><br/>The current XML file is located <b><a href="http://notepad-plus.sourceforge.net/commun/pluginManager/plugins.xml">here</a></b>, if you want to check it out.
+<br/><br/>This is also a "debug" build, so if something goes wrong, you can step through it. The PDBs are also included in the zip file.
+
+<br/><br/>The current XML file is located <b><a href="http://sourceforge.net/projects/npppluginmgr/files/xml">here</a></b>, if you want to check it out.
+<br/><br/>
+<b>The old git based XML modification system has been discontinued, and we are now exclusively using the web based system</b>
 <hr/>
 
 <a name="planned"></a>
-<h3>Planned for Version 1.0</h3>
+
+Next steps after 1.0.2, who knows:
 <ul>
-<li>DONE - <span style="text-decoration:line-through">Much improved downloader, can download individual files and more reliable ZIP downloading</span></li>
-<li>DONE - <span style="text-decoration:line-through">Notepad++ version detection, so plugins can have different versions for different Notepad++ versions</span></li>
-<li>DONE - <span style="text-decoration:line-through">A proper remove - so each plugin has removal steps, when it's more than just the DLL</span></li>
-<li>DONE - <span style="text-decoration:line-through">A "run" step, to allow for custom installation routines</span></li>
-<li>DONE - <span style="text-decoration:line-through">Improved GPUP.exe - better Notepad++ restart handling, self-replacement support</span></li>
-<li>In progress - Proxy authentication (the tricky bit is storing the credentials, that involves encryption, and key management)</li>
-<li>Improved UAC support, so you don't get a UAC prompt if you don't need one (like in the case where you just need to restart)</li>
-<li>Zipped (or maybe 7zipped) plugins.xml - the XML has grown from 40KB when we started, to nearly 100KB - no reason not to zip it</li>
-<li>Recursive copy - plugins with many directories (my Python Script plugin is the worst culprit) have a large definition, just because we can't do an XCOPY /S equivalent</li>
-</ul>
-After 1.0, who knows:
-<ul><li>Rollback to a previously installed version.  This might not make into 1.0, but I hope so.</li>
-<li>Some form of plugin feedback / rating system
 <li>7zip support.  Currently only zip files are supported, but 7zip is smaller, and being able to download the smaller version of plugins is always a plus.  I've moved this from 1.0 as I don't think it's that necessary, just a nice to have.</li>
+<li>A secondary (larger) download version of Plugin Manager that supports SSPI authenticated proxies.</li>
+<li>Rollback to a previously installed version.</li>
+<li>Some form of plugin feedback / rating system</li>
 </ul>
 
 Enjoy, and please let me know what you think, any feedback is gratefully received!  You can either post 
-a comment to the Plugin Development forum, or usually find me in #notepad++ on freenode.  
+a comment to the Plugin Development forum, or sometimes find me in #notepad++ on freenode.  
 
 <a name="credit"></a>
 <hr/>
 <h3>Credits</h3>
 I must say a big thank you to Joce, who helped a lot in the development of this plugin.  
+<br/>A big thanks to Pedro Sland, for developing the <a href="http://www.brotherstone.co.uk/npp/pm/admin">administration system</a>. 
+This has massively reduced the workload for updating the list, and enabled all plugin developers to 
 <br/>The good people on #notepad++ (especially joce and Thell) who've helped out with ideas and code reviews
 <br/>Don Ho and all the contributors, for bringing us this great editor, and providing such a neat plugin architecture that developers can easily add stuff
 </body>

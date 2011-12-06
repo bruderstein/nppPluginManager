@@ -328,7 +328,21 @@ InstallStatus Plugin::remove(tstring& basePath, TiXmlElement* forGpup,
 	
 	TiXmlElement* deleteElement = new TiXmlElement(_T("delete"));
 	
-	tstring fullFilename(variableHandler->getVariable(_T("PLUGINDIR")).c_str());
+	
+	// Save a copy of the current plugin dir
+	const tstring& origPluginDir = variableHandler->getVariable(_T("PLUGINDIR"));
+
+	// replace PLUGINDIR with the plugin dir of this plugin
+	if (this->getInstalledForAllUsers())
+	{
+		variableHandler->setVariable(_T("PLUGINDIR"), (variableHandler->getVariable(_T("ALLUSERSPLUGINDIR")).c_str()));
+	}
+	else
+	{
+		variableHandler->setVariable(_T("PLUGINDIR"), (variableHandler->getVariable(_T("USERPLUGINDIR")).c_str()));
+	}
+
+	tstring fullFilename(variableHandler->getVariable(_T("PLUGINDIR")));
 	fullFilename.push_back(_T('\\'));
 	fullFilename.append(getFilename());
 	deleteElement->SetAttribute(_T("file"), fullFilename.c_str());
@@ -336,6 +350,9 @@ InstallStatus Plugin::remove(tstring& basePath, TiXmlElement* forGpup,
 	forGpup->LinkEndChild(deleteElement);	
 	
 	runSteps(_removeSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, moduleInfo, variableHandler);
+
+	// restore the original plugin dir
+	variableHandler->setVariable(_T("PLUGINDIR"), origPluginDir.c_str());
 
 	return INSTALL_NEEDRESTART;
 }

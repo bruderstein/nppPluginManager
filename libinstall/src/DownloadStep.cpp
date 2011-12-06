@@ -65,8 +65,30 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		if (contentType == _T("text/html"))
 		{
 			DirectLinkSearch linkSearch(downloadFilename.c_str());
-			boost::shared_ptr<TCHAR> realLink = linkSearch.search(_filename.c_str());
-			
+			boost::shared_ptr<TCHAR> realLink;
+			if (!_filename.empty())
+			{
+				realLink = linkSearch.search(_filename.c_str());
+			}
+			else
+			{
+				tstring::size_type lastQuestionMark = _url.find_last_of(_T('?'));
+				tstring::size_type lastSlash = _url.find_last_of(_T('/'));
+				if (lastSlash != tstring::npos)
+				{
+					lastSlash++;
+				}
+
+				tstring::size_type length = lastQuestionMark;
+				if (length != tstring::npos)
+				{
+					length = length - lastSlash;
+				}
+				
+
+				tstring filenameInUrl = _url.substr(lastSlash, length);
+				realLink = linkSearch.search(filenameInUrl.c_str());
+			}
 
 			if (realLink.get())
 			{

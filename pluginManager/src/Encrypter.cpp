@@ -13,15 +13,26 @@ int Encrypter::encrypt(unsigned const char *keyBuffer, const int keyLength, unsi
 	DATA_BLOB pDataIn;
 	pDataIn.cbData = keyLength;
 	pDataIn.pbData = static_cast<BYTE *>(const_cast<unsigned char *>(keyBuffer));
-	BOOL success = CryptProtectData(&pDataIn, NULL, NULL, NULL, NULL, NULL, &pDataOut);
-
-	if (success && (encKeyBufferLength >= static_cast<int>(pDataOut.cbData)))
+	HMODULE crypt32 = LoadLibrary(_T("crypt32.dll"));
+	
+	if (crypt32 != NULL)
 	{
-		memcpy(encKeyBuffer, pDataOut.pbData, pDataOut.cbData);
-		retVal = pDataOut.cbData;
-	}
+		typedef BOOL (__stdcall * CryptProtectDataFunc)(DATA_BLOB*, LPCTSTR, DATA_BLOB*, PVOID, CRYPTPROTECT_PROMPTSTRUCT*, DWORD, DATA_BLOB*);
+		CryptProtectDataFunc cryptProtectData;
+		cryptProtectData = (CryptProtectDataFunc)GetProcAddress(crypt32, "CryptProtectData");
+		if (NULL != cryptProtectData)
+		{
+			BOOL success = cryptProtectData(&pDataIn, NULL, NULL, NULL, NULL, NULL, &pDataOut);
 
-	LocalFree(pDataOut.pbData);
+			if (success && (encKeyBufferLength >= static_cast<int>(pDataOut.cbData)))
+			{
+				memcpy(encKeyBuffer, pDataOut.pbData, pDataOut.cbData);
+				retVal = pDataOut.cbData;
+			}
+	
+			LocalFree(pDataOut.pbData);
+		}
+	}
 	return retVal;
 }
 
@@ -63,15 +74,28 @@ int Encrypter::decrypt(const unsigned char *encKeyBuffer, const int encKeyLength
 	DATA_BLOB pDataIn;
 	pDataIn.cbData = encKeyLength;
 	pDataIn.pbData = static_cast<BYTE *>(const_cast<unsigned char *>(encKeyBuffer));
-	BOOL success = CryptUnprotectData(&pDataIn, NULL, NULL, NULL, NULL, NULL, &pDataOut);
 
-	if (success && (keyLength >= static_cast<int>(pDataOut.cbData)))
+	HMODULE crypt32 = LoadLibrary(_T("crypt32.dll"));
+	
+	if (crypt32 != NULL)
 	{
-		memcpy(keyBuffer, pDataOut.pbData, pDataOut.cbData);
-		retVal = pDataOut.cbData;
-	}
+		typedef BOOL (__stdcall * CryptUnprotectDataFunc)(DATA_BLOB*, LPCTSTR, DATA_BLOB*, PVOID, CRYPTPROTECT_PROMPTSTRUCT*, DWORD, DATA_BLOB*);
+		CryptUnprotectDataFunc cryptUnprotectData;
+		cryptUnprotectData = (CryptUnprotectDataFunc)GetProcAddress(crypt32, "CryptUnprotectData");
+		if (NULL != cryptUnprotectData)
+		{	
+			BOOL success = cryptUnprotectData(&pDataIn, NULL, NULL, NULL, NULL, NULL, &pDataOut);
 
-	LocalFree(pDataOut.pbData);
+			if (success && (keyLength >= static_cast<int>(pDataOut.cbData)))
+			{
+				memcpy(keyBuffer, pDataOut.pbData, pDataOut.cbData);
+				retVal = pDataOut.cbData;
+			}
+			LocalFree(pDataOut.pbData);
+		}
+
+	}
+	
 	return retVal;
 }
 

@@ -190,6 +190,9 @@
       <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusUnicode)\plugins
 copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
     </PostBuildEvent>
+    <Manifest>
+      <OutputManifestFile>$(IntDir)pluginamanger.manifest</OutputManifestFile>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

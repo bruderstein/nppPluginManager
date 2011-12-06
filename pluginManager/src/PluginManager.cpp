@@ -336,21 +336,12 @@ void saveSettings(void)
 	const char *pass = g_options.proxyInfo.getPassword();
 	if (g_options.proxyInfo.getSaveCredentials() == SAVECRED_YES && pass && pass[0])
 	{
-		if (g_winVer >= WV_W2K || g_winVer == WV_UNKNOWN)
+		Encrypter encrypter;
+		TCHAR buffer[1000];
+		int resultLength = encrypter.encryptToHex((unsigned char *)pass, strlen(pass), buffer, 1000);
+		if (resultLength)
 		{
-			Encrypter encrypter;
-			TCHAR buffer[1000];
-			int resultLength = encrypter.encryptToHex((unsigned char *)pass, strlen(pass), buffer, 1000);
-			if (resultLength)
-			{
-				::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, buffer, iniFilePath);
-			}
-
-		}
-		else 
-		{
-			boost::shared_ptr<TCHAR> tpass = WcharMbcsConverter::char2tchar((const char *)pass);
-			::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, tpass.get(), iniFilePath);
+			::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, buffer, iniFilePath);
 		}
 	}
 

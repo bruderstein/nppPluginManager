@@ -63,6 +63,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 		curl_easy_setopt(_curl, CURLOPT_PROGRESSFUNCTION, DownloadManager::curlProgressCallback);
 		curl_easy_setopt(_curl, CURLOPT_PROGRESSDATA, this);
 		curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 0);
+		curl_easy_setopt(_curl, CURLOPT_CONNECTTIMEOUT, 30);
 		curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1);
 		code = curl_easy_perform(_curl);
 	
