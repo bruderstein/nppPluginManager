@@ -30,7 +30,7 @@ using namespace boost;
 
 
 Plugin::Plugin(void)
-: _isInstalled(FALSE), _detailsAdded(FALSE), _updateDetailsAdded(FALSE)
+: _isInstalled(FALSE), _detailsAdded(FALSE), _updateDetailsAdded(FALSE), _isLibrary(FALSE)
 {
 }
 

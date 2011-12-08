@@ -57,7 +57,7 @@ public:
 	void	setLatestUpdate(const TCHAR* latestUpdate);
 	void	setStability(const TCHAR* stability);
 	void    setInstalledForAllUsers(BOOL installedForAllUsers);
-
+	void    setIsLibrary(BOOL isLibrary) { _isLibrary = isLibrary; }
 	/* Getters */
 	tstring&		getName();
 	PluginVersion&	getVersion();
@@ -70,6 +70,8 @@ public:
 	tstring&		getStability();
 	tstring&        getUpdateDescription();
 	BOOL			getInstalledForAllUsers();
+	BOOL            getIsLibrary() { return _isLibrary; }
+
 
 	/* General methods */
 	BOOL			isInstalled();
@@ -122,6 +124,7 @@ private:
 	BOOL					_detailsAdded;
 	BOOL					_updateDetailsAdded;
 	BOOL					_installedForAllUsers;
+	BOOL					_isLibrary;
 
 	/* Dependencies on other plugins */
 	std::list<tstring>		_dependencies;

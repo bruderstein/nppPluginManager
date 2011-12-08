@@ -341,6 +341,20 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 					plugin->setStability(_T("Good"));
 
 
+				TiXmlElement *isLibraryElement = pluginNode->FirstChildElement(_T("isLibrary"));
+				if (isLibraryElement && isLibraryElement->FirstChild())
+				{
+					tstring isLibrary(isLibraryElement->FirstChild()->Value());
+					if (isLibrary == _T("true"))
+					{
+						_libraries[plugin->getName()] = plugin;
+						plugin->setIsLibrary(true);
+					}
+				}
+				
+
+
+
 				if (available)
 					_plugins[plugin->getName()] = plugin;
 				
@@ -742,13 +756,23 @@ VariableHandler* PluginList::getVariableHandler()
 
 Plugin* PluginList::getPlugin(tstring name)
 {
-	return _plugins[name];
+	Plugin* plugin = _plugins[name];
+	if (NULL == plugin)
+	{
+		plugin = _libraries[name];
+	}
+	return plugin;
 }
 
 BOOL PluginList::isInstallOrUpgrade(const tstring& name)
 {
 	Plugin* plugin = _plugins[name];
-	if (plugin->isInstalled() && plugin->getVersion() <= plugin->getInstalledVersion())
+	if (NULL == plugin)
+	{
+		plugin = _libraries[name];
+	}
+
+	if (!plugin || (plugin->isInstalled() && plugin->getVersion() <= plugin->getInstalledVersion()))
 		return FALSE;
 	else
 		return TRUE;
@@ -771,6 +795,7 @@ boost::shared_ptr< list<tstring> > PluginList::calculateDependencies(boost::shar
 		++pluginIter;
 	}
 
+
 	// Now check all dependencies are in the name map
 	pluginIter = selectedPlugins->begin();
 	while(pluginIter != selectedPlugins->end())
@@ -788,11 +813,15 @@ boost::shared_ptr< list<tstring> > PluginList::calculateDependencies(boost::shar
 					if (isInstallOrUpgrade(*depIter))
 					{
 						Plugin* dependsPlugin = getPlugin(*depIter);
-						toBeInstalled.insert(*depIter);
+						if (NULL != dependsPlugin)
+						{
+							toBeInstalled.insert(*depIter);
 
-						selectedPlugins->push_back(dependsPlugin);
-						// Add the name to the list to show the message
-						installDueToDepends->push_back(*depIter); 
+							selectedPlugins->push_back(dependsPlugin);
+							// Add the name to the list to show the message
+							installDueToDepends->push_back(*depIter); 
+							
+						}
 					}
 				}
 
@@ -994,6 +1023,8 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		
 	if (!installDueToDepends->empty())
 	{
+		bool dependentPluginsToInstall = false;
+
 		tstring dependsMessage = _T("The following plugin");
 		if (installDueToDepends->size() > 1)
 			dependsMessage.append(_T("s"));
@@ -1001,14 +1032,24 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		dependsMessage.append(_T(" need to be installed to support your selection.\r\n\r\n"));
 		for(list<tstring>::iterator msgIter = installDueToDepends->begin(); msgIter != installDueToDepends->end(); msgIter++)
 		{
-			dependsMessage.append(*msgIter);
-			dependsMessage.append(_T("\r\n"));
+			Plugin *plugin = getPlugin(*msgIter);
+			if (plugin && !plugin->getIsLibrary())
+			{
+				dependsMessage.append(*msgIter);
+				dependsMessage.append(_T("\r\n"));
+				dependentPluginsToInstall = true;
+			}
+			
+
 		}
 
 		dependsMessage.append(_T("\r\nThey will be installed automatically."));
 
-
-		::MessageBox(hMessageBoxParent, dependsMessage.c_str(), _T("Plugin Manager"), MB_OK | MB_ICONINFORMATION);
+		// Only display the message if there are real plugin dependencies to install, and not just libraries
+		if (dependentPluginsToInstall)
+		{
+			::MessageBox(hMessageBoxParent, dependsMessage.c_str(), _T("Plugin Manager"), MB_OK | MB_ICONINFORMATION);
+		}
 
 	}
 

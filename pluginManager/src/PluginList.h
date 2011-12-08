@@ -85,6 +85,7 @@ public:
 private:
 	/* Plugin name map */
 	PluginContainer _plugins;
+	PluginContainer _libraries;
 
 	/* Hashes to real names, for plugins that dynamically report their names */
 	std::map<tstring, tstring> _pluginRealNames;
