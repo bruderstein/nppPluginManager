@@ -672,21 +672,27 @@ BOOL PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 	unsigned char* buffer = new unsigned char[bufferSize];
 	::GetFileVersionInfo(pluginFilename.c_str(), handle, bufferSize, buffer);
 	
-	struct LANGANDCODEPAGE {
+	/*struct LANGANDCODEPAGE {
 		WORD wLanguage;
 		WORD wCodePage;
-	} *lpTranslate;
+	} *lpTranslate;*/
 
-	UINT cbTranslate;
+	VS_FIXEDFILEINFO* lpFileInfo;
+
+	UINT cbFileInfo;
 
 	VerQueryValue(buffer, 
-              _T("\\VarFileInfo\\Translation"),
-              (LPVOID*)&lpTranslate,
-              &cbTranslate);
+              _T("\\"),
+              (LPVOID*)&lpFileInfo,
+              &cbFileInfo);
 
-	if (cbTranslate)
+	if (cbFileInfo)
 	{
-
+		plugin->setInstalledVersion(PluginVersion((lpFileInfo->dwFileVersionMS & 0xFFFF0000) >> 16, 
+												  lpFileInfo->dwFileVersionMS & 0x0000FFFF,
+												  (lpFileInfo->dwFileVersionLS & 0xFFFF0000) >> 16,
+												  lpFileInfo->dwFileVersionLS & 0x0000FFFF));
+		/*
 		HRESULT hr;
 		TCHAR subBlock[50];
 		hr = StringCchPrintf(subBlock, 50,
@@ -708,12 +714,16 @@ BOOL PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 					plugin->setInstalledVersion(PluginVersion(fileVersion));
 			}
 		}
+		*/
+
 	}
 	else
 	{
+		delete[] buffer;
 		return FALSE;
 	}
 
+	delete[] buffer;
 	return TRUE;
 
 

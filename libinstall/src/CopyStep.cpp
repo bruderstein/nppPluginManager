@@ -356,12 +356,22 @@ void CopyStep::copyGpup(const tstring& basePath, const tstring& toPath)
 
 void CopyStep::callGpup(const TCHAR *gpupPath, const TCHAR *arguments)
 {
+	OSVERSIONINFO osvi;
+    BOOL bIsWindowsVistaOrLater;
+
+    ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+    osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+
+    GetVersionEx(&osvi);
+
+    bIsWindowsVistaOrLater = (osvi.dwMajorVersion >= 6);
+
 	SHELLEXECUTEINFO sei;
 	memset(&sei, 0, sizeof(sei));
 	sei.cbSize = sizeof(sei);
 	sei.lpFile = gpupPath;
 	sei.lpParameters = arguments;
-	sei.lpVerb = _T("open");
+	sei.lpVerb =  bIsWindowsVistaOrLater ? _T("runas") : _T("open");
 	sei.nShow = SW_SHOW;
 
 	if (::ShellExecuteEx(&sei))
