@@ -75,7 +75,7 @@ BEGIN
             VALUE "FileDescription", "Plugin Manager for Notepad++.  A free (GPL) plugin management plugin"
             VALUE "FileVersion", PLUGINMANAGERVERSION_RESOURCE_STRING
             VALUE "InternalName", "PluginManager"
-            VALUE "LegalCopyright", "Copyright (C) 2009-10 Dave Brotherstone"
+            VALUE "LegalCopyright", "Copyright (C) 2009-11 Dave Brotherstone"
             VALUE "OriginalFilename", "PluginManager.dll"
             VALUE "ProductName", "PluginManager"
             VALUE "ProductVersion", PLUGINMANAGERVERSION_RESOURCE_STRING
@@ -118,7 +118,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     LTEXT           PLUGINMANAGERVERSION_STRING,IDC_STATIC,45,23,37,8
     LTEXT           "Notepad++ Plugin Manager",IDC_STATIC,7,7,90,8
-    LTEXT           "(C) Dave Brotherstone",IDC_STATIC,12,37,74,8
+    LTEXT           "(C) 2009-2011 Dave Brotherstone",IDC_STATIC,12,37,74,8
     LTEXT           PLUGINMANAGERVERSION_RELEASEDATE,IDC_STATIC,35,50,50,8
     LTEXT           "Version",IDC_STATIC,14,23,24,8
 END
