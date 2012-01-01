@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "precompiled_headers.h"
 #include "Utility.h"
 #include "PluginManager.h"
+#include "PluginVersion.h"
+#include "PluginManagerVersion.h"
 
 BOOL Utility::removeDirectory(const TCHAR* directory)
 {
@@ -77,6 +79,20 @@ void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *argu
 		return;
 	}
 
+	PluginVersion *gpupVersion = getFileVersion(gpupExe.c_str());
+
+	if ((*gpupVersion) != PluginVersion(PLUGINMANAGERVERSION_STRING))
+	{
+		::MessageBox(errorParent, _T("The external plugin updater (gpup.exe) under ")
+									 _T("the updater directory does not appear to be the correct version.  ")
+									 _T("It will most likely work, but you should reinstall the ")
+									 _T("plugin manager at your next opportunity to ensure full ")
+									 _T("functionality.  We'll attempt to use the current version ")
+									 _T("for this operation."), 
+									 _T("Plugin Manager GPUP.EXE Version"),
+									 MB_OK | MB_ICONWARNING);
+	}
+	delete gpupVersion;
 	//gpupExe.insert(0, _T("\""));
 	//gpupExe.append(_T("\" "));
 
@@ -136,4 +152,48 @@ void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *argu
 						&startup,    // STARTUPINFO
 						&procinfo);  // PROCESS_INFORMATION
 */
+}
+
+
+PluginVersion* Utility::getFileVersion(const TCHAR* path)
+{
+	DWORD handle;
+	DWORD bufferSize = ::GetFileVersionInfoSize(path, &handle);
+	PluginVersion *version;
+
+	if (bufferSize <= 0) 
+		return new PluginVersion();
+
+	unsigned char* buffer = new unsigned char[bufferSize];
+	::GetFileVersionInfo(path, handle, bufferSize, buffer);
+	
+	/*struct LANGANDCODEPAGE {
+		WORD wLanguage;
+		WORD wCodePage;
+	} *lpTranslate;*/
+
+	VS_FIXEDFILEINFO* lpFileInfo;
+
+	UINT cbFileInfo;
+
+	VerQueryValue(buffer, 
+              _T("\\"),
+              (LPVOID*)&lpFileInfo,
+              &cbFileInfo);
+
+	if (cbFileInfo)
+	{
+		version = new PluginVersion((lpFileInfo->dwFileVersionMS & 0xFFFF0000) >> 16, 
+												  lpFileInfo->dwFileVersionMS & 0x0000FFFF,
+												  (lpFileInfo->dwFileVersionLS & 0xFFFF0000) >> 16,
+												  lpFileInfo->dwFileVersionLS & 0x0000FFFF);
+	} 
+	else 
+	{
+		version = new PluginVersion();
+	}
+
+	delete [] buffer;
+
+	return version;
 }
