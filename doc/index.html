@@ -19,8 +19,10 @@ from Notepad++.  A centrally hosted XML file holds the list of plugins, that the
 downloads and processes against the list of installed plugins.
 <br/><br/>
 <font color="#F00000">Important note for Vista / Windows 7: </font>
-In order to update the plugin manager to 1.0.2 , you need to run Notepad++ as administrator, update plugin manager, then 
+In order to update the plugin manager to 1.0.8 , you need to run Notepad++ as administrator, update plugin manager, then 
 everything will run properly under a normal user.  Future updates to Plugin Manager will automatically run as administrator.
+<br/>
+<a href="update.htm"><b>Click here for help for update to Plugin Manager 1.0.8</b></a>
 <a name="features"></a>
 <h3>Features</h3>
 
@@ -47,6 +49,42 @@ everything will run properly under a normal user.  Future updates to Plugin Mana
 <br/><br/>
 <a name="changes"></a>
 <h3>Changes</h3>
+1.0.8
+<br/><ul>
+<li>Checks gpup.exe version is correct in order to ensure upgrade from previous version was successful
+</ul>
+<br/>
+
+1.0.7
+<br/><ul>
+<li>Fix for updating Plugin Manager itself</li>
+<li>Now uses main FileVersion instead of translated FileVersion to detect plugin version</li>
+</ul>
+<br/>
+
+1.0.5
+<br/><ul>
+<li>"Library" plugins properly supported</li>
+<li>Validation url changed to npppluginmgr project on sourceforge</li>
+</ul>
+<br/>
+
+
+1.0.4
+<br/><ul>
+<li>Fixed crypt32.dll loading dynamically (static link was removed)</li>
+</ul>
+<br/>
+
+1.0.3
+<br/><ul>
+<li>Uninstall fix for appdata plugins</li>
+<li>Infinite loop bug fixed when download location is actually an html site</li>
+<li>Crypt32.dll now loaded dynamically, if it's available (for encrypting proxy authentication details)</li>
+<li>Timeout for connection added when downloading</li>
+</ul>
+<br/>
+
 1.0.2
 <br><ul>
 <li>Support for authenticated proxies (SSPI (windows automatic) authenticated proxies are not supported)</li>
