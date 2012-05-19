@@ -463,6 +463,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 					}
 					return TRUE;
 				}
+
 				case IDOK :
 				case IDCANCEL :
 					display(FALSE);
@@ -652,6 +653,11 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 	
 
 	_endthread();
+}
+
+void PluginManagerDialog::refreshLists()
+{
+	populateLists(this);
 }
 
 void PluginManagerDialog::populateLists(PluginManagerDialog* dlg)

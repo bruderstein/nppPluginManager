@@ -38,6 +38,7 @@ public:
 	void setStepProgress(const int percentageComplete);
 	void setStepComplete();
 
+	void refreshLists();
 
 protected :
 	virtual BOOL CALLBACK run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

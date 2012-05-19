@@ -32,7 +32,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Encrypter.h"
 
 /* information for notepad */
+
+#ifdef ALLOW_OVERRIDE_XML_URL
+CONST INT   nbFunc  = 3;
+#else
 CONST INT	nbFunc	= 2;
+#endif
+
 CONST TCHAR	PLUGIN_NAME[] = _T("Plugin Manager");
 
 /* global values */
@@ -63,7 +69,7 @@ TCHAR				iniFilePath[MAX_PATH];
 
 
 UINT startupChecks(LPVOID param); 
-
+void doReloadXml();
 
 
 using namespace std;
@@ -89,9 +95,15 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 			_tcscpy_s(funcItem[0]._itemName, 64, _T("&Show Plugin Manager"));
 			_tcscpy_s(funcItem[1]._itemName, 64, _T("&About"));
 
+
 			/* Set shortcuts */
 			funcItem[0]._pShKey = NULL;
 			funcItem[1]._pShKey = NULL;
+#ifdef ALLOW_OVERRIDE_XML_URL
+			funcItem[2]._pFunc = doReloadXml;
+			_tcscpy_s(funcItem[2]._itemName, 64, _T("&Refresh XML"));
+			funcItem[2]._pShKey = NULL;
+#endif
 
 			DownloadManager::setUserAgent(_T("Notepad++/Plugin-Manager;v") _T(PLUGINMANAGERVERSION_STRING));
 			break;
@@ -443,3 +455,21 @@ UINT startupChecks(LPVOID /*param*/)
 
 	return 0;
 }
+
+#ifdef ALLOW_OVERRIDE_XML_URL
+void doReloadXml()
+{
+	if (NULL == g_pluginList)
+	{
+		g_pluginList = new PluginList();
+		g_pluginList->init(&nppData);
+		pluginManagerDlg.setPluginList(g_pluginList);
+	}
+
+	g_pluginList->downloadList();
+
+	pluginManagerDlg.refreshLists();
+	::MessageBox(nppData._nppHandle, _T("XML Refreshed"), _T("Plugin Manager"), MB_OK |MB_ICONINFORMATION);
+
+}
+#endif
