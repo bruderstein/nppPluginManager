@@ -381,16 +381,20 @@ Plugin developers and maintainers and welcome to register for an account at <a h
 <br/><br/>
 
 It's obviously important to test that your modifications work, so for that we have a 
-testing version of the Plugin Manager.  This version allows you to override the 
-URL of the XML and MD5 file. Just set xmlurl and md5url settings in the PluginManager.ini.
+testing version of the Plugin Manager.
 
-<br/>Note these are URLs, so you need to use something like
+<ol>
+<li>Download the testing version of Plugin Manager here:  <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_UNI.zip">Unicode</a> / <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_ANSI.zip">ANSI</a></li>
+<li>Add the following lines to your PluginManager.ini (under plugins\Config, or %APPDATA%\notepad++\plugins\config)
 <pre>
-xmlurl=file:///d:/work/npp/pluginsxml/plugins.xml
-md5url=file:///d:/work/npp/pluginsxml/plugins.md5.txt
+xmlurl=http://www.brotherstone.co.uk/npp/pm/admin/plugins/generate_xml
+md5url=http://www.brotherstone.co.uk/npp/pm/admin/dummy.md5.txt
 </pre>
-<br/>You can download a new version of plugins.xml (with your modifications) from the <a href="http://www.brotherstone.co.uk/npp/pm/admin">administration system</a>
-<br/>The testing version of the Plugin Manager is here:  <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_UNI.zip">Unicode</a> / <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_ANSI.zip">ANSI</a>
+</li>
+</ol>
+
+<br/><br/>This version downloads the XML directly from the admin site, and validates the MD5s against the hashes that have been added on the admin site.  Please test your changes.
+
 <br/><br/>This is also a "debug" build, so if something goes wrong, you can step through it. The PDBs are also included in the zip file.
 
 <br/><br/>The current XML file is located <b><a href="http://sourceforge.net/projects/npppluginmgr/files/xml">here</a></b>, if you want to check it out.

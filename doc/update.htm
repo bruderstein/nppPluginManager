@@ -1,0 +1,32 @@
+<html><body>
+<h1>Plugin Manager 1.0.8 Update</h1>
+<p>For <b>Windows 7</b> and <b>Vista</b> users, you will almost certainly need to start Notepad++ as administrator in order to update from Plugin Manager 0.9.3.1
+(the version bundled with Notepad++ since about 5.6)
+</p>
+<p>Simply right click the Notepad++ program in your start menu, and click "Run as administrator"</p>
+<p>In Notepad++, go to the Plugins menu and choose Plugin Manager, Show Plugin Manager.  On the updates tab you'll see Plugin Manager listed and ticked.
+Just click "Update"</p>
+<p>Restart when it asks you to, and then you have the new version.</p>
+<br/><br/><a href="http://sourceforge.net/projects/notepad-plus/forums/forum/331754/topic/4923003">Forum post to post issues or queries about the update</a>
+<br/><br/>
+<a name="gpupcopy"></a>
+<h2>Need to complete steps... message</h2>
+If after installing the Plugin Manager update, and restarting Notepad++, 
+you receive a message about steps still needing to be completed, and after
+clicking "yes" and restarting again, the message still appears, you need to 
+delete the PluginManagerGpup.xml file from your plugin config directory. 
+The right directory is shown in the settings dialog in Plugin Manager itself (plugins, plugin manager, show plugin manager, settings).
+<a name="gpupver"></a>
+<h2>Message about GPUP.EXE</h2>
+<p>If you receive a message about GPUP.EXE not being the right version, simply reinstall plugin manager, you won't need to run Notepad++
+as administrator to do that.</p>
+<p>To help the search engines, the exact message is "The external plugin updater (gpup.exe) under the updater directory does not appear to be the correct version. 
+It will most likely work, but you should reinstall the plugin manager at your next opportunity to ensure full 
+functionality.  We'll attempt to use the current version for this operation."
+</p>
+<p>Plugins, Plugin Manager, Show Plugin Manager, go to the "installed" tab, and select Plugin Manager, then click reinstall.</p>
+<p>On Windows 7 and Vista, you'll likely get 2 UAC prompts (asking to confirm to perform the action as an administrator), that's completely normal,
+and has to do with the fact that the GPUP.EXE file needs to be replaced as administrator, and then the new version run to replace the plugin DLL.</p>
+
+</body>
+</html>
