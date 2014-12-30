@@ -45,9 +45,6 @@
     <ClCompile Include="..\..\src\md5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ProxyInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\RunStep.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,7 +60,7 @@
     <ClCompile Include="..\..\src\precompiled_headers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ProxyCredentialsDlg.cpp">
+    <ClCompile Include="..\..\src\InternetDownload.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,9 +98,6 @@
     <ClInclude Include="..\..\include\libinstall\md5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\libinstall\ProxyInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\libinstall\RunStep.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -122,10 +116,10 @@
     <ClInclude Include="..\..\src\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\libinstall\ProxyCredentialsDlg.h">
+    <ClInclude Include="..\..\include\libinstall\ModuleInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\libinstall\ModuleInfo.h">
+    <ClInclude Include="..\..\src\InternetDownload.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

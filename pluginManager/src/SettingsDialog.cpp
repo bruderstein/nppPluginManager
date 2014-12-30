@@ -85,16 +85,7 @@ BOOL SettingsDialog::run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 
 void SettingsDialog::initialiseOptions()
 {
-	::SetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYADDRESS), g_options.proxyInfo.getProxy());
 	char tmp[15];
-
-	if (g_options.proxyInfo.getProxyPort() != 0) 
-	{
-		_ltoa_s(g_options.proxyInfo.getProxyPort(), tmp, 15, 10);
-		::SetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYPORT), tmp);
-	}
-	else
-		::SetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYPORT), "");	
 
 	::SendMessage(GetDlgItem(_hSelf, IDC_NOTIFY), BM_SETCHECK, g_options.notifyUpdates ? BST_CHECKED : BST_UNCHECKED, 0);
 	
@@ -130,11 +121,6 @@ void SettingsDialog::initialiseOptions()
 void SettingsDialog::setOptions()
 {
 	char address[MAX_PATH];
-	::GetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYADDRESS), address, MAX_PATH);
-	g_options.proxyInfo.setProxy(address);
-
-	::GetWindowTextA(GetDlgItem(_hSelf, IDC_PROXYPORT), address, MAX_PATH);
-	g_options.proxyInfo.setProxyPort(atol(address));
 	
 
 	::GetWindowTextA(GetDlgItem(_hSelf, IDC_DAYSTOCHECK), address, MAX_PATH);

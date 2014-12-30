@@ -21,7 +21,7 @@ class ProxyInfo;
 class ModuleInfo;
 
 namespace Validator {
-	ValidateStatus validate(const tstring& file, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo);
+	ValidateStatus validate(const tstring& file, const ModuleInfo *moduleInfo);
 }
 
 #endif

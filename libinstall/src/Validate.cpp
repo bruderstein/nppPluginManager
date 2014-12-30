@@ -7,7 +7,7 @@
 namespace Validator
 {
 
-ValidateStatus validate(const tstring& file, ProxyInfo* proxyInfo, const ModuleInfo* moduleInfo)
+ValidateStatus validate(const tstring& file, const ModuleInfo* moduleInfo)
 {
 	DownloadManager download;
 	
@@ -16,7 +16,7 @@ ValidateStatus validate(const tstring& file, ProxyInfo* proxyInfo, const ModuleI
 	tstring validateUrl = VALIDATE_BASEURL;
 	validateUrl.append(localMD5);
 	std::string validateResult;
-	if (download.getUrl(validateUrl.c_str(), validateResult, proxyInfo, moduleInfo))
+	if (download.getUrl(validateUrl.c_str(), validateResult, moduleInfo))
 	{
 		if (validateResult == VALIDATE_RESULT_OK)
 			return VALIDATE_OK;

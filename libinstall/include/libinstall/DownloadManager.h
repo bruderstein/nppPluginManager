@@ -19,9 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
-#include <curl/curl.h>
 
-class ProxyInfo;
 class ModuleInfo;
 
 class DownloadManager
@@ -29,8 +27,8 @@ class DownloadManager
 public:
 	DownloadManager(void);
 	~DownloadManager(void);
-	BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo);
-	BOOL getUrl(const TCHAR *url, std::string& result, ProxyInfo *proxyInfo, const ModuleInfo *moduleInfo);
+	BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, const ModuleInfo *moduleInfo);
+	BOOL getUrl(const TCHAR *url, std::string& result, const ModuleInfo *moduleInfo);
 
 	void setProgressFunction(boost::function<void(int)> progressFunction);
 
@@ -43,8 +41,7 @@ public:
 										  double /*ultotal*/, double /*ulnow*/);
 
 private:
-	CURL	*_curl;
 	boost::function<void(int)> _progressFunction;
 	BOOL					   _progressFunctionSet;
-	static std::string		   _userAgent;
+	static tstring				_userAgent;
 };

@@ -129,7 +129,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\..\tinyxml\include;..\..\..\unzip\include;..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOUNCRYPT;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;ZLIB_WINAPI;NOUNCRYPT;TIXML_USE_STL;_CRT_SECURE_NO_WARNINGS;CURL_STATICLIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -244,6 +244,7 @@
     <ClCompile Include="..\..\src\DownloadStep.cpp" />
     <ClCompile Include="..\..\src\FileBuffer.cpp" />
     <ClCompile Include="..\..\src\InstallStepFactory.cpp" />
+    <ClCompile Include="..\..\src\InternetDownload.cpp" />
     <ClCompile Include="..\..\src\md5.cpp" />
     <ClCompile Include="..\..\src\precompiled_headers.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -254,8 +255,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug-xml-test|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\src\ProxyCredentialsDlg.cpp" />
-    <ClCompile Include="..\..\src\ProxyInfo.cpp" />
     <ClCompile Include="..\..\src\RunStep.cpp" />
     <ClCompile Include="..\..\src\Validate.cpp" />
     <ClCompile Include="..\..\src\VariableHandler.cpp" />
@@ -274,12 +273,11 @@
     <ClInclude Include="..\..\include\libinstall\InstallStepFactory.h" />
     <ClInclude Include="..\..\include\libinstall\md5.h" />
     <ClInclude Include="..\..\include\libinstall\ModuleInfo.h" />
-    <ClInclude Include="..\..\include\libinstall\ProxyCredentialsDlg.h" />
-    <ClInclude Include="..\..\include\libinstall\ProxyInfo.h" />
     <ClInclude Include="..\..\include\libinstall\RunStep.h" />
     <ClInclude Include="..\..\include\libinstall\Validate.h" />
     <ClInclude Include="..\..\include\libinstall\VariableHandler.h" />
     <ClInclude Include="..\..\include\libinstall\WcharMbcsConverter.h" />
+    <ClInclude Include="..\..\src\InternetDownload.h" />
     <ClInclude Include="..\..\src\precompiled_headers.h" />
     <ClInclude Include="..\..\src\resource.h" />
   </ItemGroup>

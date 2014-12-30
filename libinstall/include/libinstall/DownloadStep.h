@@ -21,13 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _DOWNLOADSTEP_H
 #include "InstallStep.h"
 
-class ProxyInfo;
 class ModuleInfo;
 
 class DownloadStep : public InstallStep
 {
 public:
-	DownloadStep(const TCHAR* url, const TCHAR* filename, ProxyInfo *proxyInfo);
+	DownloadStep(const TCHAR* url, const TCHAR* filename);
 	~DownloadStep() {};
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
@@ -37,8 +36,6 @@ public:
 private:
 	tstring	_url;
 	tstring _filename;
-	ProxyInfo *_proxyInfo;
-
 };
 
 #endif

@@ -394,7 +394,7 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 		else 
 		{
 
-			boost::shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement, &g_options.proxyInfo);
+			boost::shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement);
 			if (installStep.get()) 
 			{
 				if (INSTALL == ior)
@@ -881,7 +881,7 @@ void PluginList::downloadList()
 		downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
 	}
 #else
-	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
+	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.moduleInfo);
 #endif
 
 	boost::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
@@ -895,12 +895,12 @@ void PluginList::downloadList()
 #ifdef ALLOW_OVERRIDE_XML_URL
 	if (!g_options.downloadUrl.empty())
 	{
-		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.proxyInfo, &g_options.moduleInfo);
+		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.moduleInfo);
 	}
 	else
 #endif
 	{
-		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.proxyInfo, &g_options.moduleInfo);
+		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.moduleInfo);
 
 		// Unzip the plugins.zip to PluginManagerPlugins.xml
 		tstring unzipPath(pluginConfig);

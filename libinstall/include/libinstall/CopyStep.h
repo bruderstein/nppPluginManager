@@ -40,8 +40,7 @@ public:
 	CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate, 
 		BOOL isGpup,
 		BOOL backup, 
-		BOOL recursive,
-		ProxyInfo* proxyInfo);
+		BOOL recursive);
 
 	~CopyStep() {};
 	
@@ -70,7 +69,6 @@ private:
 
 	ToDestination _toDestination;
 
-	ProxyInfo *_proxyInfo;
 	
 	BOOL    _failIfExists;
 	BOOL    _validate;

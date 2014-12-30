@@ -25,7 +25,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/RunStep.h"
 #include "libinstall/tstring.h"
 #include "libinstall/VariableHandler.h"
-#include "libinstall/ProxyInfo.h"
 
 
 using namespace std;
@@ -37,13 +36,13 @@ InstallStepFactory::InstallStepFactory(VariableHandler* variableHandler)
 
 
 
-boost::shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element, ProxyInfo *proxyInfo)
+boost::shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element)
 {
 	boost::shared_ptr<InstallStep> installStep;
 
 	if (!_tcscmp(element->Value(), _T("download")) && element->FirstChild())
 	{
-		installStep.reset(new DownloadStep(element->FirstChild()->Value(), element->Attribute(_T("filename")), proxyInfo));
+		installStep.reset(new DownloadStep(element->FirstChild()->Value(), element->Attribute(_T("filename"))));
 	}
 	else if (!_tcscmp(element->Value(), _T("copy")))
 	{
@@ -78,7 +77,7 @@ boost::shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element,
 		if (tRecursive && !_tcscmp(tRecursive, _T("true")))
 			recursive = TRUE;
 
-		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, isGpup, backup, recursive, proxyInfo));
+		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, isGpup, backup, recursive));
 	}
 	else if (!_tcscmp(element->Value(), _T("delete")))
 	{
@@ -111,7 +110,7 @@ boost::shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element,
 			outsideNpp = TRUE;
 		}
 
-		installStep.reset(new RunStep(tFile, tArgs, outsideNpp, proxyInfo));
+		installStep.reset(new RunStep(tFile, tArgs, outsideNpp));
 	}
 
 	return installStep;

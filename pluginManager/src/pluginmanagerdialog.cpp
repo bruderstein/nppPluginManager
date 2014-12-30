@@ -435,22 +435,10 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 				{
 					SettingsDialog settingsDlg;
 					BOOL oldShowUnstable = g_options.showUnstable;
-					std::string oldProxy (g_options.proxyInfo.getProxy());
-					int oldProxyPort = g_options.proxyInfo.getProxyPort();
 
 					settingsDlg.doModal(&_nppData, _hSelf);
 
-					std::string newProxy (g_options.proxyInfo.getProxy());
-					if (oldProxyPort != g_options.proxyInfo.getProxyPort()
-						|| oldProxy != newProxy)
-					{
-						_pluginList = NULL;
-						_installedListView.setMessage(_T("Redownloading plugin list..."));
-						_updatesListView.setMessage(_T("Redownloading plugin list..."));
-						_availableListView.setMessage(_T("Redownloading plugin list..."));
-						_beginthread(downloadAndPopulate, 0, this);
-					}
-					else if (g_options.showUnstable != oldShowUnstable)
+					if (g_options.showUnstable != oldShowUnstable)
 					{
 						TCHAR pluginConfig[MAX_PATH];
 						::SendMessage(_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));

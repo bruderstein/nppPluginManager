@@ -227,37 +227,7 @@ void loadSettings(void)
 	}
 
 	TCHAR tmp[MAX_PATH];
-	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), tmp, MAX_PATH, iniFilePath);
 
-	g_options.proxyInfo.setProxy(WcharMbcsConverter::tchar2char(tmp).get());
-
-	g_options.proxyInfo.setProxyPort(::GetPrivateProfileInt(SETTINGS_GROUP, KEY_PROXYPORT, 0, iniFilePath));
-	g_options.proxyInfo.setSaveCredentials(static_cast<SAVECRED>(::GetPrivateProfileInt(SETTINGS_GROUP, KEY_SAVECRED, (int)SAVECRED_UNKNOWN, iniFilePath)));
-
-	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, _T(""), tmp, MAX_PATH, iniFilePath);
-	g_options.proxyInfo.setUsername(WcharMbcsConverter::tchar2char(tmp).get());
-
-	TCHAR encBuffer[1000];
-	::GetPrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, _T(""), encBuffer, 1000, iniFilePath);
-
-
-
-	if ((g_winVer >= WV_W2K || g_winVer == WV_UNKNOWN) 
-		&& encBuffer[0])
-	{
-		Encrypter encrypter;
-		unsigned char decBuffer[100];
-		int length = encrypter.decryptHex(encBuffer, decBuffer, 100);
-		if (length > 0)
-		{
-			g_options.proxyInfo.setPassword((const char *)decBuffer);
-		}
-	}
-	else if (encBuffer[0])
-	{
-		// Less than Win2k, but still got a password, so saved unencrypted
-		g_options.proxyInfo.setPassword(WcharMbcsConverter::tchar2char(tmp).get());
-	}
 
 	g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
 
@@ -318,18 +288,6 @@ void saveSettings(void)
 {
 	TCHAR	temp[16];
 
-	_itot_s(g_options.proxyInfo.getProxyPort(), temp, 16, 10);
-	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPORT, temp, iniFilePath);
-	const char *proxy = g_options.proxyInfo.getProxy();
-	if (proxy && *proxy)
-	{
-		boost::shared_ptr<TCHAR> tproxy = WcharMbcsConverter::char2tchar(proxy);
-		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, tproxy.get(), iniFilePath);
-	}
-	else
-	{
-		::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXY, _T(""), iniFilePath);
-	}
 	
 	// Install location
 	_itot_s(g_options.installLocation, temp, 16, 10);
@@ -342,30 +300,7 @@ void saveSettings(void)
 	}
 
 
-	boost::shared_ptr<TCHAR> username = WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername());
-	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, username.get(), iniFilePath);
 	
-	const char *pass = g_options.proxyInfo.getPassword();
-	if (g_options.proxyInfo.getSaveCredentials() == SAVECRED_YES && pass && pass[0])
-	{
-		Encrypter encrypter;
-		TCHAR buffer[1000];
-		int resultLength = encrypter.encryptToHex((unsigned char *)pass, strlen(pass), buffer, 1000);
-		if (resultLength)
-		{
-			::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, buffer, iniFilePath);
-		}
-	}
-
-	if (g_options.proxyInfo.getSaveCredentials() != SAVECRED_UNKNOWN)
-	{
-		_itot_s(g_options.proxyInfo.getSaveCredentials(), temp, 16, 10);
-		::WritePrivateProfileString(SETTINGS_GROUP, KEY_SAVECRED, temp, iniFilePath);
-	}
-
-
-
-	::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, WcharMbcsConverter::char2tchar(g_options.proxyInfo.getUsername()).get(), iniFilePath);
 	_itot_s(g_options.notifyUpdates, temp, 16, 10);
 	::WritePrivateProfileString(SETTINGS_GROUP, KEY_NOTIFYUPDATES, temp, iniFilePath);
 

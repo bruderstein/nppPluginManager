@@ -27,7 +27,7 @@ class ModuleInfo;
 class RunStep : public InstallStep
 {
 public:
-	RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp, ProxyInfo *proxyInfo);
+	RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp);
 	~RunStep() {};
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
@@ -39,8 +39,6 @@ public:
 private:
 	BOOL execute(const TCHAR *executable, const TCHAR *arguments);
 
-
-	ProxyInfo *_proxyInfo;
 	BOOL	_outsideNpp;
 	tstring	_file;
 	tstring _arguments;

@@ -11,12 +11,10 @@
 
 using namespace std;
 
-DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename, ProxyInfo *proxyInfo)
+DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename)
 {
 	_url = url;
 
-	_proxyInfo = proxyInfo;
-	
 	if (filename)
 		_filename = filename;
 }
@@ -60,7 +58,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 	tstring contentType;
 
-	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, _proxyInfo, moduleInfo))
+	if (downloadManager.getUrl(_url.c_str(), downloadFilename, contentType, moduleInfo))
 	{
 		if (contentType == _T("text/html"))
 		{

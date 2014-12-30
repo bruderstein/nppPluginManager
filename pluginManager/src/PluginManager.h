@@ -87,7 +87,6 @@ enum INSTALLLOCATION
 
 struct Options
 {
-	ProxyInfo proxyInfo;
 	BOOL notifyUpdates;
 	time_t lastCheck;
 	BOOL showUnstable;

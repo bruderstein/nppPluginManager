@@ -26,17 +26,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/DirectoryUtil.h"
 #include "libinstall/VariableHandler.h"
 #include "libinstall/Validate.h"
-#include "libinstall/ProxyInfo.h"
 #include "libinstall/ModuleInfo.h"
 
 using namespace std;
 
 
 CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace, 
-				   BOOL validate, BOOL isGpup, BOOL backup, BOOL recursive, ProxyInfo *proxyInfo)
+				   BOOL validate, BOOL isGpup, BOOL backup, BOOL recursive)
 				   : _from(from), _validate(validate), _failIfExists(!attemptReplace),
-				     _isGpup(isGpup), _backup(backup), _recursive(recursive), 
-					 _proxyInfo(proxyInfo)
+				     _isGpup(isGpup), _backup(backup), _recursive(recursive) 
 {
 
 	if (to)
@@ -221,7 +219,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 				copy = false;
 				if (_validate)
 				{
-					switch(Validator::validate(src, _proxyInfo, moduleInfo))
+					switch(Validator::validate(src, moduleInfo))
 					{
 					
 						case VALIDATE_OK:

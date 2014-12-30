@@ -20,6 +20,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <WindowsX.h>
+#include <WinInet.h>
 
 #include <strsafe.h>
 typedef std::basic_string<TCHAR>			tstring;
