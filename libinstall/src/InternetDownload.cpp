@@ -52,13 +52,13 @@ BOOL InternetDownload::request() {
 
     /* Make a permanent copy of the url (c_str() returns a temporary object */
     TCHAR *url = new TCHAR[m_url.size() + 1];
-    _tcscpy_s(url, m_url.size(), m_url.c_str());
+    _tcscpy_s(url, m_url.size() + 1, m_url.c_str());
 
     InternetCrackUrl(url, m_url.size(), 0, &urlComponents);
 
     
     TCHAR *host = new TCHAR[urlComponents.dwHostNameLength + 1];
-    _tcscpy_s(urlComponents.lpszHostName, urlComponents.dwHostNameLength, host);
+    _tcsnccpy_s(host, urlComponents.dwHostNameLength + 1, urlComponents.lpszHostName, urlComponents.dwHostNameLength);
     host[urlComponents.dwHostNameLength] = _T('\0');
 
 
@@ -76,7 +76,7 @@ BOOL InternetDownload::request() {
     PCTSTR rgpszAcceptTypes[] = {_T("*/*"), NULL}; 
 
     TCHAR *path = new TCHAR[urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength + 1];
-    _tcscpy_s(path, urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength, path);
+    _tcsnccpy_s(path, urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength + 1, urlComponents.lpszUrlPath, urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength);
     path[urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength] = _T('\0');
 
     m_hHttp = HttpOpenRequest(
@@ -88,6 +88,8 @@ BOOL InternetDownload::request() {
         rgpszAcceptTypes, /* Accept types */
         0, /* Flags - none required */
         reinterpret_cast<DWORD_PTR>(this));
+
+    delete[] path;
     
     if (!m_hHttp) {
         m_error = GetLastError();
@@ -120,12 +122,12 @@ BOOL InternetDownload::getData(writeData_t writeData, void *context)
     BOOL dataAvailableResponse = InternetQueryDataAvailable(m_hHttp, &bytesAvailable, 0, NULL);
 
     if (dataAvailableResponse && bytesAvailable) {
-        BYTE buffer[4096];
+        BYTE buffer[8192]; // InternetQueryDataAvailable seems to give back 8k buffers, so an 8k buffer is optimal
         DWORD bytesRead;
         DWORD bytesToRead = bytesAvailable;
         while (bytesToRead > 0) {
-            if (bytesToRead > 4095) {
-                bytesToRead = 4095;
+            if (bytesToRead > 8192) {
+                bytesToRead = 8192;
             }
             InternetReadFile(m_hHttp, buffer, bytesToRead, &bytesRead);
             
@@ -133,6 +135,13 @@ BOOL InternetDownload::getData(writeData_t writeData, void *context)
 
             bytesAvailable -= bytesRead;
             bytesToRead = bytesAvailable;
+
+            if (bytesToRead == 0) {
+                 dataAvailableResponse = InternetQueryDataAvailable(m_hHttp, &bytesAvailable, 0, NULL);
+                 if (dataAvailableResponse) {
+                     bytesToRead = bytesAvailable;
+                 }
+            }
         }
 
         return TRUE;
@@ -144,32 +153,25 @@ BOOL InternetDownload::getData(writeData_t writeData, void *context)
 BOOL InternetDownload::saveToFile(const tstring& filename) {
     if (request()) {
         FILE *fp = _tfopen(filename.c_str(), _T("wb"));
-        return getData(&InternetDownload::writeToFile, fp);
+        BOOL success = getData(&InternetDownload::writeToFile, fp);
+        fclose(fp);
+        return success;
     }
 
     return FALSE;
 }
 
-tstring InternetDownload::getContent() {
+std::string InternetDownload::getContent() {
     if (request()) {
         std::string result;
         BOOL success = getData(&InternetDownload::writeToString, &result);
     
         if (success) {
-#ifdef _UNICODE
-            int length = MultiByteToWideChar(CP_UTF8, 0, result.c_str(), result.size(), NULL, -1);
-            TCHAR *resultWide = new TCHAR[length + 1];
-            MultiByteToWideChar(CP_UTF8, 0, result.c_str(), result.size(), resultWide, length + 1);
-            tstring strResultWide(resultWide);
-            delete[] resultWide;
-            return strResultWide;
-#else
             return result;
-#endif
         }
     }
 
-    return _T("");
+    return "";
 }
 
 void InternetDownload::writeToFile(BYTE* buffer, DWORD bufferLength, void *context) {

@@ -8,7 +8,7 @@ public:
 
     int saveToFile(const tstring& filename);
 
-    tstring getContent();
+    std::string getContent();
     
 
 private:

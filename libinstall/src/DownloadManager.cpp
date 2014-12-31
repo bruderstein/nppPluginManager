@@ -3,6 +3,7 @@
 
 
 #include "libinstall/DownloadManager.h"
+#include "InternetDownload.h"
 #include "libinstall/WcharMbcsConverter.h"
 #include "libinstall/ModuleInfo.h" 
 using namespace std;
@@ -32,83 +33,18 @@ void DownloadManager::setProgressFunction(boost::function<void(int)> progressFun
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, const ModuleInfo *moduleInfo)
 {
-    HINTERNET hInternet = ::InternetOpen(_userAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL /* proxy*/ , NULL /* proxy bypass */, 0/* INTERNET_FLAG_ASYNC */);
-
-
-    FILE *fp;
-    if (0 != _tfopen_s(&fp, filename.c_str(), _T("wb")))
-    {
-        // error opening file
-        return FALSE;
-    }
-
-    long httpCode = 0;
-
-    bool cancelClicked = false;
-
-    HINTERNET hConnect = InternetConnect(hInternet, 
-        _T("www.local"), 
-        INTERNET_DEFAULT_HTTP_PORT, 
-        NULL,
-        NULL,
-        INTERNET_SERVICE_HTTP,
-        0, /* flags */
-        reinterpret_cast<DWORD_PTR>(this));
-
-    PCTSTR rgpszAcceptTypes[] = {_T("*/*"), NULL}; 
-
-    HINTERNET hHttp = HttpOpenRequest(
-        hConnect, 
-        _T("GET"),
-        _T("/test/cheese"),
-        NULL, /* http version - defaults to "HTTP/1.1" */
-        NULL, /* referrer - NULL means no referrer header sent */
-        rgpszAcceptTypes, /* Accept types */
-        0, /* Flags - none required */
-        reinterpret_cast<DWORD_PTR>(this));
-    
-    BOOL sendRequestResult = HttpSendRequest(hHttp, 
-        NULL, /*lpszHeaders */
-        -1L, /* dwHeadersLength */
-        NULL, /* lpOptional  (POST data) */
-        0);    /* dwOptionalLength */
-
-
-    // HttpEndRequest(hHttp, NULL, 0, NULL);
-
-    DWORD bytesAvailable;
-    BOOL dataAvailableResponse = InternetQueryDataAvailable(hHttp, &bytesAvailable, 0, NULL);
-    if (bytesAvailable == 0) {
-        bytesAvailable = 1;
-    }
-
-    if (dataAvailableResponse && bytesAvailable) {
-        BYTE buffer[4096];
-        DWORD bytesRead;
-        DWORD bytesToRead = bytesAvailable;
-        while (bytesToRead > 0) {
-            if (bytesToRead > 4095) {
-                bytesToRead = 4095;
-            }
-            InternetReadFile(hHttp, buffer, bytesToRead, &bytesRead);
-            fwrite(buffer, bytesRead, 1, fp);
-            bytesAvailable -= bytesRead;
-            bytesToRead = bytesAvailable;
-        }
-    }
-
-    fclose(fp);
-    InternetCloseHandle(hHttp);
-    InternetCloseHandle(hInternet);
-    return TRUE;
+    InternetDownload download(_userAgent, url);
+    contentType.append(_T("application/zip"));
+    return download.saveToFile(filename);
 }
 
 
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const ModuleInfo *moduleInfo)
 {
-    result.append("000000000000111100000000000011100000000000011111");
-        return TRUE;
+    InternetDownload download(_userAgent, url);
+    result.append( download.getContent());
+    return !result.empty();
 }
 
 
