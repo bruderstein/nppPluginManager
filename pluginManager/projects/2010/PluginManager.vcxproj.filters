@@ -69,9 +69,6 @@
     <ClInclude Include="..\..\src\WcharMbcsConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Encrypter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\libinstall\src\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -122,9 +119,6 @@
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\precompiled_headers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Encrypter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
