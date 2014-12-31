@@ -874,11 +874,11 @@ void PluginList::downloadList()
 	BOOL downloadResult;
 	if (!g_options.downloadMD5Url.empty())
 	{
-		downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
+		downloadResult = downloadManager.getUrl(g_options.downloadMD5Url.c_str(), serverMD5, &g_options.moduleInfo);
 	}
 	else
 	{
-		downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.proxyInfo, &g_options.moduleInfo);
+		downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.moduleInfo);
 	}
 #else
 	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.moduleInfo);
@@ -895,7 +895,10 @@ void PluginList::downloadList()
 #ifdef ALLOW_OVERRIDE_XML_URL
 	if (!g_options.downloadUrl.empty())
 	{
-		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.moduleInfo);
+		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListZipFilename, contentType, &g_options.moduleInfo);
+        tstring unzipPath(pluginConfig);
+		unzipPath.append(_T("\\"));
+		Decompress::unzip(pluginsListZipFilename, unzipPath);
 	}
 	else
 #endif
