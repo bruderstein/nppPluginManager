@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/InstallStep.h"
 #include "libinstall/DeleteStep.h"
 #include "libinstall/VariableHandler.h"
+#include "libinstall/CancelToken.h"
 
 
 
@@ -37,7 +38,8 @@ DeleteStep::DeleteStep(const TCHAR *file, BOOL isDirectory)
 StepStatus DeleteStep::perform(tstring& /*basePath*/, TiXmlElement* forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
 							 boost::function<void(const int)> stepProgress, 
-							 const ModuleInfo* /*moduleInfo*/)
+							 const ModuleInfo* /*moduleInfo*/,
+                             CancelToken& /*cancelToken*/)
 {
 	StepStatus status = STEPSTATUS_FAIL;
 

@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/VariableHandler.h"
 #include "libinstall/Validate.h"
 #include "libinstall/ModuleInfo.h"
+#include "libinstall/CancelToken.h"
 
 using namespace std;
 
@@ -71,7 +72,8 @@ void CopyStep::replaceVariables(VariableHandler *variableHandler)
 StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
 							 boost::function<void(const int)> stepProgress,
-							 const ModuleInfo* moduleInfo)
+							 const ModuleInfo* moduleInfo,
+                             CancelToken& cancelToken)
 {
 
 	tstring fromPath = basePath;
@@ -123,14 +125,16 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		return STEPSTATUS_SUCCESS;
 	}
 
-	return copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, moduleInfo); 
+	return copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, moduleInfo, cancelToken); 
 }
 
 
 StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath, 
 					 TiXmlElement* forGpup,
 					 boost::function<void(const TCHAR*)> setStatus,
-					 boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo)
+					 boost::function<void(const int)> stepProgress, 
+                     const ModuleInfo* moduleInfo,
+                     CancelToken& cancelToken)
 {
 	StepStatus status = STEPSTATUS_SUCCESS;
 
@@ -164,6 +168,10 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 	{
 		do 
 		{
+            if (cancelToken.isSignalled()) {
+                return STEPSTATUS_FAIL;
+            }
+
 			dest = toPath;
 			if (_toDestination == TO_DIRECTORY)
 				dest.append(foundData.cFileName);
@@ -202,7 +210,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 						// Destination must end in a backslash for directories
 						dest.append(_T("\\"));
 						// Recursively call ourselves to copy this directory
-						status = copyDirectory(fullFoundPath, dest, forGpup, setStatus, stepProgress, moduleInfo);
+						status = copyDirectory(fullFoundPath, dest, forGpup, setStatus, stepProgress, moduleInfo, cancelToken);
 
 					}
 
@@ -219,7 +227,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 				copy = false;
 				if (_validate)
 				{
-					switch(Validator::validate(src, moduleInfo))
+					switch(Validator::validate(src, cancelToken, moduleInfo))
 					{
 					
 						case VALIDATE_OK:

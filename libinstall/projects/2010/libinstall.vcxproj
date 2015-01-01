@@ -235,6 +235,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\CancelToken.cpp" />
     <ClCompile Include="..\..\src\CopyStep.cpp" />
     <ClCompile Include="..\..\src\Decompress.cpp" />
     <ClCompile Include="..\..\src\DeleteStep.cpp" />
@@ -261,6 +262,7 @@
     <ClCompile Include="..\..\src\WcharMbcsConverter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\libinstall\CancelToken.h" />
     <ClInclude Include="..\..\include\libinstall\CopyStep.h" />
     <ClInclude Include="..\..\include\libinstall\Decompress.h" />
     <ClInclude Include="..\..\include\libinstall\DeleteStep.h" />

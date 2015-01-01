@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tinyxml/tinyxml.h"
 #include "libinstall/InstallStep.h"
 #include "libinstall/InstallStepFactory.h"
+#include "libinstall/CancelToken.h"
 #include "ProgressDialog.h"
 
 #define RETURN_SUCCESS				0
@@ -276,6 +277,7 @@ void stepProgress(int /*percentageComplete*/)
 BOOL processActionsFile(const tstring& actionsFile)
 {
 
+    CancelToken cancelToken;
 
 	TiXmlDocument xmlDocument(actionsFile.c_str());
 	if (xmlDocument.LoadFile())
@@ -311,7 +313,8 @@ BOOL processActionsFile(const tstring& actionsFile)
 												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
 												boost::bind(&setStatus, _1),     // status update function
 												boost::bind(&stepProgress, _1),
-												NULL); // step progress function
+												NULL,
+                                                cancelToken); // step progress function
 
 
 				// If it said it needed to do it in GPUP, then maybe N++ hasn't quite
@@ -326,7 +329,8 @@ BOOL processActionsFile(const tstring& actionsFile)
 												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
 												boost::bind(&setStatus, _1),     // status update function
 												boost::bind(&stepProgress, _1), // step progress function
-												NULL); 
+												NULL,
+                                                cancelToken); 
 
 
 

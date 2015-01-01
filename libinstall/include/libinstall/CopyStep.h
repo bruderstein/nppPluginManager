@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Validate.h"
 
 class VariableHandler;
-class ProxyInfo;
+class CancelToken;
 
 enum ToDestination
 {
-	TO_DIRECTORY,
-	TO_FILE
+    TO_DIRECTORY,
+    TO_FILE
 };
 
 
@@ -37,44 +37,48 @@ enum ToDestination
 class CopyStep : public InstallStep
 {
 public:
-	CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate, 
-		BOOL isGpup,
-		BOOL backup, 
-		BOOL recursive);
+    CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate, 
+        BOOL isGpup,
+        BOOL backup, 
+        BOOL recursive);
 
-	~CopyStep() {};
-	
-	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
-		 boost::function<void(const TCHAR*)> setStatus,
-	     boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo);
+    ~CopyStep() {};
+    
+    StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
+         boost::function<void(const TCHAR*)> setStatus,
+         boost::function<void(const int)> stepProgress, 
+         const ModuleInfo* moduleInfo, 
+         CancelToken& cancelToken);
 
-	void replaceVariables(VariableHandler *variableHandler);
+    void replaceVariables(VariableHandler *variableHandler);
 
 private:
-	
-	ValidateStatus Validate(tstring& file);
-	void copyGpup(const tstring& basePath, const tstring& toPath);
-	void callGpup(const TCHAR *gpupPath, const TCHAR *arguments);
+    
+    ValidateStatus Validate(tstring& file);
+    void copyGpup(const tstring& basePath, const tstring& toPath);
+    void callGpup(const TCHAR *gpupPath, const TCHAR *arguments);
 
-	StepStatus copyDirectory(tstring& fromPath, tstring& toPath, 
-					 TiXmlElement* forGpup,
-					 boost::function<void(const TCHAR*)> setStatus,
-					 boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo);
+    StepStatus copyDirectory(tstring& fromPath, tstring& toPath, 
+                     TiXmlElement* forGpup,
+                     boost::function<void(const TCHAR*)> setStatus,
+                     boost::function<void(const int)> stepProgress, 
+                     const ModuleInfo* moduleInfo,
+                     CancelToken& cancelToken);
 
-	
-	tstring	_from;
-	tstring _to;
-	tstring _toFile;
+    
+    tstring	_from;
+    tstring _to;
+    tstring _toFile;
 
 
-	ToDestination _toDestination;
+    ToDestination _toDestination;
 
-	
-	BOOL    _failIfExists;
-	BOOL    _validate;
-	BOOL	_backup;
-	BOOL    _isGpup;
-	BOOL	_recursive;
+    
+    BOOL    _failIfExists;
+    BOOL    _validate;
+    BOOL	_backup;
+    BOOL    _isGpup;
+    BOOL	_recursive;
 };
 
 #endif

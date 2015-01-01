@@ -10,7 +10,8 @@ using namespace std;
 
 tstring DownloadManager::_userAgent(_T("Plugin-Manager"));
 
-DownloadManager::DownloadManager(void)
+DownloadManager::DownloadManager(CancelToken& cancelToken)
+    : m_cancelToken(cancelToken)
 {
     _progressFunctionSet = FALSE;
 }
@@ -33,7 +34,7 @@ void DownloadManager::setProgressFunction(boost::function<void(int)> progressFun
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, const ModuleInfo *moduleInfo)
 {
-    InternetDownload download(_userAgent, url);
+    InternetDownload download(_userAgent, url, m_cancelToken);
     contentType.append(_T("application/zip"));
     return download.saveToFile(filename);
 }
@@ -42,11 +43,15 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const ModuleInfo *moduleInfo)
 {
-    InternetDownload download(_userAgent, url);
+    InternetDownload download(_userAgent, url, m_cancelToken);
     result.append( download.getContent());
     return !result.empty();
 }
 
+void DownloadManager::cancelDownload() 
+{
+    m_cancelToken.triggerCancel();
+}
 
 
 size_t DownloadManager::curlWriteCallback(void *ptr, size_t size, size_t nmemb, void *stream)

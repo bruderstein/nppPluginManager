@@ -19,29 +19,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
 
+#include "CancelToken.h"
 
 class ModuleInfo;
+
 
 class DownloadManager
 {
 public:
-	DownloadManager(void);
-	~DownloadManager(void);
-	BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, const ModuleInfo *moduleInfo);
-	BOOL getUrl(const TCHAR *url, std::string& result, const ModuleInfo *moduleInfo);
+    DownloadManager(CancelToken& cancelToken);
+    ~DownloadManager();
+    BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, const ModuleInfo *moduleInfo);
+    BOOL getUrl(const TCHAR *url, std::string& result, const ModuleInfo *moduleInfo);
+    void cancelDownload();
 
-	void setProgressFunction(boost::function<void(int)> progressFunction);
+    void setProgressFunction(boost::function<void(int)> progressFunction);
 
-	static void setUserAgent(const TCHAR* userAgent);
+    static void setUserAgent(const TCHAR* userAgent);
 
-	static size_t curlWriteCallback(void *ptr, size_t size, size_t nmemb, void *stream);
-	static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *stream);
-	static size_t curlWriteStringCallback(void *ptr, size_t size, size_t nmemb, void *str);
-	static int DownloadManager::curlProgressCallback(void *ptr, double dltotal, double dlnow, 
-										  double /*ultotal*/, double /*ulnow*/);
+    static size_t curlWriteCallback(void *ptr, size_t size, size_t nmemb, void *stream);
+    static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *stream);
+    static size_t curlWriteStringCallback(void *ptr, size_t size, size_t nmemb, void *str);
+    static int DownloadManager::curlProgressCallback(void *ptr, double dltotal, double dlnow, 
+                                          double /*ultotal*/, double /*ulnow*/);
 
 private:
-	boost::function<void(int)> _progressFunction;
-	BOOL					   _progressFunctionSet;
-	static tstring				_userAgent;
+    boost::function<void(int)> _progressFunction;
+    BOOL					   _progressFunctionSet;
+    static tstring				_userAgent;
+
+    CancelToken                m_cancelToken;
 };

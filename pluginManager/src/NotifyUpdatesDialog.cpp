@@ -120,8 +120,10 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 
 				case IDC_UPDATE:
 					{
+                        CancelToken cancelToken;
 						ProgressDialog progress(_hInst, 
-							boost::bind(&PluginList::startInstall, _pluginList, _nppData._nppHandle, _1, &_pluginListView, TRUE));
+                            cancelToken,
+							boost::bind(&PluginList::startInstall, _pluginList, _nppData._nppHandle, _1, &_pluginListView, TRUE, cancelToken));
 						progress.doModal(_hSelf);
 						
 						_pluginListView.removeSelected();

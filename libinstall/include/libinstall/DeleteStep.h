@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "InstallStep.h"
 
 class ModuleInfo;
+class CancelToken;
 
 class DeleteStep : public InstallStep
 {
@@ -32,7 +33,9 @@ public:
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
 		boost::function<void(const TCHAR*)> setStatus,
-		boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo);
+		boost::function<void(const int)> stepProgress, 
+        const ModuleInfo* moduleInfo,
+        CancelToken& cancelToken);
 
 	void replaceVariables(VariableHandler *variableHandler);
 

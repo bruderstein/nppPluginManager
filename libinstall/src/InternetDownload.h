@@ -1,8 +1,10 @@
 #pragma once
 
+#include "libinstall/CancelToken.h"
+
 class InternetDownload {
 public:
-    InternetDownload(const tstring& userAgent, const tstring& url);
+    InternetDownload(const tstring& userAgent, const tstring& url, CancelToken cancelToken);
         
     ~InternetDownload();
 
@@ -27,6 +29,7 @@ private:
     HINTERNET m_hInternet;
     HINTERNET m_hConnect;
     HINTERNET m_hHttp;
+    CancelToken m_cancelToken;
 
     DWORD m_error;
     

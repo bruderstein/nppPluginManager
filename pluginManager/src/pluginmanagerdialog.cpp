@@ -126,13 +126,12 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 			{
 				case IDC_BUTTONINSTALL:
 				{
-					//
-
+                    CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_availableListView, FALSE));
+                        cancelToken,
+						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_availableListView, FALSE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					
-					//	dlg->installPlugins(dlg->_availableListView);
 					break;
 				}
 			}
@@ -227,8 +226,10 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 			{
 				case IDC_BUTTONUPDATE:
 				{
+                    CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_updatesListView, TRUE));
+                        cancelToken,
+						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_updatesListView, TRUE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					
 					
@@ -325,16 +326,20 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 			{
 				case IDC_BUTTONREMOVE:
 				{
+                    CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
-						boost::bind(&PluginList::startRemove, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView));
+                        cancelToken,
+						boost::bind(&PluginList::startRemove, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					break;
 				}
 
 				case IDC_REINSTALL:
 				{
+                    CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, TRUE));
+                        cancelToken,
+						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, TRUE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					break;
 				}
@@ -396,8 +401,6 @@ BOOL CALLBACK PluginManagerDialog::tabWndProc(HWND hWnd, UINT Message, WPARAM wP
 
 BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
-	DownloadManager downloadManager;
-
 	switch (Message) 
 	{
         case WM_INITDIALOG :

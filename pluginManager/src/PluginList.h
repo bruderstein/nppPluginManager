@@ -68,19 +68,20 @@ public:
 	void startInstall(HWND hMessageBoxParent, 
 							  ProgressDialog* progressDialog, 
 							  PluginListView *pluginListView, 
-							  BOOL isUpdate);
+							  BOOL isUpdate,
+                              CancelToken& cancelToken);
 
 
     void startRemove(HWND hMessageBoxParent, 
 							  ProgressDialog* progressDialog, 
-							  PluginListView *pluginListView);
+							  PluginListView *pluginListView,
+                              CancelToken& cancelToken);
 
 	/* Waits until the list has been downloaded and processed */
 	void waitForListsAvailable();
 
 	/* Returns true if the lists have been downloaded and processed already */
 	BOOL listsAvailable();
-
 
 private:
 	/* Plugin name map */
@@ -121,8 +122,8 @@ private:
 	BOOL checkInstalledPlugins(const TCHAR *nppDirectory, BOOL allUsers);
 	void addAvailablePlugins();
 
-	void installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade);
-	void removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView);
+	void installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade, CancelToken& cancelToken);
+	void removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, CancelToken& cancelToken);
 	void addPluginNames(TiXmlElement* pluginNamesElement);
 
 	static UINT installThreadProc(LPVOID param);

@@ -3,13 +3,14 @@
 #include "libinstall/DownloadManager.h"
 #include "libinstall/tstring.h"
 #include "libinstall/md5.h"
+#include "libinstall/CancelToken.h"
 
 namespace Validator
 {
 
-ValidateStatus validate(const tstring& file, const ModuleInfo* moduleInfo)
+ValidateStatus validate(const tstring& file, CancelToken& cancelToken, const ModuleInfo* moduleInfo)
 {
-	DownloadManager download;
+	DownloadManager download(cancelToken);
 	
 	TCHAR localMD5[(MD5::HASH_LENGTH * 2) + 1];
 	MD5::hash(file.c_str(), localMD5, (MD5::HASH_LENGTH * 2) + 1);

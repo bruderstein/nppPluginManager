@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class VariableHandler;
 class ModuleInfo;
+class CancelToken;
 
 enum StepStatus 
 {
@@ -45,7 +46,8 @@ public:
 	virtual StepStatus perform(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
 		boost::function<void(const TCHAR*)> setStatus,
 		boost::function<void(const int)> stepProgress,
-		const ModuleInfo* /*windowParent */) { return STEPSTATUS_SUCCESS; };
+		const ModuleInfo* /*windowParent */,
+        CancelToken& cancelToken) { return STEPSTATUS_SUCCESS; };
 
 	virtual StepStatus remove(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
 		boost::function<void(const TCHAR*)> setStatus,

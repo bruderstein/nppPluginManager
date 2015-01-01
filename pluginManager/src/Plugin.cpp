@@ -310,11 +310,12 @@ InstallStatus Plugin::install(tstring& basePath, TiXmlElement* forGpup,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
 									  const ModuleInfo* moduleInfo,
-									  VariableHandler* variableHandler)
+									  VariableHandler* variableHandler,
+                                      CancelToken& cancelToken)
 {
 	
 
-	return runSteps(_installSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, moduleInfo, variableHandler);
+	return runSteps(_installSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, moduleInfo, variableHandler, cancelToken);
 }
 
 
@@ -323,7 +324,8 @@ InstallStatus Plugin::remove(tstring& basePath, TiXmlElement* forGpup,
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
 									  const ModuleInfo* moduleInfo,
-									  VariableHandler* variableHandler)
+									  VariableHandler* variableHandler,
+                                      CancelToken& cancelToken)
 {
 	
 	TiXmlElement* deleteElement = new TiXmlElement(_T("delete"));
@@ -349,7 +351,7 @@ InstallStatus Plugin::remove(tstring& basePath, TiXmlElement* forGpup,
 
 	forGpup->LinkEndChild(deleteElement);	
 	
-	runSteps(_removeSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, moduleInfo, variableHandler);
+	runSteps(_removeSteps, basePath, forGpup, setStatus, stepProgress, stepComplete, moduleInfo, variableHandler, cancelToken);
 
 	// restore the original plugin dir
 	variableHandler->setVariable(_T("PLUGINDIR"), origPluginDir.c_str());
@@ -364,7 +366,8 @@ InstallStatus Plugin::runSteps(InstallStepContainer steps, tstring& basePath, Ti
 									  boost::function<void(const int)> stepProgress,
 									  boost::function<void()> stepComplete,
 									  const ModuleInfo* moduleInfo,
-									  VariableHandler* variableHandler)
+									  VariableHandler* variableHandler,
+                                      CancelToken& cancelToken)
 {
 	InstallStatus status = INSTALL_SUCCESS;
 
@@ -380,7 +383,7 @@ InstallStatus Plugin::runSteps(InstallStepContainer steps, tstring& basePath, Ti
 		if (variableHandler)
 			(*stepIterator)->replaceVariables(variableHandler);
 
-		stepStatus = (*stepIterator)->perform(basePath, forGpup, setStatus, stepProgress, moduleInfo);
+		stepStatus = (*stepIterator)->perform(basePath, forGpup, setStatus, stepProgress, moduleInfo, cancelToken);
 
 		switch(stepStatus)
 		{

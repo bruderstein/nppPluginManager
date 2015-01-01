@@ -40,7 +40,8 @@ RunStep::RunStep(const TCHAR *file, const TCHAR *arguments, BOOL outsideNpp)
 StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup, 
 							 boost::function<void(const TCHAR*)> setStatus,
 							 boost::function<void(const int)> stepProgress, 
-							 const ModuleInfo* moduleInfo)
+							 const ModuleInfo* moduleInfo,
+                             CancelToken& cancelToken)
 {
 	StepStatus status = STEPSTATUS_FAIL;
 
@@ -76,7 +77,7 @@ StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup,
 	tstring executable(basePath);
 	executable.append(_file);
     BOOL executeFile = FALSE;
-	switch(Validator::validate(executable, moduleInfo))
+	switch(Validator::validate(executable, cancelToken, moduleInfo))
 	{
 	
 		case VALIDATE_OK:

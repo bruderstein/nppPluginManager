@@ -23,25 +23,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "validate.h"
 
 class ModuleInfo;
+class CancelToken;
 
 class RunStep : public InstallStep
 {
 public:
-	RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp);
-	~RunStep() {};
-	
-	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
-		boost::function<void(const TCHAR*)> setStatus,
-		boost::function<void(const int)> stepProgress, const ModuleInfo* moduleInfo);
+    RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp);
+    ~RunStep() {};
+    
+    StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
+        boost::function<void(const TCHAR*)> setStatus,
+        boost::function<void(const int)> stepProgress, 
+        const ModuleInfo* moduleInfo,
+        CancelToken& cancelToken);
 
-	void replaceVariables(VariableHandler *variableHandler);
+    void replaceVariables(VariableHandler *variableHandler);
 
 private:
-	BOOL execute(const TCHAR *executable, const TCHAR *arguments);
+    BOOL execute(const TCHAR *executable, const TCHAR *arguments);
 
-	BOOL	_outsideNpp;
-	tstring	_file;
-	tstring _arguments;
+    BOOL	_outsideNpp;
+    tstring	_file;
+    tstring _arguments;
 };
 
 #endif

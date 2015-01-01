@@ -864,7 +864,8 @@ void PluginList::downloadList()
 	
 
 	// Download the plugins.xml from the repository
-	DownloadManager downloadManager;
+    CancelToken cancelToken;
+	DownloadManager downloadManager(cancelToken);
 	tstring contentType;
 	TCHAR hashBuffer[(MD5LEN * 2) + 1];
 	MD5::hash(pluginsListFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
@@ -895,10 +896,12 @@ void PluginList::downloadList()
 #ifdef ALLOW_OVERRIDE_XML_URL
 	if (!g_options.downloadUrl.empty())
 	{
-		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListZipFilename, contentType, &g_options.moduleInfo);
+		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.moduleInfo);
+        /*
         tstring unzipPath(pluginConfig);
 		unzipPath.append(_T("\\"));
 		Decompress::unzip(pluginsListZipFilename, unzipPath);
+        */
 	}
 	else
 #endif
@@ -961,7 +964,7 @@ TiXmlDocument* PluginList::getGpupDocument(const TCHAR* filename)
 	return forGpupDoc;
 }
 
-void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade)
+void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade, CancelToken& cancelToken)
 {
 	
 
@@ -1175,7 +1178,9 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 			boost::bind(&ProgressDialog::stepComplete, progressDialog),
-			&g_options.moduleInfo, _variableHandler);
+			&g_options.moduleInfo, 
+            _variableHandler,
+            cancelToken);
 
 		switch(status)
 		{
@@ -1252,7 +1257,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	
 }
 
-void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView)
+void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, CancelToken& cancelToken)
 {
 	g_options.moduleInfo.setHParent(hMessageBoxParent);
 
@@ -1303,7 +1308,9 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 					boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 					boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 					boost::bind(&ProgressDialog::stepComplete, progressDialog),
-					&g_options.moduleInfo, _variableHandler);
+					&g_options.moduleInfo, 
+                    _variableHandler,
+                    cancelToken);
 		++pluginIter;
 	}
 
@@ -1343,12 +1350,14 @@ struct InstallParam
 	ProgressDialog*		 progressDialog;
 	HWND                 hMessageBoxParent;
 	BOOL                 isUpdate;
+    CancelToken          cancelToken;
 };
 
 void PluginList::startInstall(HWND hMessageBoxParent, 
 							  ProgressDialog* progressDialog, 
 							  PluginListView *pluginListView, 
-							  BOOL isUpdate)
+							  BOOL isUpdate,
+                              CancelToken& cancelToken)
 {
 	InstallParam *ip = new InstallParam;
 
@@ -1357,6 +1366,7 @@ void PluginList::startInstall(HWND hMessageBoxParent,
 	ip->pluginList        = this;
 	ip->isUpdate          = isUpdate;
 	ip->hMessageBoxParent = hMessageBoxParent;
+    ip->cancelToken       = cancelToken;
 
 	::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::installThreadProc, 
 		(LPVOID)ip, 0, 0);
@@ -1370,7 +1380,8 @@ UINT PluginList::installThreadProc(LPVOID param)
 	ip->pluginList->installPlugins(ip->hMessageBoxParent, 
 								   ip->progressDialog, 
 								   ip->pluginListView, 
-								   ip->isUpdate);
+								   ip->isUpdate,
+                                   ip->cancelToken);
 
 	// clean up the parameter
 	delete ip;
@@ -1383,7 +1394,8 @@ UINT PluginList::installThreadProc(LPVOID param)
 
 void PluginList::startRemove(HWND hMessageBoxParent, 
 							  ProgressDialog* progressDialog, 
-							  PluginListView *pluginListView)
+							  PluginListView *pluginListView,
+                              CancelToken& cancelToken)
 {
 	InstallParam *ip = new InstallParam;
 
@@ -1391,6 +1403,7 @@ void PluginList::startRemove(HWND hMessageBoxParent,
 	ip->progressDialog    = progressDialog;
 	ip->pluginList        = this;
 	ip->hMessageBoxParent = hMessageBoxParent;
+    ip->cancelToken       = cancelToken;
 
 	::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::removeThreadProc, 
 		(LPVOID)ip, 0, 0);
@@ -1402,7 +1415,8 @@ UINT PluginList::removeThreadProc(LPVOID param)
 	
 	ip->pluginList->removePlugins(ip->hMessageBoxParent, 
 								   ip->progressDialog, 
-								   ip->pluginListView);
+								   ip->pluginListView,
+                                   ip->cancelToken);
 
 	// clean up the parameter
 	delete ip;

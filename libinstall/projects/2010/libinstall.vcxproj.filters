@@ -63,6 +63,9 @@
     <ClCompile Include="..\..\src\InternetDownload.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\CancelToken.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\libinstall\CopyStep.h">
@@ -120,6 +123,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\InternetDownload.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\libinstall\CancelToken.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

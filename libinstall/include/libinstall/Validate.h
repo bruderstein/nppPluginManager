@@ -17,11 +17,11 @@ enum ValidateStatus
 	VALIDATE_BANNED
 };
 
-class ProxyInfo;
 class ModuleInfo;
+class CancelToken;
 
 namespace Validator {
-	ValidateStatus validate(const tstring& file, const ModuleInfo *moduleInfo);
+	ValidateStatus validate(const tstring& file, CancelToken& cancelToken, const ModuleInfo *moduleInfo);
 }
 
 #endif

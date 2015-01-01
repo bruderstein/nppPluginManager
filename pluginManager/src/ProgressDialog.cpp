@@ -20,16 +20,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "precompiled_headers.h"
 #include "resource.h"
 #include "ProgressDialog.h"
+#include "libinstall/CancelToken.h"
 
 
 using namespace boost;
 
-ProgressDialog::ProgressDialog(HINSTANCE hInst, function<void(ProgressDialog*)> startFunction)
+ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, function<void(ProgressDialog*)> startFunction)
+    : _hInst(hInst),
+      _startFunction(startFunction),
+      _hSelf(0),
+      _completedSteps(0),
+      _cancelToken(cancelToken)
 {
-	_hInst = hInst;
-	_startFunction = startFunction;
-	_hSelf = 0;
-	_completedSteps = 0;
 }
 
 
@@ -66,6 +68,18 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
 			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(lParam);
 			return dlg->runDlgProc(hWnd, message, wParam, lParam);
 		}
+
+        case WM_COMMAND:
+            {
+                if (IDCANCEL == wParam) {
+                    int mbResult = MessageBox(hWnd, _T("Are you sure you wish to abort the current installation/removal?"), _T("Cancel installation / removal?"), MB_YESNO | MB_ICONQUESTION);
+                    if (IDYES == mbResult) {
+			            ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+                        dlg->_cancelToken.triggerCancel();
+                    }
+                }
+                return FALSE;
+            }
 		default:
 		{
 			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));

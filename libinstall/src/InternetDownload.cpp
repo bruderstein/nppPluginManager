@@ -1,13 +1,15 @@
 
 #include "precompiled_headers.h"
 #include "InternetDownload.h"
+#include "libinstall/CancelToken.h"
 
-InternetDownload::InternetDownload(const tstring& userAgent, const tstring& url) 
+InternetDownload::InternetDownload(const tstring& userAgent, const tstring& url, CancelToken cancelToken) 
     : m_url(url),
       m_hInternet(NULL),
       m_hConnect(NULL),
       m_hHttp(NULL),
-      m_error(0)
+      m_error(0),
+      m_cancelToken(cancelToken)
 {
     m_hInternet = ::InternetOpen(userAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL /* proxy*/ , NULL /* proxy bypass */, 0 /* dwflags */);
 }
@@ -117,6 +119,10 @@ BOOL InternetDownload::getData(writeData_t writeData, void *context)
     if (m_error) {
         return FALSE;
     }
+    
+    if (m_cancelToken.isSignalled()) {
+        return false;
+    }
 
     DWORD bytesAvailable;
     BOOL dataAvailableResponse = InternetQueryDataAvailable(m_hHttp, &bytesAvailable, 0, NULL);
@@ -135,6 +141,10 @@ BOOL InternetDownload::getData(writeData_t writeData, void *context)
 
             bytesAvailable -= bytesRead;
             bytesToRead = bytesAvailable;
+
+            if (m_cancelToken.isSignalled()) {
+                return FALSE;
+            }
 
             if (bytesToRead == 0) {
                  dataAvailableResponse = InternetQueryDataAvailable(m_hHttp, &bytesAvailable, 0, NULL);
