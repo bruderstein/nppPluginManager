@@ -34,3 +34,13 @@ typedef std::basic_string<TCHAR>			tstring;
 
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
+
+#include <sstream>
+
+#ifdef UNICODE
+#define tostringstream std::wostringstream
+#else
+#define tostringstream std::ostringstream
+#endif
+
+#define FMTDBGSTR(stream)  ((tostringstream&)(tostringstream() << tstring() << stream)).str().c_str() 

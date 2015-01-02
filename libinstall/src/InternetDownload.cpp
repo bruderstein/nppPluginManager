@@ -3,15 +3,25 @@
 #include "InternetDownload.h"
 #include "libinstall/CancelToken.h"
 
-InternetDownload::InternetDownload(const tstring& userAgent, const tstring& url, CancelToken cancelToken) 
+InternetDownload::InternetDownload(const tstring& userAgent, const tstring& url, CancelToken cancelToken, boost::function<void(int)> progressFunction /* = NULL */) 
     : m_url(url),
       m_hInternet(NULL),
       m_hConnect(NULL),
       m_hHttp(NULL),
       m_error(0),
-      m_cancelToken(cancelToken)
+      m_cancelToken(cancelToken),
+      m_progressFunction(progressFunction)
 {
-    m_hInternet = ::InternetOpen(userAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL /* proxy*/ , NULL /* proxy bypass */, 0 /* dwflags */);
+    m_requestComplete = ::CreateEvent(NULL, TRUE /*manualReset*/, FALSE /*initialState*/, NULL /*name*/);
+    m_responseReceived = ::CreateEvent(NULL, TRUE /*manualReset*/, FALSE /*initialState*/, NULL /*name*/);
+
+    m_hInternet = ::InternetOpen(userAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL /* proxy*/ , NULL /* proxy bypass */, INTERNET_FLAG_ASYNC /* dwflags */);
+    
+    INTERNET_STATUS_CALLBACK ourCallback = &InternetDownload::statusCallback;
+    ::InternetSetStatusCallback(m_hInternet, ourCallback);
+    DWORD timeout = 120000;
+    ::InternetSetOption(m_hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(DWORD));
+    ::InternetSetOption(m_hInternet, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(DWORD));
 }
 
 InternetDownload::~InternetDownload() 
@@ -32,86 +42,71 @@ InternetDownload::~InternetDownload()
     }
 }
 
+void InternetDownload::statusCallback( HINTERNET hInternet,
+     DWORD_PTR dwContext,
+     DWORD dwInternetStatus,
+     LPVOID lpvStatusInformation,
+     DWORD dwStatusInformationLength )
+{
+    InternetDownload *download = (InternetDownload*)dwContext;
+    switch(dwInternetStatus) {
+    case INTERNET_STATUS_RECEIVING_RESPONSE:
+            download->receivingResponse();
+            break;
+
+    case INTERNET_STATUS_REQUEST_COMPLETE:
+            download->responseReceived();
+            break;
+    case INTERNET_STATUS_HANDLE_CREATED:
+            download->m_hHttp = (*(HANDLE*)lpvStatusInformation);
+            break;
+
+    default: 
+        break;
+
+    }
+
+
+}
+
 BOOL InternetDownload::request() {
 
     if (!m_hInternet) {
         return FALSE;
     }
-
-    URL_COMPONENTS urlComponents;
-    memset(&urlComponents, 0, sizeof(URL_COMPONENTS));
-    urlComponents.dwStructSize = sizeof(URL_COMPONENTS);
-    /* Set all the lengths to non-zero, and leave the pointers at zero, then we just get pointers to the 
-       url string, with lengths for each section
-     */
-    urlComponents.dwExtraInfoLength = 1;
-    urlComponents.dwHostNameLength = 1;
-    urlComponents.dwPasswordLength = 1;
-    urlComponents.dwSchemeLength = 1;
-    urlComponents.dwUrlPathLength = 1;
-    urlComponents.dwUserNameLength = 1;
-    urlComponents.nPort = 80;
-
-    /* Make a permanent copy of the url (c_str() returns a temporary object */
-    TCHAR *url = new TCHAR[m_url.size() + 1];
-    _tcscpy_s(url, m_url.size() + 1, m_url.c_str());
-
-    InternetCrackUrl(url, m_url.size(), 0, &urlComponents);
-
     
-    TCHAR *host = new TCHAR[urlComponents.dwHostNameLength + 1];
-    _tcsnccpy_s(host, urlComponents.dwHostNameLength + 1, urlComponents.lpszHostName, urlComponents.dwHostNameLength);
-    host[urlComponents.dwHostNameLength] = _T('\0');
+    m_hHttp = InternetOpenUrl(m_hInternet, m_url.c_str(), NULL, 0, 0, reinterpret_cast<DWORD_PTR>(this));
+    return TRUE;
+}
 
+BOOL InternetDownload::waitForHandle(HANDLE handle)
+{
+    HANDLE waitHandles[2];
+    waitHandles[0] = m_cancelToken.getToken();
+    waitHandles[1] = handle;
+    int waitResponse = WaitForMultipleObjects(2, waitHandles, FALSE, 60000);
 
-    m_hConnect = InternetConnect(m_hInternet, 
-        host,
-        urlComponents.nPort, 
-        NULL,
-        NULL,
-        INTERNET_SERVICE_HTTP,
-        0, /* flags */
-        reinterpret_cast<DWORD_PTR>(this));
+    switch(waitResponse) {
+        case WAIT_OBJECT_0:
+            {
+                // cancelled
+                return FALSE;
+            }
+            
+        case WAIT_TIMEOUT:
+            {
+                // More than 60seconds for response
+                return FALSE;
+            }
 
-    delete[] host;
-
-    PCTSTR rgpszAcceptTypes[] = {_T("*/*"), NULL}; 
-
-    TCHAR *path = new TCHAR[urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength + 1];
-    _tcsnccpy_s(path, urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength + 1, urlComponents.lpszUrlPath, urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength);
-    path[urlComponents.dwUrlPathLength + urlComponents.dwExtraInfoLength] = _T('\0');
-
-    m_hHttp = HttpOpenRequest(
-        m_hConnect, 
-        _T("GET"),
-        path,
-        NULL, /* http version - defaults to "HTTP/1.1" */
-        NULL, /* referrer - NULL means no referrer header sent */
-        rgpszAcceptTypes, /* Accept types */
-        0, /* Flags - none required */
-        reinterpret_cast<DWORD_PTR>(this));
-
-    delete[] path;
-    
-    if (!m_hHttp) {
-        m_error = GetLastError();
-        return FALSE;
-    }
-
-    BOOL sendRequestResult = HttpSendRequest(m_hHttp, 
-        NULL, /*lpszHeaders */
-        -1L, /* dwHeadersLength */
-        NULL, /* lpOptional  (POST data) */
-        0);    /* dwOptionalLength */
-
-    if (!sendRequestResult) {
-        m_error = GetLastError();
-        return FALSE;
+        case WAIT_FAILED:
+            {
+                return FALSE;
+            }
     }
 
     return TRUE;
 }
-
 
 BOOL InternetDownload::getData(writeData_t writeData, void *context) 
 {
@@ -119,45 +114,74 @@ BOOL InternetDownload::getData(writeData_t writeData, void *context)
     if (m_error) {
         return FALSE;
     }
-    
+
     if (m_cancelToken.isSignalled()) {
-        return false;
+        return FALSE;
     }
 
+    OutputDebugString(_T("Beginning getData - waiting for request completion\n"));
     DWORD bytesAvailable;
-    BOOL dataAvailableResponse = InternetQueryDataAvailable(m_hHttp, &bytesAvailable, 0, NULL);
 
-    if (dataAvailableResponse && bytesAvailable) {
-        BYTE buffer[8192]; // InternetQueryDataAvailable seems to give back 8k buffers, so an 8k buffer is optimal
-        DWORD bytesRead;
-        DWORD bytesToRead = bytesAvailable;
-        while (bytesToRead > 0) {
-            if (bytesToRead > 8192) {
-                bytesToRead = 8192;
-            }
-            InternetReadFile(m_hHttp, buffer, bytesToRead, &bytesRead);
-            
-            (*this.*writeData)(buffer, bytesRead, context);
+    if (!waitForHandle(m_responseReceived)) {
+        return FALSE;
+    }
 
-            bytesAvailable -= bytesRead;
-            bytesToRead = bytesAvailable;
+    TCHAR headerBuffer[1024];
+    DWORD headerIndex = 0;
+    DWORD bufferLength = 1024;
+    long contentLength = 0;
+    BOOL contentLengthSuccess = HttpQueryInfo(m_hHttp, HTTP_QUERY_CONTENT_LENGTH, headerBuffer, &bufferLength, &headerIndex);
+    if (contentLengthSuccess) {
+        contentLength = _ttol(headerBuffer);
+    }
 
-            if (m_cancelToken.isSignalled()) {
+    bufferLength = 1024;
+    headerIndex = 0;
+    BOOL contentTypeSuccess = HttpQueryInfo(m_hHttp, HTTP_QUERY_CONTENT_TYPE, headerBuffer, &bufferLength, &headerIndex);
+    if (contentTypeSuccess) {
+        m_contentType = headerBuffer;
+    }
+
+    long bytesWritten = 0;
+
+    // Make point-at-which-we-receive-the-headers 5% of the total progress (arbitrarily chosen!)
+    if (!m_progressFunction.empty()) {
+        m_progressFunction(5);
+    }
+
+
+    DWORD bytesToRead = 16384;
+    BYTE buffer[16384]; // InternetReadFile seems to give back 8k buffers, so an 8k buffer is optimal
+    DWORD *bytesRead = new DWORD();
+    do {
+        receivingResponse();
+        int readFileResponse = InternetReadFile(m_hHttp, buffer, bytesToRead, bytesRead);
+        if (!readFileResponse && ERROR_IO_PENDING == GetLastError()) {
+            if (!waitForHandle(m_responseReceived)) {
                 return FALSE;
             }
-
-            if (bytesToRead == 0) {
-                 dataAvailableResponse = InternetQueryDataAvailable(m_hHttp, &bytesAvailable, 0, NULL);
-                 if (dataAvailableResponse) {
-                     bytesToRead = bytesAvailable;
-                 }
-            }
+        } else if (!readFileResponse) {
+            return FALSE;
         }
 
-        return TRUE;
-    }
+        // Check the cancellation token, because otherwise we only check it if we get an ASYNC result from InternetReadFile
+        // That tends to happen on slow(ish) connections, but isn't guaranteed. (From what I've seen)
+        if (m_cancelToken.isSignalled()) {
+            return FALSE;
+        }
 
-    return FALSE;
+        (*this.*writeData)(buffer, *bytesRead, context);
+        bytesWritten += *bytesRead;
+        if (contentLength && !m_progressFunction.empty()) {
+            int percent = static_cast<int>((static_cast<double>(bytesWritten) / static_cast<double>(contentLength)) * 95 + 5);
+            m_progressFunction(percent);
+        }
+
+    } while (*bytesRead != 0);
+
+    delete bytesRead;
+    return TRUE;
+
 }
 
 BOOL InternetDownload::saveToFile(const tstring& filename) {

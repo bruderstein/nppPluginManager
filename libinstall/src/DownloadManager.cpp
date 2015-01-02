@@ -34,16 +34,18 @@ void DownloadManager::setProgressFunction(boost::function<void(int)> progressFun
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, const ModuleInfo *moduleInfo)
 {
-    InternetDownload download(_userAgent, url, m_cancelToken);
-    contentType.append(_T("application/zip"));
-    return download.saveToFile(filename);
+    InternetDownload download(_userAgent, url, m_cancelToken, _progressFunction);
+    BOOL downloadSuccess = download.saveToFile(filename);
+    contentType.append(download.getContentType());
+
+    return downloadSuccess;
 }
 
 
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const ModuleInfo *moduleInfo)
 {
-    InternetDownload download(_userAgent, url, m_cancelToken);
+    InternetDownload download(_userAgent, url, m_cancelToken, _progressFunction);
     result.append( download.getContent());
     return !result.empty();
 }
