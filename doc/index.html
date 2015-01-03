@@ -49,6 +49,25 @@ everything will run properly under a normal user.  Future updates to Plugin Mana
 <br/><br/>
 <a name="changes"></a>
 <h3>Changes</h3>
+1.3.1
+<br>
+<ul>
+  <li>Remove unneeded proxy username and password from ini settings file if they're there</li>
+</ul>
+<br>
+1.3.0
+<br>
+<ul>
+	<li>Handle proxy authentication with the system dialog</li>
+</ul>
+<br>
+1.2.0
+<br>
+<ul>
+ <li>Downloads now using WinInet API instead of <a href="http://curl.haxx.se/libcurl/">libcurl</a>. Hence now using system proxy (same as IE and Chrome), and smaller binaries.</li>
+ <li>Better UAC support. If you start Notepad++ as a normal user, then install something, N++ will be restarted as the same user (not as admin as per previous versions)</li>
+</ul>
+<br>
 1.0.8
 <br/><ul>
 <li>Checks gpup.exe version is correct in order to ensure upgrade from previous version was successful
