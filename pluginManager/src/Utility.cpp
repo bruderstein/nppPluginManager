@@ -1,7 +1,7 @@
 /*
 This file is part of Plugin Manager Plugin for Notepad++
 
-Copyright (C)2009-2010 Dave Brotherstone <davegb@pobox.com>
+Copyright (C)2009-2010,2015 Dave Brotherstone <davegb@pobox.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -134,7 +134,7 @@ void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *argu
 	PROCESS_INFORMATION procinfo;
 */
 	::ShellExecute(NULL,
-				   g_winVer < WV_VISTA ? _T("open") : (needAdmin ? _T("runas") : _T("open")),
+				   _T("open"),
 				   gpupExe.c_str(),
 				   gpupArguments.c_str(),
 				   NULL,

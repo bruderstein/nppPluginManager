@@ -22,9 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "stdafx.h"
 #include "gpup.h"
 
-#include <tchar.h>
-#include <string>
-#include <list>
 
 
 #pragma warning (push)
@@ -142,6 +139,7 @@ BOOL parseCommandLine(const TCHAR* cmdLine, Options& options)
 	if (!arg->empty())
 		argList.push_back(arg);
 	
+    options.setArgList(argList);
 	
 	list<tstring*>::iterator iter = argList.begin();
 	while(iter != argList.end())
@@ -176,6 +174,10 @@ BOOL parseCommandLine(const TCHAR* cmdLine, Options& options)
 			if (iter != argList.end())
 				options.setCopyTo((*iter)->c_str());
 		}
+        else if (*(*iter) == _T("-M"))
+        {
+            options.setIsAdmin(TRUE);
+        }
 
 		++iter;
 	}
@@ -252,9 +254,11 @@ void showProgressDialog()
 {
 	g_progressDialog = new ProgressDialog(hInst);
 	g_progressDialog->doDialog();
+}
 
-	
-	
+void closeProgressDialog()
+{
+    g_progressDialog->close();
 }
 
 void setStatus(const TCHAR* status)
@@ -354,6 +358,64 @@ BOOL processActionsFile(const tstring& actionsFile)
 
 }
 
+BOOL actionsFileHasActions(const tstring& actionsFile) 
+{
+    TiXmlDocument xmlDocument(actionsFile.c_str());
+	if (xmlDocument.LoadFile())
+	{
+		TiXmlElement *install = xmlDocument.FirstChildElement(_T("install"));
+		TiXmlElement stillToComplete(_T("install"));
+		tstring basePath;
+
+		if (install && !install->NoChildren())
+		{
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+
+DWORD runGpupAsAdmin(const Options& options) {
+    const std::list<tstring*> args = options.getArgList();
+    tstring parameters;
+    
+    
+    for(std::list<tstring*>::const_iterator it = args.begin(); it != args.end(); ++it) {
+        parameters.append(_T("\""));
+        parameters.append(*(*it));
+        parameters.append(_T("\" "));
+    }
+
+    parameters.append(_T("-M"));
+
+    TCHAR gpupExeName[MAX_PATH];
+    GetModuleFileName(0, gpupExeName, MAX_PATH);
+
+    DWORD version = ::GetVersion();
+    DWORD majorVersion = LOBYTE(version);
+
+    BOOL isVistaOrGreater = (majorVersion >= 6);
+
+    SHELLEXECUTEINFO shExecInfo = {0};
+    shExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    shExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    shExecInfo.hwnd = NULL;
+    shExecInfo.lpVerb = isVistaOrGreater ? _T("runas") : _T("open");
+    shExecInfo.lpFile = gpupExeName;
+    shExecInfo.lpParameters = parameters.c_str();   
+    shExecInfo.lpDirectory = NULL;
+    shExecInfo.nShow = SW_SHOW;
+    shExecInfo.hInstApp = NULL; 
+    ShellExecuteEx(&shExecInfo);
+    WaitForSingleObject(shExecInfo.hProcess,INFINITE);
+    
+    DWORD exitCode;
+    GetExitCodeProcess(shExecInfo.hProcess, &exitCode);
+    return exitCode;
+}
+
+
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -363,6 +425,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(hInstance);
 	UNREFERENCED_PARAMETER(nCmdShow);
+
+    MessageBox(NULL, _T("GPUP Attach"), _T("GPUP"), MB_ICONINFORMATION);
 
 	hInst = hInstance;
 
@@ -388,7 +452,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 		return RETURN_INVALID_PARAMETERS;
 	}
 
-	showProgressDialog();
+    showProgressDialog();
 	
 	setStatus(_T("Waiting for Notepad++ to close"));
 
@@ -400,19 +464,32 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	
-
+    BOOL shouldRestartProcess = TRUE;
+    DWORD returnValue = RETURN_SUCCESS;
 	if (options.getActionsFile() != _T(""))
 	{
-		if (!processActionsFile(options.getActionsFile()))
-		{
-			MessageBox(NULL, _T("Error finishing installation steps.  Plugin installation has not completed successfully."), _T("Plugin Manager"), MB_OK | MB_ICONERROR);
+        if (!options.isAdmin() && actionsFileHasActions(options.getActionsFile())) 
+        {
+            closeProgressDialog();
+             returnValue = runGpupAsAdmin(options);
+        }
+        else 
+        {
+            shouldRestartProcess = FALSE;
+            if (!processActionsFile(options.getActionsFile())) 
+            {
+			    MessageBox(NULL, _T("Error finishing installation steps.  Plugin installation has not completed successfully."), _T("Plugin Manager"), MB_OK | MB_ICONERROR);
+            }
 		}
 	}
 
-	startNewInstance(options.getExeName());
+    if (shouldRestartProcess) 
+    {
+	    startNewInstance(options.getExeName());
+    }
 	
 
-	return RETURN_SUCCESS;
+	return returnValue;
 
 }
 

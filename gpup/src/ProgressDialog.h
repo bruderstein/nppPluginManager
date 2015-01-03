@@ -4,29 +4,31 @@
 class ProgressDialog
 {
 public:
-	ProgressDialog(HINSTANCE hInst);
+    ProgressDialog(HINSTANCE hInst);
 
-	void stepComplete();
-	void setStatus(const TCHAR* status);
+    void stepComplete();
+    void setStatus(const TCHAR* status);
 
-	BOOL CALLBACK runDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-	
-	void setStepCount(int stepCount);
-	void doDialog();
+    BOOL CALLBACK runDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    
+    void setStepCount(int stepCount);
+    void doDialog();
 
-	static BOOL CALLBACK dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    void close();
+
+    static BOOL CALLBACK dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 private:
-	int _stepCount;
-	int _completedSteps;
+    int _stepCount;
+    int _completedSteps;
 
-	HINSTANCE _hInst;
-	HWND _hSelf;
-	HWND _hProgressBar;
-	HWND _hStatus;
+    HINSTANCE _hInst;
+    HWND _hSelf;
+    HWND _hProgressBar;
+    HWND _hStatus;
 
-	void goToCenter();
+    void goToCenter();
 };
 
 #endif

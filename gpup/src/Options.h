@@ -26,28 +26,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 class Options
 {
 public:
-	Options()  {};
-	~Options() {};
+    Options() : _isAdmin(FALSE) {};
+    ~Options() {};
 
-	void setActionsFile(const TCHAR* actionsFile);
-	void setWindowName(const TCHAR* windowName);
-	void setExeName(const TCHAR* exeName);
-	void setCopyFrom(const TCHAR* copyFrom);
-	void setCopyTo(const TCHAR* copyTo);
+    void setActionsFile(const TCHAR* actionsFile);
+    void setWindowName(const TCHAR* windowName);
+    void setExeName(const TCHAR* exeName);
+    void setCopyFrom(const TCHAR* copyFrom);
+    void setCopyTo(const TCHAR* copyTo);
+    void setArgList(const std::list<tstring*>& argList);
+    void setIsAdmin(const BOOL isAdmin);
 
-	const tstring& getActionsFile();
-	const tstring& getExeName();
-	const tstring& getWindowName();
-	const tstring& getCopyFrom();
-	const tstring& getCopyTo();
+    const tstring& getActionsFile() const;
+    const tstring& getExeName() const;
+    const tstring& getWindowName() const;
+    const tstring& getCopyFrom() const;
+    const tstring& getCopyTo() const;
+    const BOOL isAdmin() const;
+    const std::list<tstring*>& getArgList() const;
 
 private: 
-	tstring _actionsFile;
-	tstring _windowName;
-	tstring _exeName;
-	tstring _copyFrom;
-	tstring _copyTo;
-	
+    tstring _actionsFile;
+    tstring _windowName;
+    tstring _exeName;
+    tstring _copyFrom;
+    tstring _copyTo;
+    BOOL _isAdmin;
+    std::list<tstring*> _argList;
 };
 
 #endif

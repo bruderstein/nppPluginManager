@@ -46,6 +46,11 @@ void ProgressDialog::doDialog()
 	goToCenter();
 }
 
+void ProgressDialog::close()
+{
+    CloseWindow(_hSelf);
+}
+
 void ProgressDialog::setStepCount(int stepCount)
 {
 	_stepCount = stepCount;

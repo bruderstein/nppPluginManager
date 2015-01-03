@@ -47,27 +47,49 @@ void Options::setCopyTo(const TCHAR* copyTo)
 	_copyTo = copyTo;
 }
 
-const tstring& Options::getActionsFile()
+
+void Options::setArgList(const std::list<tstring*>& argList) 
+{
+    _argList = argList;
+}
+
+void Options::setIsAdmin(const BOOL isAdmin) 
+{
+    _isAdmin = isAdmin;
+}
+
+
+const tstring& Options::getActionsFile() const
 {
 	return _actionsFile;
 }
 
-const tstring& Options::getExeName()
+const tstring& Options::getExeName() const
 {
 	return _exeName;
 }
 
-const tstring& Options::getWindowName()
+const tstring& Options::getWindowName() const 
 {
 	return _windowName;
 }
 
-const tstring& Options::getCopyFrom()
+const tstring& Options::getCopyFrom() const 
 {
 	return _copyFrom;
 }
 
-const tstring& Options::getCopyTo()
+const tstring& Options::getCopyTo() const 
 {
 	return _copyTo;
+}
+
+const std::list<tstring*>& Options::getArgList() const
+{
+    return _argList;
+}
+
+const BOOL Options::isAdmin() const 
+{
+    return _isAdmin;
 }
