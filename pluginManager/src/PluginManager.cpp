@@ -306,6 +306,11 @@ void saveSettings(void)
     _itot_s(g_options.showUnstable, temp, 16, 10);
     ::WritePrivateProfileString(SETTINGS_GROUP, KEY_SHOWUNSTABLE, temp, iniFilePath);
 
+    // Remove any leftover proxy credentials from previous versions 
+    // (password encrypted, but they are no longer needed, so clear them out if they're there)
+    ::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYUSERNAME, NULL, iniFilePath);
+    ::WritePrivateProfileString(SETTINGS_GROUP, KEY_PROXYPASSWORD, NULL, iniFilePath);
+
 }
 
 /**************************************************************************
