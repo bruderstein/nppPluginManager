@@ -3,8 +3,9 @@
 #include "InternetDownload.h"
 #include "libinstall/CancelToken.h"
 
-InternetDownload::InternetDownload(const tstring& userAgent, const tstring& url, CancelToken cancelToken, boost::function<void(int)> progressFunction /* = NULL */) 
-    : m_url(url),
+InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, boost::function<void(int)> progressFunction /* = NULL */) 
+    : m_parentHwnd(parentHwnd),
+      m_url(url),
       m_hInternet(NULL),
       m_hConnect(NULL),
       m_hHttp(NULL),
@@ -108,32 +109,52 @@ BOOL InternetDownload::waitForHandle(HANDLE handle)
     return TRUE;
 }
 
-BOOL InternetDownload::getData(writeData_t writeData, void *context) 
+DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context) 
 {
 
     if (m_error) {
-        return FALSE;
+        return DOWNLOAD_STATUS_FAIL;
     }
 
     if (m_cancelToken.isSignalled()) {
-        return FALSE;
+        return DOWNLOAD_STATUS_FAIL;
     }
 
     OutputDebugString(_T("Beginning getData - waiting for request completion\n"));
     DWORD bytesAvailable;
 
     if (!waitForHandle(m_responseReceived)) {
-        return FALSE;
+        return DOWNLOAD_STATUS_FAIL;
     }
 
     TCHAR headerBuffer[1024];
     DWORD headerIndex = 0;
     DWORD bufferLength = 1024;
+
+    DWORD statusCode;
+    BOOL statusCodeSuccess = HttpQueryInfo(m_hHttp, HTTP_QUERY_STATUS_CODE, headerBuffer, &bufferLength, &headerIndex);
+    if (statusCodeSuccess) {
+        statusCode = _ttol(headerBuffer);
+    }
+
+    if (HTTP_STATUS_PROXY_AUTH_REQ == statusCode) {
+        LPVOID errorBuffer = 0;
+        DWORD dwFlags = FLAGS_ERROR_UI_FLAGS_GENERATE_DATA | FLAGS_ERROR_UI_FLAGS_CHANGE_OPTIONS;
+        DWORD errorResult = InternetErrorDlg(m_parentHwnd, m_hHttp, ERROR_INTERNET_INCORRECT_PASSWORD, dwFlags, &errorBuffer);
+        if (errorResult == ERROR_INTERNET_FORCE_RETRY) {
+            return DOWNLOAD_STATUS_FORCE_RETRY;
+        }
+        
+    }
+
+    bufferLength = 1024;
+    headerIndex = 0;
     long contentLength = 0;
     BOOL contentLengthSuccess = HttpQueryInfo(m_hHttp, HTTP_QUERY_CONTENT_LENGTH, headerBuffer, &bufferLength, &headerIndex);
     if (contentLengthSuccess) {
         contentLength = _ttol(headerBuffer);
     }
+
 
     bufferLength = 1024;
     headerIndex = 0;
@@ -158,16 +179,16 @@ BOOL InternetDownload::getData(writeData_t writeData, void *context)
         int readFileResponse = InternetReadFile(m_hHttp, buffer, bytesToRead, bytesRead);
         if (!readFileResponse && ERROR_IO_PENDING == GetLastError()) {
             if (!waitForHandle(m_responseReceived)) {
-                return FALSE;
+                return DOWNLOAD_STATUS_CANCELLED;
             }
         } else if (!readFileResponse) {
-            return FALSE;
+            return DOWNLOAD_STATUS_FAIL;
         }
 
         // Check the cancellation token, because otherwise we only check it if we get an ASYNC result from InternetReadFile
         // That tends to happen on slow(ish) connections, but isn't guaranteed. (From what I've seen)
         if (m_cancelToken.isSignalled()) {
-            return FALSE;
+            return DOWNLOAD_STATUS_CANCELLED;
         }
 
         (*this.*writeData)(buffer, *bytesRead, context);
@@ -180,16 +201,22 @@ BOOL InternetDownload::getData(writeData_t writeData, void *context)
     } while (*bytesRead != 0);
 
     delete bytesRead;
-    return TRUE;
+    return DOWNLOAD_STATUS_SUCCESS;
 
 }
 
 BOOL InternetDownload::saveToFile(const tstring& filename) {
     if (request()) {
         FILE *fp = _tfopen(filename.c_str(), _T("wb"));
-        BOOL success = getData(&InternetDownload::writeToFile, fp);
+        DOWNLOAD_STATUS status = getData(&InternetDownload::writeToFile, fp);
         fclose(fp);
-        return success;
+        if (status == DOWNLOAD_STATUS_FORCE_RETRY) {
+            // This is where we should have used a second class for the actual request.
+        ::InternetCloseHandle(m_hHttp);
+        m_hHttp = NULL;
+            return saveToFile(filename);
+        }
+        return DOWNLOAD_STATUS_SUCCESS == status;
     }
 
     return FALSE;
@@ -198,9 +225,15 @@ BOOL InternetDownload::saveToFile(const tstring& filename) {
 std::string InternetDownload::getContent() {
     if (request()) {
         std::string result;
-        BOOL success = getData(&InternetDownload::writeToString, &result);
+        DOWNLOAD_STATUS status = getData(&InternetDownload::writeToString, &result);
     
-        if (success) {
+        if (DOWNLOAD_STATUS_FORCE_RETRY == status) {
+            ::InternetCloseHandle(m_hHttp);
+            m_hHttp = NULL;
+            return getContent();
+        }
+
+        if (DOWNLOAD_STATUS_SUCCESS == status) {
             return result;
         }
     }

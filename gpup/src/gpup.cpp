@@ -426,8 +426,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hInstance);
 	UNREFERENCED_PARAMETER(nCmdShow);
 
-    MessageBox(NULL, _T("GPUP Attach"), _T("GPUP"), MB_ICONINFORMATION);
-
 	hInst = hInstance;
 
 	Options options;

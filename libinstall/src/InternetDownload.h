@@ -2,13 +2,20 @@
 
 #include "libinstall/CancelToken.h"
 
+enum DOWNLOAD_STATUS {
+    DOWNLOAD_STATUS_SUCCESS,
+    DOWNLOAD_STATUS_FAIL,
+    DOWNLOAD_STATUS_CANCELLED,
+    DOWNLOAD_STATUS_FORCE_RETRY
+};
+
 class InternetDownload {
 public:
-    InternetDownload(const tstring& userAgent, const tstring& url, CancelToken cancelToken, boost::function<void(int)> progressFunction = NULL);
+    InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, boost::function<void(int)> progressFunction = NULL);
         
     ~InternetDownload();
 
-    int saveToFile(const tstring& filename);
+    BOOL saveToFile(const tstring& filename);
 
     std::string getContent();
     
@@ -33,7 +40,7 @@ private:
 
     typedef void (InternetDownload::*writeData_t)(BYTE* buffer, DWORD bufferLength, void* context);
 
-    BOOL getData(writeData_t writeData, void* context);
+    DOWNLOAD_STATUS getData(writeData_t writeData, void* context);
 
     boost::function<void(int)> m_progressFunction;
 
@@ -47,6 +54,7 @@ private:
     HANDLE m_responseReceived;
     HANDLE m_requestComplete;
     CancelToken m_cancelToken;
+    HWND m_parentHwnd;
 
     // TODO: this is pretty horrible
     DWORD m_receivedBytes;

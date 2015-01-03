@@ -138,7 +138,7 @@ extern "C" __declspec(dllexport) void setInfo(NppData notpadPlusData)
     aboutDlg.init((HINSTANCE)g_hModule, nppData);
 
     pluginManagerDlg.init((HINSTANCE)g_hModule, nppData);
-
+    g_options.moduleInfo.setHParent(nppData._nppHandle);
     g_winVer = static_cast<winVer>(::SendMessage(nppData._nppHandle, NPPM_GETWINDOWSVERSION, 0, 0));
 }
 

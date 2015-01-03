@@ -34,7 +34,7 @@ void DownloadManager::setProgressFunction(boost::function<void(int)> progressFun
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& contentType, const ModuleInfo *moduleInfo)
 {
-    InternetDownload download(_userAgent, url, m_cancelToken, _progressFunction);
+    InternetDownload download(moduleInfo->getHParent(), _userAgent, url, m_cancelToken, _progressFunction);
     BOOL downloadSuccess = download.saveToFile(filename);
     contentType.append(download.getContentType());
 
@@ -45,7 +45,7 @@ BOOL DownloadManager::getUrl(CONST TCHAR *url, tstring& filename, tstring& conte
 
 BOOL DownloadManager::getUrl(CONST TCHAR *url, string& result, const ModuleInfo *moduleInfo)
 {
-    InternetDownload download(_userAgent, url, m_cancelToken, _progressFunction);
+    InternetDownload download(moduleInfo->getHParent(), _userAgent, url, m_cancelToken, _progressFunction);
     result.append( download.getContent());
     return !result.empty();
 }
