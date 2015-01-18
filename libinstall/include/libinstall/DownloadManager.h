@@ -32,16 +32,12 @@ public:
     BOOL getUrl(const TCHAR *url, tstring& filename, tstring& contentType, const ModuleInfo *moduleInfo);
     BOOL getUrl(const TCHAR *url, std::string& result, const ModuleInfo *moduleInfo);
     void cancelDownload();
+    void disableCache();
 
     void setProgressFunction(boost::function<void(int)> progressFunction);
 
     static void setUserAgent(const TCHAR* userAgent);
 
-    static size_t curlWriteCallback(void *ptr, size_t size, size_t nmemb, void *stream);
-    static size_t curlHeaderCallback(void *ptr, size_t size, size_t nmemb, void *stream);
-    static size_t curlWriteStringCallback(void *ptr, size_t size, size_t nmemb, void *str);
-    static int DownloadManager::curlProgressCallback(void *ptr, double dltotal, double dlnow, 
-                                          double /*ultotal*/, double /*ulnow*/);
 
 private:
     boost::function<void(int)> _progressFunction;
@@ -49,4 +45,5 @@ private:
     static tstring				_userAgent;
 
     CancelToken                m_cancelToken;
+    BOOL                       m_disableCache;
 };

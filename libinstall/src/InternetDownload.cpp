@@ -11,7 +11,8 @@ InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, co
       m_hHttp(NULL),
       m_error(0),
       m_cancelToken(cancelToken),
-      m_progressFunction(progressFunction)
+      m_progressFunction(progressFunction),
+      m_flags(0)
 {
     m_requestComplete = ::CreateEvent(NULL, TRUE /*manualReset*/, FALSE /*initialState*/, NULL /*name*/);
     m_responseReceived = ::CreateEvent(NULL, TRUE /*manualReset*/, FALSE /*initialState*/, NULL /*name*/);
@@ -69,6 +70,9 @@ void InternetDownload::statusCallback( HINTERNET hInternet,
 
 
 }
+void InternetDownload::disableCache() {
+    m_flags = INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_PRAGMA_NOCACHE;
+}
 
 BOOL InternetDownload::request() {
 
@@ -76,7 +80,7 @@ BOOL InternetDownload::request() {
         return FALSE;
     }
     
-    m_hHttp = InternetOpenUrl(m_hInternet, m_url.c_str(), NULL, 0, 0, reinterpret_cast<DWORD_PTR>(this));
+    m_hHttp = InternetOpenUrl(m_hInternet, m_url.c_str(), NULL, 0, m_flags, reinterpret_cast<DWORD_PTR>(this));
     return TRUE;
 }
 

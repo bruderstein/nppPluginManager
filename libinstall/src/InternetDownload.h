@@ -15,6 +15,8 @@ public:
         
     ~InternetDownload();
 
+    void disableCache();
+
     BOOL saveToFile(const tstring& filename);
 
     std::string getContent();
@@ -58,6 +60,8 @@ private:
 
     // TODO: this is pretty horrible
     DWORD m_receivedBytes;
+
     DWORD m_error;
+    DWORD m_flags;
     
 };
