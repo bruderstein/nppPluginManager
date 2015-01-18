@@ -81,7 +81,7 @@ void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *argu
 
 	PluginVersion *gpupVersion = getFileVersion(gpupExe.c_str());
 
-	if ((*gpupVersion) <= PluginVersion(PLUGINMANAGERVERSION_STRING))
+	if ((*gpupVersion) < PluginVersion(PLUGINMANAGERVERSION_STRING))
 	{
 		::MessageBox(errorParent, _T("The external plugin updater (gpup.exe) under ")
 									 _T("the updater directory does not appear to be the correct version.  ")
