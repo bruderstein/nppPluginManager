@@ -1,4 +1,13 @@
-<html><head><title>Plugin Manager for Notepad++</title></head>
+<html>
+<head>
+  <title>Plugin Manager for Notepad++</title>
+  <style>
+.important {
+  color: #f00;
+  font-weigth: bold;
+}
+</style>
+</head>
 <body>
 <h2>Plugin Manager</h2>
 <hr/>
@@ -18,7 +27,7 @@ Plugin Manager is a plugin for Notepad++ that allows you to install, update and 
 from Notepad++.  A centrally hosted XML file holds the list of plugins, that the plugin manager 
 downloads and processes against the list of installed plugins.
 <br/><br/>
-<font color="#F00000">Important note for Vista / Windows 7: </font>
+<span class="important">Important note for Vista / Windows 7: </span>
 In order to update the plugin manager to 1.0.8 , you need to run Notepad++ as administrator, update plugin manager, then 
 everything will run properly under a normal user.  Future updates to Plugin Manager will automatically run as administrator.
 <br/>
@@ -49,6 +58,12 @@ everything will run properly under a normal user.  Future updates to Plugin Mana
 <br/><br/>
 <a name="changes"></a>
 <h3>Changes</h3>
+1.3.3
+<br>
+<ul>
+  <li>Fix gpup version check to accept newer versions of gpup.exe (needed for PM update).
+  <span class="important">This sadly does not fix people updating from 1.0.8, who will still get a warning when updating PM to 1.3.x, that the GPUP version doesn't match.</span></li>
+</ul>
 1.3.2
 <br>
 <ul>
@@ -199,15 +214,18 @@ from the update tab (or when you get the notification that the update has happen
 <br/><br/>
 <a name="download"></a>
 <h3>Download links</h3>
-Official home: <a href="http://sourceforge.net/projects/npppluginmgr/files/v1.0.2">http://sourceforge.net/projects/npppluginmgr/files/v1.0.2</a>
+Official home: <a href="http://sourceforge.net/projects/npppluginmgr/files/v1.3.3">http://sourceforge.net/projects/npppluginmgr/files/v1.3.3</a>
 <br/>
-Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.2_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_UNI.zip</a>
+Unicode: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_1.3.3_UNI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_1.3.3_UNI.zip</a>
 <br/>
-ANSI: <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.2_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_0.9.3.1_ANSI.zip</a>
+ANSI (v.1.0.8): <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.8_ANSI.zip">http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.8_ANSI.zip</a>
 <br/>
-Source code is on github: <a href="http://github.com/davegb3/nppPluginManager">http://github.com/davegb3/nppPluginManager</a>
+Source code is on github: <a href="http://github.com/bruderstein/nppPluginManager">http://github.com/bruderstein/nppPluginManager</a>
 <br/>
 MD5 Sums:
+<br/>931e1d021dc6fc0a80890df75da4a583 PluginManager_1.3.3_UNI.zip
+<br/>5367b29d2be4e40632859bbb4bfb7d57 PluginManager_1.0.8_UNI.zip
+<br/>ad273cfb1b0137a8e79b4df83a1e4d3e PluginManager_1.0.8_ANSI.zip
 <br/>96f96623bc66713c6b7d13522f282f95 PluginManager_1.0.2_ANSI.zip
 <br/>b646aae090998a1901bb04f816ee1372 PluginManager_1.0.2_UNI.zip
 <br/><br/>
@@ -381,8 +399,8 @@ There's a web based system for adding or updating your plugin - please use this 
 <br><br>
 <h4>How to get your plugin listed</h4>
 Make an announcement on the <a href="http://sourceforge.net/projects/notepad-plus/forums/forum/482781/">
-Plugin Development forum</a> of the Notepad++ project.  I monitor this forum closely, and take the updates 
-from there.  
+Plugin Development forum</a> of the Notepad++ project.   Then enter your plugin (or update to your plugin) on the administration system.
+Your update will go out with the next batch of updates.
 
 <br>
 <b>IMPORTANT:</b> If you haven't announced your plugin (or new version)
