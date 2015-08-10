@@ -44,11 +44,11 @@ InternetDownload::~InternetDownload()
     }
 }
 
-void InternetDownload::statusCallback( HINTERNET hInternet,
+void InternetDownload::statusCallback( HINTERNET /* hInternet */,
      DWORD_PTR dwContext,
      DWORD dwInternetStatus,
      LPVOID lpvStatusInformation,
-     DWORD dwStatusInformationLength )
+     DWORD /* dwStatusInformationLength */)
 {
     InternetDownload *download = (InternetDownload*)dwContext;
     switch(dwInternetStatus) {
@@ -125,7 +125,6 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
     }
 
     OutputDebugString(_T("Beginning getData - waiting for request completion\n"));
-    DWORD bytesAvailable;
 
     if (!waitForHandle(m_responseReceived)) {
         return DOWNLOAD_STATUS_FAIL;
@@ -135,7 +134,7 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
     DWORD headerIndex = 0;
     DWORD bufferLength = 1024;
 
-    DWORD statusCode;
+    DWORD statusCode = 0;
     BOOL statusCodeSuccess = HttpQueryInfo(m_hHttp, HTTP_QUERY_STATUS_CODE, headerBuffer, &bufferLength, &headerIndex);
     if (statusCodeSuccess) {
         statusCode = _ttol(headerBuffer);
