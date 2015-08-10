@@ -882,7 +882,9 @@ void PluginList::downloadList()
 		downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.moduleInfo);
 	}
 #else
-	BOOL downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.moduleInfo);
+	// OSes less than vista don't support SNI, which cloudflare uses to support HTTPS, so we have to use HTTP on old OSes
+    TCHAR *md5Url = g_winVer < WV_VISTA ? PLUGINS_HTTP_MD5_URL : PLUGINS_MD5_URL;
+	BOOL downloadResult = downloadManager.getUrl(md5Url, serverMD5, &g_options.moduleInfo);
 #endif
 
 	boost::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
@@ -906,7 +908,9 @@ void PluginList::downloadList()
 	else
 #endif
 	{
-		downloadManager.getUrl(PLUGINS_URL, pluginsListZipFilename, contentType, &g_options.moduleInfo);
+        // OSes less than vista don't support SNI, which cloudflare uses to support HTTPS, so we have to use HTTP on old OSes
+        TCHAR *pluginsUrl = g_winVer < WV_VISTA ? PLUGINS_HTTP_URL : PLUGINS_URL;
+		downloadManager.getUrl(pluginsUrl, pluginsListZipFilename, contentType, &g_options.moduleInfo);
 
 		// Unzip the plugins.zip to PluginManagerPlugins.xml
 		tstring unzipPath(pluginConfig);

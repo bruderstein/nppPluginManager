@@ -26,14 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/ModuleInfo.h"
 
 
-#define PLUGINS_MD5_URL     _T("http://downloads.sourceforge.net/project/npppluginmgr/xml/plugins.md5.txt")
-#define PLUGINS_URL         _T("http://downloads.sourceforge.net/project/npppluginmgr/xml/plugins.zip")
-
-
-
-
-
-
+#define PLUGINS_MD5_URL     _T("https://nppxml.bruderste.in/pm/xml/plugins.md5.txt")
+#define PLUGINS_HTTP_MD5_URL     _T("http://nppxml.bruderste.in/pm/xml/plugins.md5.txt")
+#define PLUGINS_URL         _T("https://nppxml.bruderste.in/pm/xml/plugins.zip")
+#define PLUGINS_HTTP_URL         _T("http://nppxml.bruderste.in/pm/xml/plugins.zip")
 
 /* ini file name */
 CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
