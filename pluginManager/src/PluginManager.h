@@ -31,12 +31,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PLUGINS_URL         _T("https://nppxml.bruderste.in/pm/xml/plugins.zip")
 #define PLUGINS_HTTP_URL         _T("http://nppxml.bruderste.in/pm/xml/plugins.zip")
 
+#ifdef ALLOW_OVERRIDE_XML_URL
+#define VALIDATE_BASE_URL          _T("http://www.brotherstone.co.uk/npp/pm/admin/validate.php?md5=")
+#define VALIDATE_BASE_HTTP_URL          _T("http://www.brotherstone.co.uk/npp/pm/admin/validate.php?md5=")
+#else
+#define VALIDATE_BASE_URL          _T("https://nppxml.bruderste.in/pm/validate?md5=")
+#define VALIDATE_BASE_HTTP_URL     _T("http://nppxml.bruderste.in/pm/validate?md5=")
+#endif
 /* ini file name */
 CONST TCHAR PLUGINMANAGER_INI[]	= _T("\\PluginManager.ini");
 
 
 #define SETTINGS_GROUP     _T("Settings")
 #define KEY_NOTIFYUPDATES  _T("NotifyUpdates")
+#define KEY_FORCEHTTP      _T("ForceHTTP")
 #define KEY_PROXY          _T("Proxy")
 #define KEY_PROXYPORT      _T("ProxyPort")
 #define KEY_LASTCHECK	   _T("LastCheck")
@@ -90,6 +98,7 @@ struct Options
 	BOOL appDataPluginsSupported;
 	ModuleInfo moduleInfo;
 	int daysToCheck;
+    BOOL forceHttp;
 #ifdef ALLOW_OVERRIDE_XML_URL
 	tstring downloadMD5Url;
 	tstring downloadUrl;

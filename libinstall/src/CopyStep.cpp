@@ -33,9 +33,11 @@ using namespace std;
 
 
 CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace, 
-				   BOOL validate, BOOL isGpup, BOOL backup, BOOL recursive)
+				   BOOL validate, BOOL isGpup, BOOL backup, BOOL recursive,
+				   const tstring& validateBaseUrl)
 				   : _from(from), _validate(validate), _failIfExists(!attemptReplace),
-				     _isGpup(isGpup), _backup(backup), _recursive(recursive) 
+				     _isGpup(isGpup), _backup(backup), _recursive(recursive),
+                     _validateBaseUrl(validateBaseUrl)
 {
 
 	if (to)
@@ -227,7 +229,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 				copy = false;
 				if (_validate)
 				{
-					switch(Validator::validate(src, cancelToken, moduleInfo))
+					switch(Validator::validate(_validateBaseUrl.c_str(), src, cancelToken, moduleInfo))
 					{
 					
 						case VALIDATE_OK:

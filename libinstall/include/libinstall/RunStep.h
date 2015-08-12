@@ -28,7 +28,7 @@ class CancelToken;
 class RunStep : public InstallStep
 {
 public:
-    RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp);
+    RunStep(const TCHAR* file, const TCHAR* arguments, BOOL outsideNpp, const tstring& validateBaseUrl);
     ~RunStep() {};
     
     StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
@@ -45,6 +45,7 @@ private:
     BOOL	_outsideNpp;
     tstring	_file;
     tstring _arguments;
+    tstring _validateBaseUrl;
 };
 
 #endif

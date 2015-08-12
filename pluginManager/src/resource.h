@@ -36,6 +36,7 @@
 #define IDC_INSTALLALLUSERS             1020
 #define IDC_BUTTON3                     1021
 #define IDC_REINSTALL                   1021
+#define IDC_FORCEHTTP                   1021
 #define IDC_BUTTON2                     1022
 #define IDC_UPDATEDESC                  1023
 #define IDC_DAYSTOCHECK                 1024

@@ -96,6 +96,7 @@ void SettingsDialog::initialiseOptions()
 	::SetWindowTextA(GetDlgItem(_hSelf, IDC_DAYSTOCHECK), tmp);
 
 	::SendMessage(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), BM_SETCHECK, g_options.installLocation == INSTALLLOC_APPDATA ? BST_UNCHECKED : BST_CHECKED, 0);
+	::SendMessage(GetDlgItem(_hSelf, IDC_FORCEHTTP), BM_SETCHECK, g_options.forceHttp != TRUE ? BST_UNCHECKED : BST_CHECKED, 0);
 
 	::EnableWindow(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), g_options.appDataPluginsSupported);
 
@@ -137,6 +138,12 @@ void SettingsDialog::setOptions()
 		g_options.showUnstable = TRUE;
 	else
 		g_options.showUnstable = FALSE;
+
+	result = ::SendMessage(GetDlgItem(_hSelf, IDC_FORCEHTTP), BM_GETCHECK, 0, 0);
+	if (BST_CHECKED == result)
+		g_options.forceHttp = TRUE;
+	else
+		g_options.forceHttp = FALSE;
 
 	if (g_options.appDataPluginsSupported)
 	{

@@ -28,10 +28,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 
 
-RunStep::RunStep(const TCHAR *file, const TCHAR *arguments, BOOL outsideNpp)
+RunStep::RunStep(const TCHAR *file, const TCHAR *arguments, BOOL outsideNpp, const tstring& validateBaseUrl)
 	: _file(file), 
 	  _arguments( arguments ? arguments : _T("")),
-	  _outsideNpp(outsideNpp)
+	  _outsideNpp(outsideNpp),
+      _validateBaseUrl(validateBaseUrl)
 {
 	
 }
@@ -77,7 +78,7 @@ StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup,
 	tstring executable(basePath);
 	executable.append(_file);
     BOOL executeFile = FALSE;
-	switch(Validator::validate(executable, cancelToken, moduleInfo))
+	switch(Validator::validate(_validateBaseUrl, executable, cancelToken, moduleInfo))
 	{
 	
 		case VALIDATE_OK:

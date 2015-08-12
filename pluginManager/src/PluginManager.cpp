@@ -232,6 +232,8 @@ void loadSettings(void)
 
     g_options.showUnstable = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_SHOWUNSTABLE, 0, iniFilePath);
 
+    g_options.forceHttp = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_FORCEHTTP, 0, iniFilePath);
+
     g_options.daysToCheck = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_DAYSTOCHECK, DAYSCHECK_DEFAULT, iniFilePath);
     if (g_options.daysToCheck < DAYSCHECK_MIN)
     {
@@ -302,6 +304,9 @@ void saveSettings(void)
     
     _itot_s(g_options.notifyUpdates, temp, 16, 10);
     ::WritePrivateProfileString(SETTINGS_GROUP, KEY_NOTIFYUPDATES, temp, iniFilePath);
+
+    _itot_s(g_options.forceHttp, temp, 16, 10);
+    ::WritePrivateProfileString(SETTINGS_GROUP, KEY_FORCEHTTP, temp, iniFilePath);
 
     _itot_s(g_options.showUnstable, temp, 16, 10);
     ::WritePrivateProfileString(SETTINGS_GROUP, KEY_SHOWUNSTABLE, temp, iniFilePath);

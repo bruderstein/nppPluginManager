@@ -93,6 +93,7 @@ void PluginList::init(NppData *nppData)
 	_variableHandler = new VariableHandler();
 	_variableHandler->setVariable(_T("NPPDIR"), nppDir);
 	_variableHandler->setVariable(_T("ALLUSERSPLUGINDIR"), allUsersPluginDir);
+	_variableHandler->setVariable(VALIDATE_BASE_URL_VAR, (g_options.forceHttp || g_winVer < WV_VISTA) ? VALIDATE_BASE_HTTP_URL : VALIDATE_BASE_URL);
 	
 	ITEMIDLIST *pidl;
 	HRESULT result = SHGetSpecialFolderLocation(NULL, CSIDL_APPDATA, &pidl);
@@ -883,7 +884,7 @@ void PluginList::downloadList()
 	}
 #else
 	// OSes less than vista don't support SNI, which cloudflare uses to support HTTPS, so we have to use HTTP on old OSes
-    TCHAR *md5Url = g_winVer < WV_VISTA ? PLUGINS_HTTP_MD5_URL : PLUGINS_MD5_URL;
+    TCHAR *md5Url = (g_options.forceHttp || g_winVer < WV_VISTA) ? PLUGINS_HTTP_MD5_URL : PLUGINS_MD5_URL;
 	BOOL downloadResult = downloadManager.getUrl(md5Url, serverMD5, &g_options.moduleInfo);
 #endif
 
@@ -909,7 +910,7 @@ void PluginList::downloadList()
 #endif
 	{
         // OSes less than vista don't support SNI, which cloudflare uses to support HTTPS, so we have to use HTTP on old OSes
-        TCHAR *pluginsUrl = g_winVer < WV_VISTA ? PLUGINS_HTTP_URL : PLUGINS_URL;
+        TCHAR *pluginsUrl = (g_options.forceHttp || g_winVer < WV_VISTA) ? PLUGINS_HTTP_URL : PLUGINS_URL;
 		downloadManager.getUrl(pluginsUrl, pluginsListZipFilename, contentType, &g_options.moduleInfo);
 
 		// Unzip the plugins.zip to PluginManagerPlugins.xml

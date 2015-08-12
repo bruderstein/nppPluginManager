@@ -40,7 +40,8 @@ public:
     CopyStep(const TCHAR* from, const TCHAR* to, const TCHAR* toFile, BOOL attemptReplace, BOOL validate, 
         BOOL isGpup,
         BOOL backup, 
-        BOOL recursive);
+        BOOL recursive,
+		const tstring& validateBaseUrl);
 
     ~CopyStep() {};
     
@@ -69,6 +70,7 @@ private:
     tstring	_from;
     tstring _to;
     tstring _toFile;
+    tstring _validateBaseUrl;
 
 
     ToDestination _toDestination;
