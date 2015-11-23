@@ -77,7 +77,11 @@ boost::shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element)
 		if (tRecursive && !_tcscmp(tRecursive, _T("true")))
 			recursive = TRUE;
 
-		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, isGpup, backup, recursive, _variableHandler->getVariable(VALIDATE_BASE_URL_VAR)));
+        tstring validateUrl;
+        if (_variableHandler) {
+            validateUrl = _variableHandler->getVariable(VALIDATE_BASE_URL_VAR);
+		}
+		installStep.reset(new CopyStep(tFrom, tTo, tToFile, attemptReplace, validate, isGpup, backup, recursive, validateUrl));
 	}
 	else if (!_tcscmp(element->Value(), _T("delete")))
 	{
@@ -110,7 +114,11 @@ boost::shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element)
 			outsideNpp = TRUE;
 		}
 
-		installStep.reset(new RunStep(tFile, tArgs, outsideNpp, _variableHandler->getVariable(VALIDATE_BASE_URL_VAR)));
+        tstring validateUrl;
+        if (_variableHandler) {
+            validateUrl = _variableHandler->getVariable(VALIDATE_BASE_URL_VAR);
+		}
+		installStep.reset(new RunStep(tFile, tArgs, outsideNpp, validateUrl));
 	}
 
 	return installStep;
