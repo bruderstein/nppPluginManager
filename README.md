@@ -8,8 +8,8 @@
 
 Plugin Manager is a plugin for Notepad++ that allows you to install, update and remove plugins from Notepad++. A centrally hosted XML file holds the list of plugins, that the plugin manager downloads and processes against the list of installed plugins.
 
-<span class="important">Important note for Vista / Windows 7:</span> In order to update the plugin manager to 1.0.8 , you need to run Notepad++ as administrator, update plugin manager, then everything will run properly under a normal user. Future updates to Plugin Manager will automatically run as administrator.
-[**Click here for help for update to Plugin Manager 1.0.8**](update.htm)<a name="features"></a>
+<span class="important">**Important note for Vista / Windows 7:**</span> In order to update the plugin manager to 1.0.8 , you need to run Notepad++ as administrator, update plugin manager, then everything will run properly under a normal user. Future updates to Plugin Manager will automatically run as administrator.
+[**Click here for help for update to Plugin Manager 1.0.8**](doc/update.htm)<a name="features"></a>
 
 ### Features
 
@@ -41,7 +41,7 @@ Plugin Manager is a plugin for Notepad++ that allows you to install, update and 
 
 1.3.3
 
-*   Fix gpup version check to accept newer versions of gpup.exe (needed for PM update). <span class="important">This sadly does not fix people updating from 1.0.8, who will still get a warning when updating PM to 1.3.x, that the GPUP version doesn't match.</span>
+*   Fix gpup version check to accept newer versions of gpup.exe (needed for PM update). <span class="important">**This sadly does not fix people updating from 1.0.8, who will still get a warning when updating PM to 1.3.x, that the GPUP version doesn't match.**</span>
 
 1.3.2
 
@@ -159,18 +159,18 @@ In fact, if you prefer, you can just add the PluginManager.dll to the plugins di
 
 ### Download links
 
-Official home: [http://sourceforge.net/projects/npppluginmgr/files/v1.3.5](http://sourceforge.net/projects/npppluginmgr/files/v1.3.5)
-Unicode: [http://www.brotherstone.co.uk/npp/pm/PluginManager_1.3.5_UNI.zip](http://www.brotherstone.co.uk/npp/pm/PluginManager_1.3.5_UNI.zip)
-ANSI (v.1.0.8): [http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.8_ANSI.zip](http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.8_ANSI.zip)
-Source code is on github: [http://github.com/bruderstein/nppPluginManager](http://github.com/bruderstein/nppPluginManager)
-MD5 Sums:
-bed7b9b3c9cd4ae7eacb19f6f64eb55e PluginManager_1.3.5_UNI.zip
-824573cdf9d08c1a8de369a9a92bce41 PluginManager_1.3.4_UNI.zip
-931e1d021dc6fc0a80890df75da4a583 PluginManager_1.3.3_UNI.zip
-5367b29d2be4e40632859bbb4bfb7d57 PluginManager_1.0.8_UNI.zip
-ad273cfb1b0137a8e79b4df83a1e4d3e PluginManager_1.0.8_ANSI.zip
-96f96623bc66713c6b7d13522f282f95 PluginManager_1.0.2_ANSI.zip
-b646aae090998a1901bb04f816ee1372 PluginManager_1.0.2_UNI.zip
+Official home: [http://sourceforge.net/projects/npppluginmgr/files/v1.3.5](http://sourceforge.net/projects/npppluginmgr/files/v1.3.5)   
+Unicode: [http://www.brotherstone.co.uk/npp/pm/PluginManager_1.3.5_UNI.zip](http://www.brotherstone.co.uk/npp/pm/PluginManager_1.3.5_UNI.zip)   
+ANSI (v.1.0.8): [http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.8_ANSI.zip](http://www.brotherstone.co.uk/npp/pm/PluginManager_1.0.8_ANSI.zip)   
+Source code is on github: [http://github.com/bruderstein/nppPluginManager](http://github.com/bruderstein/nppPluginManager)   
+MD5 Sums:   
+bed7b9b3c9cd4ae7eacb19f6f64eb55e PluginManager_1.3.5_UNI.zip   
+824573cdf9d08c1a8de369a9a92bce41 PluginManager_1.3.4_UNI.zip   
+931e1d021dc6fc0a80890df75da4a583 PluginManager_1.3.3_UNI.zip   
+5367b29d2be4e40632859bbb4bfb7d57 PluginManager_1.0.8_UNI.zip   
+ad273cfb1b0137a8e79b4df83a1e4d3e PluginManager_1.0.8_ANSI.zip   
+96f96623bc66713c6b7d13522f282f95 PluginManager_1.0.2_ANSI.zip   
+b646aae090998a1901bb04f816ee1372 PluginManager_1.0.2_UNI.zip   
 
 <u>Older versions</u> Older versions can be obtained from [http://sourceforge.net/projects/npppluginmgr/files/](http://sourceforge.net/projects/npppluginmgr/files/)
 
@@ -221,6 +221,7 @@ The following elements can be contained within the plugin element(all are option
 
 Here's an example plugin definition, using f0dder's switcher plugin to switch between related files, such s .h and .cpp :
 
+```xml
 <pre><plugin name="switcher">
 		<unicodeVersion>1.0</unicodeVersion>
 		<ansiVersion>1.0</ansiVersion>
@@ -246,9 +247,12 @@ Here's an example plugin definition, using f0dder's switcher plugin to switch be
 		</install>
 </plugin>
 </pre>
+```
+
 
 Note that you can have as many steps as you like within the <ansi> and <unicode> elements, and you can have as many of these as you like also. So:
 
+```xml
 <pre><install>
 			<unicode>
 				<download>http://downloads.sourceforge.net/sourceforge/npp-plugins/SpeechPlugin_0_2_1_dll.zip</download>
@@ -260,9 +264,11 @@ Note that you can have as many steps as you like within the <ansi> and <unicode>
 			</ansi>
 </install>
 </pre>
+```
 
 is just as valid as, and does the same job as
 
+```xml
 <pre><install>
 			<unicode>
 				<download>http://downloads.sourceforge.net/sourceforge/npp-plugins/SpeechPlugin_0_2_1_dll.zip</download>
@@ -279,6 +285,7 @@ is just as valid as, and does the same job as
 			</ansi>
 </install>
 </pre>
+```
 
 The second is obviously just longer, and the first would probably be preferred.
 
@@ -336,21 +343,21 @@ The current XML file is located **[here](http://sourceforge.net/projects/nppplug
 *   Rollback to a previously installed version.
 *   Some form of plugin feedback / rating system
 
-Enjoy, and please let me know what you think, any feedback is gratefully received! You can either post a comment to the Plugin Development forum, or sometimes find me in #notepad++ on freenode.<a name="credit"></a>
+Enjoy, and please let me know what you think, any feedback is gratefully received! You can either post a comment to the Plugin Development forum, or sometimes find me in [\#notepad++](irc://irc.freenode.net/#notepad++) on freenode.<a name="credit"></a>
 
 * * *
 
 ### Credits
 
-I must say a big thank you to Joce, who helped a lot in the development of this plugin.
-A big thanks to Pedro Sland, for developing the [administration system](http://www.brotherstone.co.uk/npp/pm/admin). This has massively reduced the workload for updating the list, and enabled all plugin developers to
-The good people on #notepad++ (especially joce and Thell) who've helped out with ideas and code reviews
+I must say a big thank you to Joce, who helped a lot in the development of this plugin.   
+A big thanks to Pedro Sland, for developing the [administration system](http://www.brotherstone.co.uk/npp/pm/admin). This has massively reduced the workload for updating the list, and enabled all plugin developers to   
+The good people on [\#notepad++](irc://irc.freenode.net/#notepad++) (especially joce and Thell) who've helped out with ideas and code reviews   
 Don Ho and all the contributors, for bringing us this great editor, and providing such a neat plugin architecture that developers can easily add stuff<a name="contact"></a>
 
 * * *
 
 ### Contact
 
-Dave Brotherstone
-Email is ![](email.png)
-Find me on IRC in [#notepad++](irc://irc.freenode.net/#notepad++) on Freenode, davegb3.
+Dave Brotherstone   
+Email is ![](doc/email.png)   
+Find me on IRC in [\#notepad++](irc://irc.freenode.net/#notepad++) on Freenode, davegb3.
