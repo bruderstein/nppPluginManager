@@ -4,7 +4,7 @@
   
   <PropertyGroup Label="UserMacros">
     <BoostPath>e:\libs\boost</BoostPath>
-	<ZlibPath>e:\libs\zlib-1.2.8</ZlibPath>
+	<ZlibPath>$(SolutionDir)\submodule\zlib</ZlibPath>
 	<TestNotepadPlusPlusUnicode>E:\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
 	<TestNotepadPlusPlusAnsi>e:\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
   </PropertyGroup>
