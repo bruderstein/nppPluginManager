@@ -5,8 +5,8 @@
   <PropertyGroup Label="UserMacros">
     <BoostPath>e:\libs\boost</BoostPath>
     <CurlPath>e:\libs\curl-7.19.5</CurlPath>
-	<ZlibPath>e:\libs\zlib-1.2.3</ZlibPath>
-	<TestNotepadPlusPlusUnicode>E:\NotepadTest\unicodeAppDataPlugins</TestNotepadPlusPlusUnicode>
+	<ZlibPath>e:\libs\zlib-1.2.8</ZlibPath>
+	<TestNotepadPlusPlusUnicode>E:\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
 	<TestNotepadPlusPlusAnsi>e:\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
   </PropertyGroup>
   
