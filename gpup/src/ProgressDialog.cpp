@@ -11,7 +11,7 @@ ProgressDialog::ProgressDialog(HINSTANCE hInst)
 	_hInst = hInst;
 	INITCOMMONCONTROLSEX icc;
 	icc.dwSize = sizeof(INITCOMMONCONTROLSEX);
-	icc.dwICC = ICC_PROGRESS_CLASS;
+	icc.dwICC = ICC_PROGRESS_CLASS || ICC_LINK_CLASS;
 
 	InitCommonControlsEx(&icc);
 	_hSelf = ::CreateDialogParam(hInst, MAKEINTRESOURCE(IDD_PROGRESSDIALOG), NULL, (DLGPROC)dlgProc, reinterpret_cast<LPARAM>(this));
