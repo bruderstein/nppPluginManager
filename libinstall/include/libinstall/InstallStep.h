@@ -44,14 +44,14 @@ public:
 	~InstallStep() {};
 
 	virtual StepStatus perform(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
-		boost::function<void(const TCHAR*)> setStatus,
-		boost::function<void(const int)> stepProgress,
+		boost::function<void(const TCHAR*)> /* setStatus */,
+		boost::function<void(const int)> /* stepProgress */,
 		const ModuleInfo* /*windowParent */,
-        CancelToken& cancelToken) { return STEPSTATUS_SUCCESS; };
+        CancelToken& /* cancelToken */) { return STEPSTATUS_SUCCESS; };
 
 	virtual StepStatus remove(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
-		boost::function<void(const TCHAR*)> setStatus,
-		boost::function<void(const int)> stepProgress,
+		boost::function<void(const TCHAR*)> /* setStatus */,
+		boost::function<void(const int)> /* stepProgress */,
 		const ModuleInfo* /*windowParent */) { return STEPSTATUS_SUCCESS; };
 
 	virtual void replaceVariables(VariableHandler* /*variableHandler*/) { };

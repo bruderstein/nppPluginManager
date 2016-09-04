@@ -66,7 +66,7 @@ BOOL Utility::removeDirectory(const TCHAR* directory)
 }
 
 
-void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *arguments, bool needAdmin)
+void Utility::startGpup(HWND errorParent, const TCHAR *nppDir, const TCHAR *arguments, bool /* needAdmin */)
 {
 
 	tstring gpupExe(nppDir);
