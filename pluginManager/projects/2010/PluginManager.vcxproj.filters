@@ -122,4 +122,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\res\nbc_logo.png" />
+    <Image Include="..\..\res\nbc_logo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
