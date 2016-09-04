@@ -68,6 +68,7 @@ BOOL SettingsDialog::run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 				case IDOK:
 					setOptions();
 
+
 				case IDCANCEL:
 					::EndDialog(hWnd, 0);
 			}
@@ -97,6 +98,7 @@ void SettingsDialog::initialiseOptions()
 
 	::SendMessage(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), BM_SETCHECK, g_options.installLocation == INSTALLLOC_APPDATA ? BST_UNCHECKED : BST_CHECKED, 0);
 	::SendMessage(GetDlgItem(_hSelf, IDC_FORCEHTTP), BM_SETCHECK, g_options.forceHttp != TRUE ? BST_UNCHECKED : BST_CHECKED, 0);
+	::SendMessage(GetDlgItem(_hSelf, IDC_USEDEVPLUGINLIST), BM_SETCHECK, g_options.useDevPluginList != TRUE ? BST_UNCHECKED : BST_CHECKED, 0);
 
 	::EnableWindow(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), g_options.appDataPluginsSupported);
 
@@ -123,7 +125,6 @@ void SettingsDialog::setOptions()
 {
 	char address[MAX_PATH];
 	
-
 	::GetWindowTextA(GetDlgItem(_hSelf, IDC_DAYSTOCHECK), address, MAX_PATH);
 	g_options.daysToCheck = atol(address);
 
@@ -145,6 +146,13 @@ void SettingsDialog::setOptions()
 	else
 		g_options.forceHttp = FALSE;
 
+	result = ::SendMessage(GetDlgItem(_hSelf, IDC_USEDEVPLUGINLIST), BM_GETCHECK, 0, 0);
+	if (BST_CHECKED == result) {
+		g_options.useDevPluginList = TRUE;
+	} else {
+		g_options.useDevPluginList = FALSE;
+	}
+
 	if (g_options.appDataPluginsSupported)
 	{
 		result = ::SendMessage(GetDlgItem(_hSelf, IDC_INSTALLALLUSERS), BM_GETCHECK, 0, 0);
@@ -157,5 +165,6 @@ void SettingsDialog::setOptions()
 	{
 		g_options.installLocation = INSTALLLOC_ALLUSERSNOAPPDATA;
 	}
+
 }
 		

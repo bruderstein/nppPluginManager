@@ -225,14 +225,13 @@ void loadSettings(void)
         ::CloseHandle(::CreateFile(iniFilePath, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
     }
 
-    TCHAR tmp[MAX_PATH];
-
-
     g_options.notifyUpdates = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_NOTIFYUPDATES, 1, iniFilePath);
 
     g_options.showUnstable = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_SHOWUNSTABLE, 0, iniFilePath);
 
     g_options.forceHttp = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_FORCEHTTP, 0, iniFilePath);
+    g_options.useDevPluginList = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_USEDEVPLUGINLIST, 0, iniFilePath);
+
 
     g_options.daysToCheck = ::GetPrivateProfileInt(SETTINGS_GROUP, KEY_DAYSTOCHECK, DAYSCHECK_DEFAULT, iniFilePath);
     if (g_options.daysToCheck < DAYSCHECK_MIN)
@@ -307,6 +306,9 @@ void saveSettings(void)
 
     _itot_s(g_options.forceHttp, temp, 16, 10);
     ::WritePrivateProfileString(SETTINGS_GROUP, KEY_FORCEHTTP, temp, iniFilePath);
+
+    _itot_s(g_options.useDevPluginList, temp, 16, 10);
+    ::WritePrivateProfileString(SETTINGS_GROUP, KEY_USEDEVPLUGINLIST, temp, iniFilePath);
 
     _itot_s(g_options.showUnstable, temp, 16, 10);
     ::WritePrivateProfileString(SETTINGS_GROUP, KEY_SHOWUNSTABLE, temp, iniFilePath);

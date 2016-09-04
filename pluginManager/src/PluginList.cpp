@@ -871,6 +871,7 @@ void PluginList::downloadList()
 	TCHAR hashBuffer[(MD5LEN * 2) + 1];
 	MD5::hash(pluginsListFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
 	string serverMD5;
+    BOOL downloadSuccess = FALSE;
 
 #ifdef ALLOW_OVERRIDE_XML_URL
 	BOOL downloadResult;
@@ -899,7 +900,7 @@ void PluginList::downloadList()
 #ifdef ALLOW_OVERRIDE_XML_URL
 	if (!g_options.downloadUrl.empty())
 	{
-		downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.moduleInfo);
+		downloadSuccess = downloadManager.getUrl(g_options.downloadUrl.c_str(), pluginsListFilename, contentType, &g_options.moduleInfo);
         /*
         tstring unzipPath(pluginConfig);
 		unzipPath.append(_T("\\"));
@@ -910,28 +911,45 @@ void PluginList::downloadList()
 #endif
 	{
         // OSes less than vista don't support SNI, which cloudflare uses to support HTTPS, so we have to use HTTP on old OSes
-        TCHAR *pluginsUrl = (g_options.forceHttp || g_winVer < WV_VISTA) ? PLUGINS_HTTP_URL : PLUGINS_URL;
-		downloadManager.getUrl(pluginsUrl, pluginsListZipFilename, contentType, &g_options.moduleInfo);
+        TCHAR *pluginsUrl = getPluginsUrl();
+		downloadSuccess = downloadManager.getUrl(pluginsUrl, pluginsListZipFilename, contentType, &g_options.moduleInfo);
 
-		// Unzip the plugins.zip to PluginManagerPlugins.xml
-		tstring unzipPath(pluginConfig);
-		unzipPath.append(_T("\\"));
-		Decompress::unzip(pluginsListZipFilename, unzipPath);
+        if (downloadSuccess) {
+			// Unzip the plugins.zip to PluginManagerPlugins.xml
+			tstring unzipPath(pluginConfig);
+			unzipPath.append(_T("\\"));
+			Decompress::unzip(pluginsListZipFilename, unzipPath);
+		} 
+
 	}
 
 	}
 
+	if (downloadSuccess) {
+		// Parse it
+		parsePluginFile(pluginsListFilename.c_str());
 
+		// Check for what is installed
+		checkInstalledPlugins();
 
-	// Parse it
-	parsePluginFile(pluginsListFilename.c_str());
+		::SetEvent(_hListsAvailableEvent);
+	} else {
+        MessageBox(_nppData->_nppHandle, _T("There was an error downloading the plugin list. Please check your internet connection, and your proxy settings in Internet Explorer, Edge or Chrome"), 
+			_T("Download Error"), MB_ICONERROR);
+	}
 	
-	// Check for what is installed
-	checkInstalledPlugins();
-		
+}
 
-	::SetEvent(_hListsAvailableEvent);
-	
+TCHAR* PluginList::getPluginsUrl() {
+    if (g_options.useDevPluginList) {
+        return DEV_PLUGINS_URL;
+	}
+
+    if (g_options.forceHttp || g_winVer < WV_VISTA) {
+        return PLUGINS_HTTP_URL;
+	}
+
+	return PLUGINS_URL;
 }
 
 void PluginList::reparseFile(const tstring& pluginsListFilename)

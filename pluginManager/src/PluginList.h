@@ -133,4 +133,6 @@ private:
 
 
 	void addSteps(Plugin* plugin, TiXmlElement* installElement, InstallOrRemove ior);
+
+    TCHAR *getPluginsUrl();
 };

@@ -21,3 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "resource.h"
+
+
+#ifdef ALLOW_OVERRIDE_XML_URL
+#define VALIDATE_BASE_URL          _T("http://www.brotherstone.co.uk/npp/pm/admin/validate.php?md5=")
+#define VALIDATE_BASE_HTTP_URL          _T("http://www.brotherstone.co.uk/npp/pm/admin/validate.php?md5=")
+#else
+#define VALIDATE_BASE_URL          _T("https://nppxml.bruderste.in/pm/validate?md5=")
+#define VALIDATE_BASE_HTTP_URL     _T("http://nppxml.bruderste.in/pm/validate?md5=")
+#endif
