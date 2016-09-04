@@ -111,8 +111,9 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 		case WM_NOTIFY:
 		{
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+            HWND hwndFrom = ((LPNMHDR)lParam)->hwndFrom;
 
-			if (((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_AVAILABLE].hListView)
+			if (dlg && ((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_AVAILABLE].hListView)
 				return dlg->_availableListView.notify(wParam, lParam);
 			else
 				return FALSE;
@@ -134,6 +135,10 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 					
 					break;
 				}
+
+				case IDC_NBCLOGO:
+                    ShellExecute(NULL, L"open", L"https://www.nexinto.com/nbc/?utm_source=npp&utm_content=content", NULL, NULL, SW_SHOW);
+                    break;
 			}
 			break;
 		}
@@ -399,6 +404,22 @@ BOOL CALLBACK PluginManagerDialog::tabWndProc(HWND hWnd, UINT Message, WPARAM wP
 
 }
 
+void PluginManagerDialog::addBottomComponent(HWND hWnd, WINDOWINFO& wiDlg, UINT id) {
+
+            POSITIONINFO *positionInfo;
+            // Logo
+            positionInfo = new POSITIONINFO();
+            positionInfo->handle = ::GetDlgItem(hWnd, id);
+			WINDOWINFO wiCtl;
+			wiDlg.cbSize = sizeof(WINDOWINFO);
+			::GetWindowInfo(positionInfo->handle, &wiCtl);
+            positionInfo->height = wiCtl.rcClient.bottom - wiCtl.rcClient.top;
+            positionInfo->width = wiCtl.rcClient.right - wiCtl.rcClient.left;
+            positionInfo->bottomOffset = wiDlg.rcClient.bottom - wiCtl.rcClient.top;
+            positionInfo->leftOffset = wiCtl.rcClient.left - wiDlg.rcClient.left;
+            _bottomComponents.push_back(boost::shared_ptr<POSITIONINFO>(positionInfo));
+}
+
 BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message) 
@@ -425,8 +446,15 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			_closeButtonWidth = wiCtl.rcClient.right - wiCtl.rcClient.left;	
 			_closeButtonHeight = wiCtl.rcClient.bottom - wiCtl.rcClient.top;
 
+
+            // Hosting provided by
+            addBottomComponent(hWnd, wiDlg, IDC_PLUGINLISTHOSTING);
+            addBottomComponent(hWnd, wiDlg, IDC_NBCLINK);
+            addBottomComponent(hWnd, wiDlg, IDC_NEXINTOBUSINESSCLOUD);
+            addBottomComponent(hWnd, wiDlg, IDC_NBCLOGO);
+            addBottomComponent(hWnd, wiDlg, IDC_WHYISTHISHERE);
+
 			_beginthread(downloadAndPopulate, 0, this);
-			
 
 			return TRUE;
 		}
@@ -438,11 +466,17 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 				{
 					SettingsDialog settingsDlg;
 					BOOL oldShowUnstable = g_options.showUnstable;
+					BOOL oldUseDevPluginList = g_options.useDevPluginList;
 
 					settingsDlg.doModal(&_nppData, _hSelf);
-
-					if (g_options.showUnstable != oldShowUnstable)
-					{
+                    if (g_options.useDevPluginList != oldUseDevPluginList) {
+                        delete _pluginList;
+                        _pluginList = NULL;
+						_availableListView.setMessage(_T("Refreshing plugin list..."));
+						_updatesListView.setMessage(_T("Refreshing plugin list..."));
+						_installedListView.setMessage(_T("Refreshing plugin list..."));
+						_beginthread(downloadAndPopulate, 0, this);
+					} else if (g_options.showUnstable != oldShowUnstable) {
 						TCHAR pluginConfig[MAX_PATH];
 						::SendMessage(_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
 	
@@ -455,6 +489,10 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 					return TRUE;
 				}
 
+				case IDC_NBCLOGO:
+                    ShellExecute(NULL, L"open", L"https://www.nexinto.com/nbc/?utm_source=logo&utm_medium=embed&utm_campaign=npp", NULL, NULL, SW_SHOW);
+                    break;
+
 				case IDOK :
 				case IDCANCEL :
 					display(FALSE);
@@ -463,21 +501,36 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 				default :
 					break;
 			}
+            break;
 		}
 
 		case WM_NOTIFY:
 		{
 			LPNMHDR lpnmhdr = (LPNMHDR) lParam;
-			if (lpnmhdr->hwndFrom == GetDlgItem(_hSelf, IDC_PLUGINTABCTRL))
+			switch(lpnmhdr->code)
 			{
-				switch(lpnmhdr->code)
+			case TCN_SELCHANGE:
+				if (lpnmhdr->hwndFrom == GetDlgItem(_hSelf, IDC_PLUGINTABCTRL))
 				{
-					case TCN_SELCHANGE:
-						OnSelChanged(lpnmhdr->hwndFrom);
-						break;
+					OnSelChanged(lpnmhdr->hwndFrom);
 				}
+				break;
+
+			case NM_CLICK:
+			case NM_RETURN:
+				HWND hwndFrom = ((LPNMHDR)lParam)->hwndFrom;
+				if (hwndFrom == GetDlgItem(hWnd, IDC_NBCLINK)
+					|| hwndFrom == GetDlgItem(hWnd, IDC_WHYISTHISHERE))
+				{
+					PNMLINK pNMLink = (PNMLINK)lParam;
+					LITEM   item    = pNMLink->item;
+					ShellExecute(NULL, L"open", item.szUrl, NULL, NULL, SW_SHOW);
+					return FALSE;
+				}
+
+				break;
 			}
-			break;
+            break;
 		}
 
 		case WM_SIZE:
@@ -580,14 +633,20 @@ DLGTEMPLATE* PluginManagerDialog::DoLockDlgRes(LPCTSTR lpszResName)
 void PluginManagerDialog::sizeWindow(int width, int height)
 {
 	// Size the tab control
-	::MoveWindow(_tabHeader.hwndTab, _leftMargin, _topMargin, width - _leftMargin - _rightMargin, height - _tabBottomOffset, TRUE);
+	::MoveWindow(_tabHeader.hwndTab, _leftMargin, _topMargin, width - _leftMargin - _rightMargin, height - _tabBottomOffset, FALSE);
 	
 	// Move the close button
-	::MoveWindow(_hCloseButton, width - _closeButtonRightOffset, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, TRUE);
+	::MoveWindow(_hCloseButton, width - _closeButtonRightOffset, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, FALSE);
 
 	// Move the settings button
-	::MoveWindow(_hSettingsButton, _leftMargin, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, TRUE);
+	::MoveWindow(_hSettingsButton, _leftMargin, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, FALSE);
 
+    
+    // Move the sponsor message 
+    for(std::list<boost::shared_ptr<POSITIONINFO>>::iterator it = _bottomComponents.begin(); it != _bottomComponents.end(); it++) {
+		::MoveWindow((*it)->handle, (*it)->leftOffset, height - (*it)->bottomOffset, (*it)->width, (*it)->height, FALSE);
+	}
+	::InvalidateRect(_hSelf, NULL, TRUE);
 }
 
 
@@ -614,10 +673,6 @@ void PluginManagerDialog::sizeTab(TABPAGE tab, int width, int height)
 
 
 }
-
-
-
-
 
 void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 {

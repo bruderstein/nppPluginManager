@@ -11,14 +11,22 @@
 #define PATHENV_MAX_LENGTH  8191
 #define TAB_PAGE_COUNT      3
 
-
+struct POSITIONINFO {
+    HWND handle;
+    int bottomOffset;
+    int leftOffset;
+    int height;
+    int width;
+};
 
 
 class PluginManagerDialog : StaticDialog
 {
 public:
 	PluginManagerDialog();
-	~PluginManagerDialog() {};
+	~PluginManagerDialog() {
+	    _bottomComponents.clear();
+	};
 
     void init(HINSTANCE hInst, NppData nppData);
 	void setPluginList(PluginList* pluginList);
@@ -49,6 +57,7 @@ private:
     HWND			_HSource;
 	HWND			_hCloseButton;
 	HWND			_hSettingsButton;
+    HWND            _hNbcLogo;
 
 	/* List of plugins, both available and installed*/
 	PluginList*		_pluginList;
@@ -103,6 +112,7 @@ private:
 	int _closeButtonBottomOffset, _closeButtonRightOffset;
 	int _closeButtonWidth, _closeButtonHeight;
 
+    std::list<boost::shared_ptr<POSITIONINFO>> _bottomComponents;
 
 
 	/* Private methods */
@@ -126,7 +136,6 @@ private:
 	/* Installs plugins from given list */ 
 	void startInstall(ProgressDialog* progressDialog, PluginListView *pluginListView, BOOL isUpdate);
 
-
-
+    void addBottomComponent(HWND hWnd, WINDOWINFO& wiDlg, UINT id);
 
 };

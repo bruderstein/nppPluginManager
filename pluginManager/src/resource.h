@@ -9,6 +9,7 @@
 #define IDD_TABAVAILABLE                113
 #define IDD_PROGRESSDIALOG              114
 #define IDD_PLUGINMANAGER_DLG           115
+#define IDB_BITMAP1                     121
 #define IDC_BUTTON1                     1001
 #define IDC_DOWNLOAD                    1001
 #define IDC_BUTTONUPDATE                1001
@@ -41,14 +42,20 @@
 #define IDC_UPDATEDESC                  1023
 #define IDC_DAYSTOCHECK                 1024
 #define IDC_INFOTEXT                    1026
+#define IDC_LOGO                        1027
+#define IDC_NBCLINK                     1030
+#define IDC_WHYISTHISHERE               1031
+#define IDC_PLUGINLISTHOSTING           1033
+#define IDC_NEXINTOBUSINESSCLOUD        1034
+#define IDC_NBCLOGO                     1035
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        116
+#define _APS_NEXT_RESOURCE_VALUE        122
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1027
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -13,6 +13,23 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "D:\\work\\npp\\PluginManager\\pluginManager\\res\\nbc_logo.bmp"
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
 // English (United Kingdom) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
@@ -24,7 +41,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 // Dialog
 //
 
-IDD_TABINSTALLED DIALOGEX 0, 0, 392, 266
+IDD_TABINSTALLED DIALOGEX 0, 0, 392, 260
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -34,7 +51,7 @@ BEGIN
     PUSHBUTTON      "Reinstall",IDC_REINSTALL,266,237,50,14
 END
 
-IDD_TABUPDATES DIALOGEX 0, 0, 392, 266
+IDD_TABUPDATES DIALOGEX 0, 0, 392, 259
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -43,7 +60,7 @@ BEGIN
     PUSHBUTTON      "Update",IDC_BUTTONUPDATE,325,237,50,14
 END
 
-IDD_TABAVAILABLE DIALOGEX 0, 0, 392, 266
+IDD_TABAVAILABLE DIALOGEX 0, 0, 391, 256
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -63,7 +80,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,103,102,50,14
 END
 
-IDD_CONFIGDIALOG DIALOGEX 0, 0, 294, 206
+IDD_CONFIGDIALOG DIALOGEX 0, 0, 294, 221
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Plugin Manager Settings"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -74,13 +91,15 @@ BEGIN
     CONTROL         "Show unstable plugins",IDC_SHOWUNSTABLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,60,46,87,10
     CONTROL         "Install plugins for all users",IDC_INSTALLALLUSERS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,60,63,99,10
-    DEFPUSHBUTTON   "OK",IDOK,71,185,63,14
-    PUSHBUTTON      "Cancel",IDCANCEL,151,185,63,14
+    DEFPUSHBUTTON   "OK",IDOK,71,200,63,14
+    PUSHBUTTON      "Cancel",IDCANCEL,151,200,63,14
     LTEXT           "days",IDC_STATIC,189,22,69,8
-    GROUPBOX        "Information",IDC_STATIC,13,105,278,72
-    EDITTEXT        IDC_INFOTEXT,16,121,264,51,ES_MULTILINE | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    GROUPBOX        "Information",IDC_STATIC,13,122,278,72
+    EDITTEXT        IDC_INFOTEXT,16,136,264,51,ES_MULTILINE | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
     CONTROL         "Force HTTP instead of HTTPS for downloading Plugin List",IDC_FORCEHTTP,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,60,80,196,10
+    CONTROL         "Use development plugin list (may contain untested, unvalidated or uninstallable plugins)",IDC_USEDEVPLUGINLIST,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,59,94,216,21
 END
 
 IDD_UPDATESNOTIFY DIALOGEX 0, 0, 402, 164
@@ -105,6 +124,19 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
+    IDD_TABINSTALLED, DIALOG
+    BEGIN
+    END
+
+    IDD_TABUPDATES, DIALOG
+    BEGIN
+    END
+
+    IDD_TABAVAILABLE, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 251
+    END
+
     IDD_PROGRESSDIALOG, DIALOG
     BEGIN
         BOTTOMMARGIN, 130
@@ -113,7 +145,11 @@ BEGIN
     IDD_CONFIGDIALOG, DIALOG
     BEGIN
         RIGHTMARGIN, 291
-        BOTTOMMARGIN, 199
+        BOTTOMMARGIN, 214
+    END
+
+    IDD_UPDATESNOTIFY, DIALOG
+    BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -134,15 +170,39 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_SOUTH_AFRICA
 // Dialog
 //
 
-IDD_PLUGINMANAGER_DLG DIALOGEX 0, 0, 429, 255
+IDD_PLUGINMANAGER_DLG DIALOGEX 0, 0, 445, 274
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_THICKFRAME
 CAPTION "Plugin Manager"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Close",IDOK,378,235,50,14
-    PUSHBUTTON      "Settings",IDC_SETTINGS,1,235,50,14
-    CONTROL         "",IDC_PLUGINTABCTRL,"SysTabControl32",0x0,0,1,428,226
+    DEFPUSHBUTTON   "Close",IDOK,378,255,50,14
+    PUSHBUTTON      "Settings",IDC_SETTINGS,5,255,50,14
+    CONTROL         "",IDC_PLUGINTABCTRL,"SysTabControl32",0x0,5,0,428,206
+    LTEXT           "Plugin list hosting generously provided by",IDC_PLUGINLISTHOSTING,102,206,133,8
+    LTEXT           "Nexinto Business Cloud",IDC_NEXINTOBUSINESSCLOUD,102,217,75,8
+    CONTROL         "<A HREF=""https://www.nexinto.com/nbc/?utm_source=url&utm_medium=embed&utm_campaign=npp"">https://www.nexinto.com/nbc</A>",IDC_NBCLINK,
+                    "SysLink",WS_TABSTOP,102,227,104,8
+    CONTROL         "<A HREF=""http://bruderste.in/npp/pm/sponsor.html"">Why is this here?</A>",IDC_WHYISTHISHERE,
+                    "SysLink",WS_TABSTOP,101,238,59,8
+    CONTROL         121,IDC_NBCLOGO,"Static",SS_BITMAP | SS_NOTIFY,8,208,90,36
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_PLUGINMANAGER_DLG, DIALOG
+    BEGIN
+        RIGHTMARGIN, 433
+        BOTTOMMARGIN, 269
+    END
+END
+#endif    // APSTUDIO_INVOKED
 
 
 #ifdef APSTUDIO_INVOKED
