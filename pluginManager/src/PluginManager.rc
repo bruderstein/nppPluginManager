@@ -182,7 +182,7 @@ BEGIN
     LTEXT           "Nexinto Business Cloud",IDC_NEXINTOBUSINESSCLOUD,102,217,75,8
     CONTROL         "<A HREF=""https://www.nexinto.com/nbc/?utm_source=url&utm_medium=embed&utm_campaign=npp"">https://www.nexinto.com/nbc</A>",IDC_NBCLINK,
                     "SysLink",WS_TABSTOP,102,227,104,8
-    CONTROL         "<A HREF=""http://bruderste.in/npp/pm/sponsor.html"">Why is this here?</A>",IDC_WHYISTHISHERE,
+    CONTROL         "<A HREF=""http://bruderste.in/npp/pm/sponsor/"">Why is this here?</A>",IDC_WHYISTHISHERE,
                     "SysLink",WS_TABSTOP,101,238,59,8
     CONTROL         121,IDC_NBCLOGO,"Static",SS_BITMAP | SS_NOTIFY,8,208,90,36
 END
