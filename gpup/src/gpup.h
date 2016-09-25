@@ -30,3 +30,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define VALIDATE_BASE_URL          _T("https://nppxml.bruderste.in/pm/validate?md5=")
 #define VALIDATE_BASE_HTTP_URL     _T("http://nppxml.bruderste.in/pm/validate?md5=")
 #endif
+
+#define DEV_VALIDATE_BASE_URL          _T("https://nppxmldev.bruderste.in/pm/validate?md5=")

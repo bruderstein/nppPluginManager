@@ -93,7 +93,7 @@ void PluginList::init(NppData *nppData)
 	_variableHandler = new VariableHandler();
 	_variableHandler->setVariable(_T("NPPDIR"), nppDir);
 	_variableHandler->setVariable(_T("ALLUSERSPLUGINDIR"), allUsersPluginDir);
-	_variableHandler->setVariable(VALIDATE_BASE_URL_VAR, (g_options.forceHttp || g_winVer < WV_VISTA) ? VALIDATE_BASE_HTTP_URL : VALIDATE_BASE_URL);
+	_variableHandler->setVariable(VALIDATE_BASE_URL_VAR, getValidateUrl());
 	
 	ITEMIDLIST *pidl;
 	HRESULT result = SHGetSpecialFolderLocation(NULL, CSIDL_APPDATA, &pidl);
@@ -950,6 +950,18 @@ TCHAR* PluginList::getPluginsUrl() {
 	}
 
 	return PLUGINS_URL;
+}
+
+TCHAR* PluginList::getValidateUrl() {
+    if (g_options.useDevPluginList) {
+        return DEV_VALIDATE_BASE_URL;
+	}
+
+    if (g_options.forceHttp || g_winVer < WV_VISTA) {
+		return VALIDATE_BASE_HTTP_URL;
+	}
+
+	return VALIDATE_BASE_URL;
 }
 
 void PluginList::reparseFile(const tstring& pluginsListFilename)

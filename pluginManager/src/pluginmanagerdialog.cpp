@@ -454,7 +454,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
             addBottomComponent(hWnd, wiDlg, IDC_NBCLOGO);
             addBottomComponent(hWnd, wiDlg, IDC_WHYISTHISHERE);
 
-			_beginthread(downloadAndPopulate, 0, this);
+			_downloadThread = _beginthread(downloadAndPopulate, 0, this);
 
 			return TRUE;
 		}
@@ -470,12 +470,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 
 					settingsDlg.doModal(&_nppData, _hSelf);
                     if (g_options.useDevPluginList != oldUseDevPluginList) {
-                        delete _pluginList;
-                        _pluginList = NULL;
-						_availableListView.setMessage(_T("Refreshing plugin list..."));
-						_updatesListView.setMessage(_T("Refreshing plugin list..."));
-						_installedListView.setMessage(_T("Refreshing plugin list..."));
-						_beginthread(downloadAndPopulate, 0, this);
+                        _beginthread(refreshDownload, 0, this);
 					} else if (g_options.showUnstable != oldShowUnstable) {
 						TCHAR pluginConfig[MAX_PATH];
 						::SendMessage(_nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
@@ -674,10 +669,11 @@ void PluginManagerDialog::sizeTab(TABPAGE tab, int width, int height)
 
 }
 
+
 void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 {
 	PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog *>(pvoid);
-
+    dlg->_isDownloading = TRUE;
 	if (!dlg->_pluginList)
 	{
 		dlg->_pluginList = new PluginList();
@@ -698,6 +694,24 @@ void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 	populateLists(dlg);
 	
 
+    dlg->_isDownloading = FALSE;
+    dlg->_downloadThread = NULL;
+	_endthread();
+}
+
+void PluginManagerDialog::refreshDownload(PVOID pvoid) {
+
+	PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog *>(pvoid);
+    
+    if (dlg->_isDownloading) {
+		::WaitForSingleObject(reinterpret_cast<HANDLE>(dlg->_downloadThread), 90000);
+	}
+	delete dlg->_pluginList;
+	dlg->_pluginList = NULL;
+	dlg->_availableListView.setMessage(_T("Refreshing plugin list..."));
+	dlg->_updatesListView.setMessage(_T("Refreshing plugin list..."));
+	dlg->_installedListView.setMessage(_T("Refreshing plugin list..."));
+	dlg->_downloadThread = _beginthread(downloadAndPopulate, 0, dlg);
 	_endthread();
 }
 

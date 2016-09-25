@@ -112,6 +112,8 @@ private:
 	int _closeButtonBottomOffset, _closeButtonRightOffset;
 	int _closeButtonWidth, _closeButtonHeight;
 
+    BOOL _isDownloading;
+    uintptr_t _downloadThread;
     std::list<boost::shared_ptr<POSITIONINFO>> _bottomComponents;
 
 
@@ -128,6 +130,7 @@ private:
 
 	/* Threaded proc to download the plugin list and populate the views */
 	static void downloadAndPopulate(PVOID pvoid);
+	static void refreshDownload(PVOID pvoid);
 	static void populateLists(PluginManagerDialog* dlg);
 
 	/* Threaded procs to install plugins from a given list */
