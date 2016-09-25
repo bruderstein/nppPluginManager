@@ -1,0 +1,16 @@
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14pt;
+  margin: 0.5em 3em;
+}
+
+header, main {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+main {
+  text-align: justify;
+}
+
