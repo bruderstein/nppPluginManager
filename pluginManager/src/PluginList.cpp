@@ -1260,6 +1260,12 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	if (needRestart)
 	{
 		
+		for(VariableHandler::iterator it = _variableHandler->begin(); it != _variableHandler->end(); it++) {
+			TiXmlElement setVariable = TiXmlElement(_T("setVariable"));
+			setVariable.SetAttribute(_T("name"), it->first);
+			setVariable.SetAttribute(_T("value"), it->second);
+			installElement->InsertBeforeChild(installElement->FirstChild(), setVariable);
+		}
 
 		forGpupDoc->SaveFile(gpupFile.c_str());
 		delete forGpupDoc;

@@ -332,6 +332,13 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 						if (_backup)
 							copy->SetAttribute(_T("backup"), _T("true"));
 						
+						if (_recursive) {
+							copy->SetAttribute(_T("recursive"), _T("true"));
+						}
+
+						if (_validate) {
+							copy->SetAttribute(_T("recursive"), _T("true"));
+						}
 						forGpup->LinkEndChild(copy);
 
 					}

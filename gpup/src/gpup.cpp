@@ -36,7 +36,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tinyxml/tinyxml.h"
 #include "libinstall/InstallStep.h"
 #include "libinstall/InstallStepFactory.h"
+#include "libinstall/VariableHandler.h"
 #include "libinstall/CancelToken.h"
+#include "libinstall/ModuleInfo.h"
 #include "ProgressDialog.h"
 
 #define RETURN_SUCCESS				0
@@ -280,6 +282,7 @@ void stepProgress(int /*percentageComplete*/)
 
 BOOL processActionsFile(const tstring& actionsFile)
 {
+    ModuleInfo moduleInfo(::GetModuleHandle(NULL), NULL);
 
     CancelToken cancelToken;
 
@@ -292,8 +295,9 @@ BOOL processActionsFile(const tstring& actionsFile)
 
 		if (install && !install->NoChildren())
 		{
-			
-			InstallStepFactory installStepFactory(NULL);
+			VariableHandler variableHandler;
+            
+			InstallStepFactory installStepFactory(&variableHandler);
 			TiXmlElement *step = install->FirstChildElement();
 			int stepCount = 0;
 			while (step)
@@ -308,22 +312,26 @@ BOOL processActionsFile(const tstring& actionsFile)
 			step = install->FirstChildElement();
 			while (step)
 			{
-				// TODO: NEED TO FIX THIS - Need proxy info somehow
 				boost::shared_ptr<InstallStep> installStep = installStepFactory.create(step);
+				// Progress to next step
+				step = (TiXmlElement*) install->IterateChildren(step);
 
+				// Not all steps are actually an install step, some are just setting variables
+				if (installStep == NULL) {
+					g_progressDialog->stepComplete();
+					continue;
+				}
 
 				StepStatus stepStatus;
 				stepStatus = installStep->perform(basePath,           // basePath
 												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
 												boost::bind(&setStatus, _1),     // status update function
 												boost::bind(&stepProgress, _1),
-												NULL,
-                                                cancelToken); // step progress function
-
+												&moduleInfo,
+												cancelToken); // step progress function
 
 				// If it said it needed to do it in GPUP, then maybe N++ hasn't quite
 				// finished quitting yet.
-
 				int retryCount = 0;
 				while (stepStatus == STEPSTATUS_NEEDGPUP && retryCount < 20)
 				{
@@ -333,8 +341,8 @@ BOOL processActionsFile(const tstring& actionsFile)
 												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
 												boost::bind(&setStatus, _1),     // status update function
 												boost::bind(&stepProgress, _1), // step progress function
-												NULL,
-                                                cancelToken); 
+												&moduleInfo,
+												cancelToken); 
 
 
 
@@ -342,7 +350,6 @@ BOOL processActionsFile(const tstring& actionsFile)
 
 				g_progressDialog->stepComplete();				
 
-				step = (TiXmlElement*) install->IterateChildren(step);
 			}
 
 		}	
@@ -429,7 +436,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	hInst = hInstance;
 
 	Options options;
-	
 	parseCommandLine(lpCmdLine, options);
 
 	// If this is just a copy request
@@ -490,8 +496,3 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	return returnValue;
 
 }
-
-
-
-
-

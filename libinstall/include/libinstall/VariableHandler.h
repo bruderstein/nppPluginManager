@@ -30,7 +30,10 @@ public:
 	void replaceVariables(tstring &source);
 
 	const tstring& getVariable(const TCHAR* variableName);
+    typedef std::map<tstring, tstring>::iterator iterator;
 
+    const iterator begin();
+    const iterator end();
 
 private:
 	std::map<tstring, tstring> *_variables;

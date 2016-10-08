@@ -120,6 +120,12 @@ boost::shared_ptr<InstallStep> InstallStepFactory::create(TiXmlElement* element)
 		}
 		installStep.reset(new RunStep(tFile, tArgs, outsideNpp, validateUrl));
 	}
+	else if (!_tcscmp(element->Value(), _T("setVariable")))
+	{
+        // Maybe an option to allow this?
+        _variableHandler->setVariable(element->Attribute(_T("name")), element->Attribute(_T("value")));
+	}
+
 
 	return installStep;
 }

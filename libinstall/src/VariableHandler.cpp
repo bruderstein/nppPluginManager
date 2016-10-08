@@ -72,4 +72,10 @@ const tstring& VariableHandler::getVariable(const TCHAR* variableName)
 	return (*_variables)[tstring(variableName)];
 }
 
-	
+const VariableHandler::iterator VariableHandler::begin() {
+    return _variables->begin();
+}
+
+const VariableHandler::iterator VariableHandler::end() {
+    return _variables->end();
+}
