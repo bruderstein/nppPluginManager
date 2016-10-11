@@ -62,7 +62,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 	{
         case WM_INITDIALOG :
 		{
-			::SetWindowLong(hWnd, GWL_USERDATA, lParam);
+			::SetWindowLongPtr(hWnd, GWLP_USERDATA, lParam);
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(lParam);
 
 			dlg->_tabs[TAB_AVAILABLE].hListView = ::GetDlgItem(hWnd, IDC_LISTAVAILABLE);	
@@ -103,14 +103,14 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 
 		case WM_SIZE:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 			dlg->sizeTab(dlg->_tabs[TAB_AVAILABLE], LOWORD(lParam), HIWORD(lParam));
 			return TRUE;
 		}
 
 		case WM_NOTIFY:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
             HWND hwndFrom = ((LPNMHDR)lParam)->hwndFrom;
 
 			if (dlg && ((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_AVAILABLE].hListView)
@@ -121,7 +121,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 
 		case WM_COMMAND:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 			switch(LOWORD(wParam))
 			{
@@ -162,7 +162,7 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 	{
         case WM_INITDIALOG :
 		{
-			::SetWindowLong(hWnd, GWL_USERDATA, (LONG)lParam);
+			::SetWindowLongPtr(hWnd, GWLP_USERDATA, lParam);
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(lParam);
 
 			dlg->_tabs[TAB_UPDATES].hListView = ::GetDlgItem(hWnd, IDC_LISTUPDATES);	
@@ -205,14 +205,14 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 
 		case WM_SIZE:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 			dlg->sizeTab(dlg->_tabs[TAB_UPDATES], LOWORD(lParam), HIWORD(lParam));
 			return TRUE;
 		}
 
 		case WM_NOTIFY:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 			if (((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_UPDATES].hListView)
 			{
@@ -225,7 +225,7 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 		
 		case WM_COMMAND:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 			switch(LOWORD(wParam))
 			{
@@ -254,7 +254,7 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 	{
         case WM_INITDIALOG :
 		{
-			::SetWindowLongPtr(hWnd, GWL_USERDATA, (LONG_PTR)lParam);
+			::SetWindowLongPtr(hWnd, GWLP_USERDATA, lParam);
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(lParam);
 
 			dlg->_tabs[TAB_INSTALLED].hListView = ::GetDlgItem(hWnd, IDC_LISTINSTALLED);	
@@ -304,14 +304,14 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 
 		case WM_SIZE:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 			dlg->sizeTab(dlg->_tabs[TAB_INSTALLED], LOWORD(lParam), HIWORD(lParam));
 			return TRUE;
 		}
 
 		case WM_NOTIFY:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 			if (((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_INSTALLED].hListView)
 			{
@@ -325,7 +325,7 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 
 		case WM_COMMAND:
 		{
-			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 			switch(LOWORD(wParam))
 			{
@@ -374,7 +374,7 @@ BOOL CALLBACK PluginManagerDialog::tabWndProc(HWND hWnd, UINT Message, WPARAM wP
 		case WM_SIZE:
 		{
 			
-			DLGHDR *dlgHdr = reinterpret_cast<DLGHDR*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			DLGHDR *dlgHdr = reinterpret_cast<DLGHDR*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 
 
 			dlgHdr->rcDisplay.left = 0;
@@ -394,7 +394,7 @@ BOOL CALLBACK PluginManagerDialog::tabWndProc(HWND hWnd, UINT Message, WPARAM wP
 		}
 
 		default:
-			DLGHDR *dlgHdr = reinterpret_cast<DLGHDR*>(::GetWindowLong(hWnd, GWL_USERDATA));
+			DLGHDR *dlgHdr = reinterpret_cast<DLGHDR*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 			if (dlgHdr->defWndProc)
 				return ::CallWindowProc(dlgHdr->defWndProc, hWnd, Message, wParam, lParam);
 			else
@@ -539,7 +539,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 
 void PluginManagerDialog::OnSelChanged(HWND hwndDlg) 
 { 
-    DLGHDR *pHdr = (DLGHDR *) GetWindowLongPtr(hwndDlg, GWL_USERDATA); 
+    DLGHDR *pHdr = (DLGHDR *) GetWindowLongPtr(hwndDlg, GWLP_USERDATA);
     int iSel = TabCtrl_GetCurSel(pHdr->hwndTab); 
  
     // Destroy the current child dialog box, if any. 
@@ -609,10 +609,10 @@ void PluginManagerDialog::initTabControl()
 	// CopyRect(&_tabHeader.rcDisplay, &wi.rcClient);
 
 	// Set the userdata
-	::SetWindowLong(hTabCtrl, GWL_USERDATA, reinterpret_cast<LONG>(&_tabHeader));
+	::SetWindowLongPtr(hTabCtrl, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&_tabHeader));
 	
-	_tabHeader.defWndProc = reinterpret_cast<WNDPROC>(::GetWindowLong(hTabCtrl, GWL_WNDPROC));
-	::SetWindowLong(hTabCtrl, GWL_WNDPROC, reinterpret_cast<LONG>(tabWndProc));
+	_tabHeader.defWndProc = reinterpret_cast<WNDPROC>(::GetWindowLongPtr(hTabCtrl, GWLP_WNDPROC));
+	::SetWindowLongPtr(hTabCtrl, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(tabWndProc));
 	// Fake a tab change, to show the first tab
 	OnSelChanged(hTabCtrl);
 }

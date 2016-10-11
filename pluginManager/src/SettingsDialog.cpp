@@ -34,12 +34,12 @@ BOOL SettingsDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 	switch(message)
 	{
 		case WM_INITDIALOG:
-			::SetWindowLongPtr(hWnd, GWL_USERDATA, lParam);
+			::SetWindowLongPtr(hWnd, GWLP_USERDATA, lParam);
 			return reinterpret_cast<SettingsDialog*>(lParam)->run_dlgProc(hWnd, message, wParam, lParam);
 
 		default:
 		{
-			SettingsDialog* dlg = reinterpret_cast<SettingsDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			SettingsDialog* dlg = reinterpret_cast<SettingsDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 			if (dlg)
 				return dlg->run_dlgProc(hWnd, message, wParam, lParam);
 			else

@@ -64,13 +64,13 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	{
 		case WM_INITDIALOG:
 		{
-			::SetWindowLongPtr(hWnd, GWL_USERDATA, (LONG)lParam);
+			::SetWindowLongPtr(hWnd, GWLP_USERDATA, lParam);
 			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(lParam);
 			return dlg->runDlgProc(hWnd, message, wParam, lParam);
 		}
 		default:
 		{
-			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(static_cast<LONG_PTR>(::GetWindowLongPtr(hWnd, GWL_USERDATA)));
+			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(static_cast<LONG_PTR>(::GetWindowLongPtr(hWnd, GWLP_USERDATA)));
 			return dlg->runDlgProc(hWnd, message, wParam, lParam);
 		}
 	}
