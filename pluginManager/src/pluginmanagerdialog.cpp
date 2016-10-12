@@ -539,7 +539,7 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 
 void PluginManagerDialog::OnSelChanged(HWND hwndDlg) 
 { 
-    DLGHDR *pHdr = (DLGHDR *) GetWindowLongPtr(hwndDlg, GWLP_USERDATA);
+    DLGHDR *pHdr = reinterpret_cast<DLGHDR*>(::GetWindowLongPtr(hwndDlg, GWLP_USERDATA));
     int iSel = TabCtrl_GetCurSel(pHdr->hwndTab); 
  
     // Destroy the current child dialog box, if any. 
