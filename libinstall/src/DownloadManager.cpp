@@ -27,7 +27,7 @@ void DownloadManager::setUserAgent(const TCHAR* userAgent)
     _userAgent = userAgent;
 }
 
-void DownloadManager::setProgressFunction(boost::function<void(int)> progressFunction)
+void DownloadManager::setProgressFunction(std::function<void(int)> progressFunction)
 {
     _progressFunction = progressFunction;
     _progressFunctionSet = TRUE;

@@ -58,7 +58,7 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 			return FALSE;
 		}
 
-		boost::shared_ptr<TCHAR> tFilename = WcharMbcsConverter::char2tchar(filename);
+		std::shared_ptr<TCHAR> tFilename = WcharMbcsConverter::char2tchar(filename);
 	
 
 		if ((tFilename.get())[_tcslen(tFilename.get()) - 1] == _T('/'))
@@ -136,6 +136,6 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 
 void Decompress::setString(const tstring &src, std::string &dest)
 {
-	boost::shared_ptr<char> cDest = WcharMbcsConverter::tchar2char(src.c_str());
+	std::shared_ptr<char> cDest = WcharMbcsConverter::tchar2char(src.c_str());
 	dest = cDest.get();
 }
