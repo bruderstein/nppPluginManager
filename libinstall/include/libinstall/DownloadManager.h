@@ -34,13 +34,13 @@ public:
     void cancelDownload();
     void disableCache();
 
-    void setProgressFunction(boost::function<void(int)> progressFunction);
+    void setProgressFunction(std::function<void(int)> progressFunction);
 
     static void setUserAgent(const TCHAR* userAgent);
 
 
 private:
-    boost::function<void(int)> _progressFunction;
+    std::function<void(int)> _progressFunction;
     BOOL					   _progressFunctionSet;
     static tstring				_userAgent;
 

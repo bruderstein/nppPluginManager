@@ -3,7 +3,7 @@
 #include "InternetDownload.h"
 #include "libinstall/CancelToken.h"
 
-InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, boost::function<void(int)> progressFunction /* = NULL */) 
+InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, std::function<void(int)> progressFunction /* = NULL */) 
     : m_parentHwnd(parentHwnd),
       m_url(url),
       m_hInternet(NULL),
@@ -169,7 +169,7 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
     long bytesWritten = 0;
 
     // Make point-at-which-we-receive-the-headers 5% of the total progress (arbitrarily chosen!)
-    if (!m_progressFunction.empty()) {
+    if (m_progressFunction != nullptr) {
         m_progressFunction(5);
     }
 
@@ -196,7 +196,7 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
 
         (*this.*writeData)(buffer, *bytesRead, context);
         bytesWritten += *bytesRead;
-        if (contentLength && !m_progressFunction.empty()) {
+        if (contentLength && m_progressFunction != nullptr) {
             int percent = static_cast<int>((static_cast<double>(bytesWritten) / static_cast<double>(contentLength)) * 95 + 5);
             m_progressFunction(percent);
         }
