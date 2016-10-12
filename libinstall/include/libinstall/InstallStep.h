@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _INSTALLSTEP_H
 #define _INSTALLSTEP_H
 
-#include <boost/function.hpp>
 #include "tstring.h"
 #include "tinyxml/tinyxml.h"
 
@@ -44,14 +43,14 @@ public:
 	~InstallStep() {};
 
 	virtual StepStatus perform(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
-		boost::function<void(const TCHAR*)> /* setStatus */,
-		boost::function<void(const int)> /* stepProgress */,
+		std::function<void(const TCHAR*)> /* setStatus */,
+		std::function<void(const int)> /* stepProgress */,
 		const ModuleInfo* /*windowParent */,
         CancelToken& /* cancelToken */) { return STEPSTATUS_SUCCESS; };
 
 	virtual StepStatus remove(tstring &/*basePath*/, TiXmlElement* /*forGpup*/, 
-		boost::function<void(const TCHAR*)> /* setStatus */,
-		boost::function<void(const int)> /* stepProgress */,
+		std::function<void(const TCHAR*)> /* setStatus */,
+		std::function<void(const int)> /* stepProgress */,
 		const ModuleInfo* /*windowParent */) { return STEPSTATUS_SUCCESS; };
 
 	virtual void replaceVariables(VariableHandler* /*variableHandler*/) { };

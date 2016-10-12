@@ -41,11 +41,11 @@ DirectLinkSearch::~DirectLinkSearch()
 {
 }
 
-boost::shared_ptr<TCHAR> DirectLinkSearch::search(const TCHAR *filename)
+std::shared_ptr<TCHAR> DirectLinkSearch::search(const TCHAR *filename)
 {
 	if (!filename || !(*filename))
 	{
-		boost::shared_ptr<TCHAR> empty;
+		std::shared_ptr<TCHAR> empty;
 		return empty;
 	}
 	
@@ -79,7 +79,7 @@ boost::shared_ptr<TCHAR> DirectLinkSearch::search(const TCHAR *filename)
 				size_t realPosition = validateDirectLink(currentPosition-checkOffset + 1);
 				if (realPosition != LINK_NOT_VALID)
 				{
-					boost::shared_ptr<TCHAR> buffer(new TCHAR[currentPosition - realPosition + 2]);
+					std::shared_ptr<TCHAR> buffer(new TCHAR[currentPosition - realPosition + 2]);
 					int bufferPosition = 0;
 					while(realPosition <= currentPosition)
 					{
@@ -107,7 +107,7 @@ boost::shared_ptr<TCHAR> DirectLinkSearch::search(const TCHAR *filename)
 		
 	} while (_file.getCharAt(currentPosition) != FILEBUFFER_EOF);
 	
-	boost::shared_ptr<TCHAR> empty;
+	std::shared_ptr<TCHAR> empty;
 	return empty;
 
 }

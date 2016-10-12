@@ -32,8 +32,8 @@ public:
 	~DeleteStep() {};
 	
 	StepStatus perform(tstring& basePath, TiXmlElement* forGpup,
-		boost::function<void(const TCHAR*)> setStatus,
-		boost::function<void(const int)> stepProgress, 
+		std::function<void(const TCHAR*)> setStatus,
+		std::function<void(const int)> stepProgress, 
         const ModuleInfo* moduleInfo,
         CancelToken& cancelToken);
 
