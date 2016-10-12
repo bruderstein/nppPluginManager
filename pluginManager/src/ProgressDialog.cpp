@@ -64,7 +64,7 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	{
 		case WM_INITDIALOG:
 		{
-			::SetWindowLongPtr(hWnd, GWL_USERDATA, lParam);
+			::SetWindowLongPtr(hWnd, GWLP_USERDATA, lParam);
 			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(lParam);
 			return dlg->runDlgProc(hWnd, message, wParam, lParam);
 		}
@@ -74,7 +74,7 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
                 if (IDCANCEL == wParam) {
                     int mbResult = MessageBox(hWnd, _T("Are you sure you wish to abort the current installation/removal?"), _T("Cancel installation / removal?"), MB_YESNO | MB_ICONQUESTION);
                     if (IDYES == mbResult) {
-			            ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			            ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
                         dlg->_cancelToken.triggerCancel();
                     }
                 }
@@ -82,7 +82,7 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
             }
 		default:
 		{
-			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 			return dlg->runDlgProc(hWnd, message, wParam, lParam);
 		}
 	}
