@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WcharMbcsConverter.h"
 
 using namespace std;
-using namespace boost;
+using namespace std::placeholders;
 
 
 PluginManagerDialog::PluginManagerDialog()
@@ -130,7 +130,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
                     CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
                         cancelToken,
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_availableListView, FALSE, cancelToken));
+						std::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_availableListView, FALSE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					
 					break;
@@ -234,7 +234,7 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
                     CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
                         cancelToken,
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_updatesListView, TRUE, cancelToken));
+						std::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_updatesListView, TRUE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					
 					
@@ -334,7 +334,7 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
                     CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
                         cancelToken,
-						boost::bind(&PluginList::startRemove, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, cancelToken));
+						std::bind(&PluginList::startRemove, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					break;
 				}
@@ -344,7 +344,7 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
                     CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
                         cancelToken,
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, TRUE, cancelToken));
+						std::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, TRUE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					break;
 				}
@@ -417,7 +417,7 @@ void PluginManagerDialog::addBottomComponent(HWND hWnd, WINDOWINFO& wiDlg, UINT 
             positionInfo->width = wiCtl.rcClient.right - wiCtl.rcClient.left;
             positionInfo->bottomOffset = wiDlg.rcClient.bottom - wiCtl.rcClient.top;
             positionInfo->leftOffset = wiCtl.rcClient.left - wiDlg.rcClient.left;
-            _bottomComponents.push_back(boost::shared_ptr<POSITIONINFO>(positionInfo));
+            _bottomComponents.push_back(std::shared_ptr<POSITIONINFO>(positionInfo));
 }
 
 BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -638,7 +638,7 @@ void PluginManagerDialog::sizeWindow(int width, int height)
 
     
     // Move the sponsor message 
-    for(std::list<boost::shared_ptr<POSITIONINFO>>::iterator it = _bottomComponents.begin(); it != _bottomComponents.end(); it++) {
+    for(std::list<std::shared_ptr<POSITIONINFO>>::iterator it = _bottomComponents.begin(); it != _bottomComponents.end(); it++) {
 		::MoveWindow((*it)->handle, (*it)->leftOffset, height - (*it)->bottomOffset, (*it)->width, (*it)->height, FALSE);
 	}
 	::InvalidateRect(_hSelf, NULL, TRUE);

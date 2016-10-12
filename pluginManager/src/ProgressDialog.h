@@ -6,7 +6,7 @@
 class ProgressDialog
 {
 public:
-    ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, boost::function<void(ProgressDialog*)> startFunction);
+    ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, std::function<void(ProgressDialog*)> startFunction);
     ~ProgressDialog() {};
 
     void doModal(HWND parent);
@@ -34,7 +34,7 @@ private:
     HINSTANCE	_hInst;
     CancelToken _cancelToken;
 
-    boost::function<void(ProgressDialog*)> _startFunction;
+    std::function<void(ProgressDialog*)> _startFunction;
 
 
     void goToCenter();

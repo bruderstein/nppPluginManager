@@ -39,8 +39,8 @@ RunStep::RunStep(const TCHAR *file, const TCHAR *arguments, BOOL outsideNpp, con
 
 
 StepStatus RunStep::perform(tstring& basePath, TiXmlElement*  forGpup, 
-							 boost::function<void(const TCHAR*)> setStatus,
-							 boost::function<void(const int)> stepProgress, 
+							 std::function<void(const TCHAR*)> setStatus,
+							 std::function<void(const int)> stepProgress, 
 							 const ModuleInfo* moduleInfo,
                              CancelToken& cancelToken)
 {
