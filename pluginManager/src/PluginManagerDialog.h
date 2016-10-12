@@ -114,7 +114,7 @@ private:
 
     BOOL _isDownloading;
     uintptr_t _downloadThread;
-    std::list<boost::shared_ptr<POSITIONINFO>> _bottomComponents;
+    std::list<std::shared_ptr<POSITIONINFO>> _bottomComponents;
 
 
 	/* Private methods */
