@@ -70,7 +70,7 @@ BOOL NotifyUpdatesDialog::updatesAvailable()
 }
 
 
-BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK NotifyUpdatesDialog::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message) 
 	{
@@ -79,8 +79,8 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			PluginListView::VERSIONCOLUMN columns[2];
 			columns[0] = PluginListView::VERSION_INSTALLED;
 			columns[1] = PluginListView::VERSION_AVAILABLE;
-			_hListView = ::GetDlgItem(hWnd, IDC_LISTUPDATES);
-			_hUpdateDescription = ::GetDlgItem(hWnd, IDC_UPDATEDESC);
+			_hListView = ::GetDlgItem(_hSelf, IDC_LISTUPDATES);
+			_hUpdateDescription = ::GetDlgItem(_hSelf, IDC_UPDATEDESC);
 			_pluginListView.init(_hListView, _hUpdateDescription, 2, columns, true);
 			
 			_pluginListView.setList(_updateList);
@@ -113,7 +113,7 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 						_pluginListView.removeSelected();
 
 						if (_pluginListView.empty())
-							::EndDialog(hWnd, 0);
+							::EndDialog(_hSelf, 0);
 
 						return TRUE;
 					}
@@ -129,14 +129,14 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 						_pluginListView.removeSelected();
 
 						if (_pluginListView.empty())
-							::EndDialog(hWnd, 0);
+							::EndDialog(_hSelf, 0);
 
 						_pluginListView.selectAll();
 
 						return TRUE;
 					}
 				case IDCANCEL :
-					::EndDialog(hWnd, 0);
+					::EndDialog(_hSelf, 0);
 					return TRUE;
 
 				default :
