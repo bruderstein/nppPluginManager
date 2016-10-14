@@ -24,12 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 
-#pragma warning (push)
-#pragma warning (disable : 4512) // assignment operator could not be generated
-#include <boost/bind.hpp>
-#pragma warning (pop)
 
-#include <boost/function.hpp>
 
 
 #include "Options.h"
@@ -55,7 +50,7 @@ ProgressDialog *g_progressDialog;
 
 
 using namespace std;
-using namespace boost;
+using namespace std::placeholders;
 
 
 BOOL parseCommandLine(const TCHAR* cmdLine, Options& options)
@@ -312,7 +307,7 @@ BOOL processActionsFile(const tstring& actionsFile)
 			step = install->FirstChildElement();
 			while (step)
 			{
-				boost::shared_ptr<InstallStep> installStep = installStepFactory.create(step);
+				std::shared_ptr<InstallStep> installStep = installStepFactory.create(step);
 				// Progress to next step
 				step = (TiXmlElement*) install->IterateChildren(step);
 
@@ -325,8 +320,8 @@ BOOL processActionsFile(const tstring& actionsFile)
 				StepStatus stepStatus;
 				stepStatus = installStep->perform(basePath,           // basePath
 												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
-												boost::bind(&setStatus, _1),     // status update function
-												boost::bind(&stepProgress, _1),
+												std::bind(&setStatus, _1),     // status update function
+												std::bind(&stepProgress, _1),
 												&moduleInfo,
 												cancelToken); // step progress function
 
@@ -339,8 +334,8 @@ BOOL processActionsFile(const tstring& actionsFile)
 					++retryCount;
 					stepStatus = installStep->perform(basePath,           // basePath
 												&stillToComplete,   // forGpup (still can't achieve, so basically a fail)
-												boost::bind(&setStatus, _1),     // status update function
-												boost::bind(&stepProgress, _1), // step progress function
+												std::bind(&setStatus, _1),     // status update function
+												std::bind(&stepProgress, _1), // step progress function
 												&moduleInfo,
 												cancelToken); 
 

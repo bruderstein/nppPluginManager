@@ -11,7 +11,7 @@ enum DOWNLOAD_STATUS {
 
 class InternetDownload {
 public:
-    InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, boost::function<void(int)> progressFunction = NULL);
+    InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, std::function<void(int)> progressFunction = NULL);
         
     ~InternetDownload();
 
@@ -44,7 +44,7 @@ private:
 
     DOWNLOAD_STATUS getData(writeData_t writeData, void* context);
 
-    boost::function<void(int)> m_progressFunction;
+    std::function<void(int)> m_progressFunction;
 
     tstring m_url;
     tstring m_userAgent;

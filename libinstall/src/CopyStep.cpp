@@ -72,8 +72,8 @@ void CopyStep::replaceVariables(VariableHandler *variableHandler)
 
 
 StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup, 
-							 boost::function<void(const TCHAR*)> setStatus,
-							 boost::function<void(const int)> stepProgress,
+							 std::function<void(const TCHAR*)> setStatus,
+							 std::function<void(const int)> stepProgress,
 							 const ModuleInfo* moduleInfo,
                              CancelToken& cancelToken)
 {
@@ -133,8 +133,8 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 
 StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath, 
 					 TiXmlElement* forGpup,
-					 boost::function<void(const TCHAR*)> setStatus,
-					 boost::function<void(const int)> stepProgress, 
+					 std::function<void(const TCHAR*)> setStatus,
+					 std::function<void(const int)> stepProgress, 
                      const ModuleInfo* moduleInfo,
                      CancelToken& cancelToken)
 {
