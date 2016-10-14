@@ -80,23 +80,23 @@ public:
     void			addBadVersion(const PluginVersion &version, const TCHAR* report);
 
     /* installation */
-    void			addInstallStep(boost::shared_ptr<InstallStep> step);
+    void			addInstallStep(std::shared_ptr<InstallStep> step);
     size_t				getInstallStepCount();
     InstallStatus   install(tstring& basePath, TiXmlElement* forGpup, 
-        boost::function<void(const TCHAR*)> setStatus,
-        boost::function<void(const int)> stepProgress,
-        boost::function<void()> stepComplete,
+        std::function<void(const TCHAR*)> setStatus,
+        std::function<void(const int)> stepProgress,
+        std::function<void()> stepComplete,
         const ModuleInfo* moduleInfo,
         VariableHandler* variableHandler,
         CancelToken& cancelToken);
 
     /* removal */
     size_t getRemoveStepCount();
-    void addRemoveStep(boost::shared_ptr<InstallStep> step);
+    void addRemoveStep(std::shared_ptr<InstallStep> step);
     InstallStatus remove(tstring& basePath, TiXmlElement* forGpup, 
-                                      boost::function<void(const TCHAR*)> setStatus,
-                                      boost::function<void(const int)> stepProgress,
-                                      boost::function<void()> stepComplete,
+                                      std::function<void(const TCHAR*)> setStatus,
+                                      std::function<void(const int)> stepProgress,
+                                      std::function<void()> stepComplete,
                                       const ModuleInfo* moduleInfo,
                                       VariableHandler* variableHandler,
                                       CancelToken& cancelToken);
@@ -134,7 +134,7 @@ private:
     std::map<tstring, PluginVersion>  _versionMap;
     std::map<PluginVersion, tstring>  _badVersionMap;
 
-    typedef std::list<boost::shared_ptr<InstallStep> > InstallStepContainer;
+    typedef std::list<std::shared_ptr<InstallStep> > InstallStepContainer;
 
     InstallStepContainer	_installSteps;
     InstallStepContainer	_removeSteps;
@@ -144,9 +144,9 @@ private:
     
     /* Step Runner for install/remove */
     InstallStatus runSteps(InstallStepContainer steps, tstring& basePath, TiXmlElement* forGpup, 
-                                      boost::function<void(const TCHAR*)> setStatus,
-                                      boost::function<void(const int)> stepProgress,
-                                      boost::function<void()> stepComplete,
+                                      std::function<void(const TCHAR*)> setStatus,
+                                      std::function<void(const int)> stepProgress,
+                                      std::function<void()> stepComplete,
                                       const ModuleInfo* moduleInfo,
                                       VariableHandler* variableHandler,
                                       CancelToken& cancelToken);

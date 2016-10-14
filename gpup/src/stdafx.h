@@ -57,5 +57,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <list>
 
 #include <map>
-#include <boost/shared_ptr.hpp>
+
+#include <functional> // std::bind and std::function
+#include <memory> //std::shared_ptr
 
