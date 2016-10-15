@@ -142,6 +142,7 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 				default :
 					break;
 			}
+			break;
 		}
 
 		case WM_NOTIFY:
