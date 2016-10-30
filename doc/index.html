@@ -58,6 +58,24 @@ everything will run properly under a normal user.  Future updates to Plugin Mana
 <br/><br/>
 <a name="changes"></a>
 <h3>Changes</h3>
+1.4.3
+<br>
+<ul>
+  <li>Change sponsor link to point to english language page (thanks sm4rk0)</li>
+</ul>
+1.4.2
+<br>
+<ul>
+  <li>Fix crash bug when clicking in the update notification window (thanks cmeriaux)</li>
+</ul>
+1.4.1
+<br>
+<ul>
+  <li>Change URL for plugin list (make HTTPS)</li>
+  <li>Add option to use development plugin list</li>
+  <li>Fix installation issues with recursive copies</li>
+  <li>Improve installation security with gpup</li>
+</ul>
 1.3.5
 <br>
 <ul>
@@ -406,25 +424,13 @@ is just as valid as, and does the same job as
 <hr/>
 <a name="developer"></a>
 <h3>Plugin developers</h3>
-If you're a plugin developer or maintainer, and you don't want your plugin in the list, or you
-want to wait a while until it's stable, then just let me know.  I won't be releasing any updated
-plugins as soon as they are released, only after 
-a few days when any bug reports have had chance to come in - unless there's a very good reason. 
-<br><br>
-There's a web based system for adding or updating your plugin - please use this to update your plugin
+There's a web based system for adding or updating your plugin - please use this to update your plugin. See below for how to register.
 <br><br>
 <h4>How to get your plugin listed</h4>
-Make an announcement on the <a href="http://sourceforge.net/projects/notepad-plus/forums/forum/482781/">
+Make an announcement on the <a href=@https://notepad-plus-plus.org/community/category/5/plugin-development">
 Plugin Development forum</a> of the Notepad++ project.   Then enter your plugin (or update to your plugin) on the administration system.
-Your update will go out with the next batch of updates.
+Your update will go out with the next batch of updates, which is every two weeks on Monday at 20:00UTC.
 
-<br>
-<b>IMPORTANT:</b> If you haven't announced your plugin (or new version)
-on the Plugin development forum, it doesn't go in Plugin Manager. Period.  This is a safety feature, so we don't 
-distribute a random
-binary through Plugin Manager, without first giving people the opportunity to download it themselves, virus check it,
-and, most importantly check it doesn't do anything harmful.
-<br/><br/>Due to pressure of time, updates tend to be bunched up over a few weeks (shorter if there have been a lot of updates).
 This eases the burden on testing, and also means that the XML isn't downloaded by 1-2 million users TOO often 
 (that's nearly 200GB download every time we update).  
 <hr/>
@@ -436,43 +442,23 @@ As of October 2011, there's a new web based system for plugin developers and mai
 Plugin developers and maintainers and welcome to register for an account at <a href="http://www.brotherstone.co.uk/npp/pm/admin">http://www.brotherstone.co.uk/npp/pm/admin</a>
 
 <br/><br/>
-
+<strong>IMPORTANT: Testing</strong>. 
+<br>Once your new plugin or update is listed in the admin system, go to your Notepad++, open Plugin Manager, click 
+settings, and click the option to use the development plugin list. This list is 2-3 minutes behind the admin system, so you
+can test that your updates install pretty much immediately. It also means "early adopters" can try your version out almost
+straight away. If there are any issues installing, fix them in the admin system, wait 2 minutes, and restart Notepad++ to
+redownload the list.  
+<br><br>
+The list is automatically promoted every two weeks on Monday at 20:00UTC.  (Specifically, odd number weeks, under unix "<code>date +%W</code>")
 <br/><br/>
 
-It's obviously important to test that your modifications work, so for that we have a 
-testing version of the Plugin Manager.
 
-<ol>
-<li>Download the testing version of Plugin Manager here:  <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_UNI.zip">Unicode</a> / <a href="http://www.brotherstone.co.uk/npp/pm/PluginManager_TEST_ANSI.zip">ANSI</a></li>
-<li>Add the following lines to your PluginManager.ini (under plugins\Config, or %APPDATA%\notepad++\plugins\config)
-<pre>
-xmlurl=http://www.brotherstone.co.uk/npp/pm/admin/plugins/generate_xml
-md5url=http://www.brotherstone.co.uk/npp/pm/admin/dummy.md5.txt
-</pre>
-</li>
-</ol>
-
-<br/><br/>This version downloads the XML directly from the admin site, and validates the MD5s against the hashes that have been added on the admin site.  Please test your changes.
-
-<br/><br/>This is also a "debug" build, so if something goes wrong, you can step through it. The PDBs are also included in the zip file.
-
-<br/><br/>The current XML file is located <b><a href="http://sourceforge.net/projects/npppluginmgr/files/xml">here</a></b>, if you want to check it out.
-<br/><br/>
 <b>The old git based XML modification system has been discontinued, and we are now exclusively using the web based system</b>
 <hr/>
 
-<a name="planned"></a>
-
-Next steps after 1.0.2, who knows:
-<ul>
-<li>7zip support.  Currently only zip files are supported, but 7zip is smaller, and being able to download the smaller version of plugins is always a plus.  I've moved this from 1.0 as I don't think it's that necessary, just a nice to have.</li>
-<li>A secondary (larger) download version of Plugin Manager that supports SSPI authenticated proxies.</li>
-<li>Rollback to a previously installed version.</li>
-<li>Some form of plugin feedback / rating system</li>
-</ul>
 
 Enjoy, and please let me know what you think, any feedback is gratefully received!  You can either post 
-a comment to the Plugin Development forum, or sometimes find me in #notepad++ on freenode.  
+a comment to the Plugin Development forum, or an issue or pull request on the <a href="https://github.com/bruderstein/nppPluginManager>github project</a>.  
 
 <a name="credit"></a>
 <hr/>
@@ -490,14 +476,8 @@ This has massively reduced the workload for updating the list, and enabled all p
 <h3>Contact</h3>
 Dave Brotherstone
 <br>Email is <img src="email.png" />
-<br>Find me on IRC in <a href="irc://irc.freenode.net/#notepad++">#notepad++</a> on Freenode, davegb3.
+<a href="github.com/bruderstein">github.com/bruderstein</a>
 
-
-	
-		
-		
-		
-		
 		
 		
 		
