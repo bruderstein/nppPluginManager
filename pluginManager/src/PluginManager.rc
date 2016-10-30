@@ -180,7 +180,7 @@ BEGIN
     CONTROL         "",IDC_PLUGINTABCTRL,"SysTabControl32",0x0,5,0,428,206
     LTEXT           "Plugin list hosting generously provided by",IDC_PLUGINLISTHOSTING,102,206,133,8
     LTEXT           "Nexinto Business Cloud",IDC_NEXINTOBUSINESSCLOUD,102,217,75,8
-    CONTROL         "<A HREF=""https://www.nexinto.com/nbc/?utm_source=url&utm_medium=embed&utm_campaign=npp"">https://www.nexinto.com/nbc</A>",IDC_NBCLINK,
+    CONTROL         "<A HREF=""https://www.nexinto.com/en/business-cloud/?utm_source=url&utm_medium=embed&utm_campaign=npp"">https://www.nexinto.com/nbc</A>",IDC_NBCLINK,
                     "SysLink",WS_TABSTOP,102,227,104,8
     CONTROL         "<A HREF=""http://bruderste.in/npp/pm/sponsor/"">Why is this here?</A>",IDC_WHYISTHISHERE,
                     "SysLink",WS_TABSTOP,101,238,59,8

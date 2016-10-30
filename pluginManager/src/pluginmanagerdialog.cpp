@@ -137,7 +137,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 				}
 
 				case IDC_NBCLOGO:
-                    ShellExecute(NULL, L"open", L"https://www.nexinto.com/nbc/?utm_source=npp&utm_content=content", NULL, NULL, SW_SHOW);
+                    ShellExecute(NULL, L"open", L"https://www.nexinto.com/en/business-cloud/?utm_source=logo&utm_medium=embed&utm_campaign=npp", NULL, NULL, SW_SHOW);
                     break;
 			}
 			break;
