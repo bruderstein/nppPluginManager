@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "WcharMbcsConverter.h"
 
 using namespace std;
-using namespace boost;
+using namespace std::placeholders;
 
 
 PluginManagerDialog::PluginManagerDialog()
@@ -56,7 +56,7 @@ void PluginManagerDialog::doDialog()
 	goToCenter();
 }
 
-BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message) 
 	{
@@ -130,7 +130,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
                     CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
                         cancelToken,
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_availableListView, FALSE, cancelToken));
+						std::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_availableListView, FALSE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					
 					break;
@@ -156,7 +156,7 @@ BOOL CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Message, 
 
 
 
-BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message) 
 	{
@@ -234,7 +234,7 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
                     CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
                         cancelToken,
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_updatesListView, TRUE, cancelToken));
+						std::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_updatesListView, TRUE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					
 					
@@ -248,7 +248,7 @@ BOOL CALLBACK PluginManagerDialog::updatesTabDlgProc(HWND hWnd, UINT Message, WP
 }
 
 
-BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message) 
 	{
@@ -334,7 +334,7 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
                     CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
                         cancelToken,
-						boost::bind(&PluginList::startRemove, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, cancelToken));
+						std::bind(&PluginList::startRemove, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					break;
 				}
@@ -344,7 +344,7 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
                     CancelToken cancelToken;
 					ProgressDialog progress(dlg->_hInst, 
                         cancelToken,
-						boost::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, TRUE, cancelToken));
+						std::bind(&PluginList::startInstall, dlg->_pluginList, dlg->_hSelf, _1, &dlg->_installedListView, TRUE, cancelToken));
 					progress.doModal(dlg->_hSelf);
 					break;
 				}
@@ -361,7 +361,7 @@ BOOL CALLBACK PluginManagerDialog::installedTabDlgProc(HWND hWnd, UINT Message, 
 }
 
  
-BOOL CALLBACK PluginManagerDialog::tabWndProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK PluginManagerDialog::tabWndProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message) 
 	{
@@ -417,10 +417,10 @@ void PluginManagerDialog::addBottomComponent(HWND hWnd, WINDOWINFO& wiDlg, UINT 
             positionInfo->width = wiCtl.rcClient.right - wiCtl.rcClient.left;
             positionInfo->bottomOffset = wiDlg.rcClient.bottom - wiCtl.rcClient.top;
             positionInfo->leftOffset = wiCtl.rcClient.left - wiDlg.rcClient.left;
-            _bottomComponents.push_back(boost::shared_ptr<POSITIONINFO>(positionInfo));
+            _bottomComponents.push_back(std::shared_ptr<POSITIONINFO>(positionInfo));
 }
 
-BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK PluginManagerDialog::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message) 
 	{
@@ -433,13 +433,13 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			
 			WINDOWINFO wiDlg;
 			wiDlg.cbSize = sizeof(WINDOWINFO);
-			::GetWindowInfo(hWnd, &wiDlg);
+			::GetWindowInfo(_hSelf, &wiDlg);
 			_leftMargin = wiCtl.rcClient.left - wiDlg.rcClient.left;
 			_rightMargin = wiDlg.rcClient.right - wiCtl.rcClient.right;
 			_topMargin = wiCtl.rcClient.top - wiDlg.rcClient.top;
 			_tabBottomOffset = wiDlg.rcClient.bottom - wiCtl.rcClient.bottom;
-			_hCloseButton = GetDlgItem(hWnd, IDOK);
-			_hSettingsButton = GetDlgItem(hWnd, IDC_SETTINGS);
+			_hCloseButton = GetDlgItem(_hSelf, IDOK);
+			_hSettingsButton = GetDlgItem(_hSelf, IDC_SETTINGS);
 			::GetWindowInfo(_hCloseButton, &wiCtl);
 			_closeButtonRightOffset = wiDlg.rcClient.right - wiCtl.rcClient.left;
 			_closeButtonBottomOffset = wiDlg.rcClient.bottom - wiCtl.rcClient.top;
@@ -448,11 +448,11 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 
 
             // Hosting provided by
-            addBottomComponent(hWnd, wiDlg, IDC_PLUGINLISTHOSTING);
-            addBottomComponent(hWnd, wiDlg, IDC_NBCLINK);
-            addBottomComponent(hWnd, wiDlg, IDC_NEXINTOBUSINESSCLOUD);
-            addBottomComponent(hWnd, wiDlg, IDC_NBCLOGO);
-            addBottomComponent(hWnd, wiDlg, IDC_WHYISTHISHERE);
+            addBottomComponent(_hSelf, wiDlg, IDC_PLUGINLISTHOSTING);
+            addBottomComponent(_hSelf, wiDlg, IDC_NBCLINK);
+            addBottomComponent(_hSelf, wiDlg, IDC_NEXINTOBUSINESSCLOUD);
+            addBottomComponent(_hSelf, wiDlg, IDC_NBCLOGO);
+            addBottomComponent(_hSelf, wiDlg, IDC_WHYISTHISHERE);
 
 			_downloadThread = _beginthread(downloadAndPopulate, 0, this);
 
@@ -514,8 +514,8 @@ BOOL CALLBACK PluginManagerDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			case NM_CLICK:
 			case NM_RETURN:
 				HWND hwndFrom = ((LPNMHDR)lParam)->hwndFrom;
-				if (hwndFrom == GetDlgItem(hWnd, IDC_NBCLINK)
-					|| hwndFrom == GetDlgItem(hWnd, IDC_WHYISTHISHERE))
+				if (hwndFrom == GetDlgItem(_hSelf, IDC_NBCLINK)
+					|| hwndFrom == GetDlgItem(_hSelf, IDC_WHYISTHISHERE))
 				{
 					PNMLINK pNMLink = (PNMLINK)lParam;
 					LITEM   item    = pNMLink->item;
@@ -638,7 +638,7 @@ void PluginManagerDialog::sizeWindow(int width, int height)
 
     
     // Move the sponsor message 
-    for(std::list<boost::shared_ptr<POSITIONINFO>>::iterator it = _bottomComponents.begin(); it != _bottomComponents.end(); it++) {
+    for(std::list<std::shared_ptr<POSITIONINFO>>::iterator it = _bottomComponents.begin(); it != _bottomComponents.end(); it++) {
 		::MoveWindow((*it)->handle, (*it)->leftOffset, height - (*it)->bottomOffset, (*it)->width, (*it)->height, FALSE);
 	}
 	::InvalidateRect(_hSelf, NULL, TRUE);

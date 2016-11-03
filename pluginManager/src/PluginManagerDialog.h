@@ -37,10 +37,10 @@ public:
         
     };
 
-	static BOOL CALLBACK tabWndProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK availableTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK updatesTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
-	static BOOL CALLBACK installedTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+	static INT_PTR CALLBACK tabWndProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+	static INT_PTR CALLBACK availableTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+	static INT_PTR CALLBACK updatesTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
+	static INT_PTR CALLBACK installedTabDlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
 	void setStatus(const TCHAR* status);
 	void setStepProgress(const int percentageComplete);
@@ -49,7 +49,7 @@ public:
 	void refreshLists();
 
 protected :
-	virtual BOOL CALLBACK run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam);
 	
 private:
 	/* Handles */
@@ -114,7 +114,7 @@ private:
 
     BOOL _isDownloading;
     uintptr_t _downloadThread;
-    std::list<boost::shared_ptr<POSITIONINFO>> _bottomComponents;
+    std::list<std::shared_ptr<POSITIONINFO>> _bottomComponents;
 
 
 	/* Private methods */

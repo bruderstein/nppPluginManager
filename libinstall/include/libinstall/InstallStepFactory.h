@@ -32,7 +32,7 @@ class InstallStepFactory
 public:
 	InstallStepFactory(VariableHandler* handler);
 
-	boost::shared_ptr<InstallStep> create(TiXmlElement* element);
+	std::shared_ptr<InstallStep> create(TiXmlElement* element);
 
 private:
 	VariableHandler* _variableHandler;

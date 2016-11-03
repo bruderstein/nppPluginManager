@@ -17,8 +17,6 @@
 #include <process.h>
 #include <strsafe.h>
 
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
+#include <functional>   // std::bind and std::function
 
 typedef std::basic_string<TCHAR>			tstring;

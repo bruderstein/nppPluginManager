@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "resource.h"
 
 using namespace std;
-using namespace boost;
+using namespace std::placeholders;
 
 void NotifyUpdatesDialog::doDialog()
 {
@@ -70,7 +70,7 @@ BOOL NotifyUpdatesDialog::updatesAvailable()
 }
 
 
-BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK NotifyUpdatesDialog::run_dlgProc(UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	switch (Message) 
 	{
@@ -79,8 +79,8 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			PluginListView::VERSIONCOLUMN columns[2];
 			columns[0] = PluginListView::VERSION_INSTALLED;
 			columns[1] = PluginListView::VERSION_AVAILABLE;
-			_hListView = ::GetDlgItem(hWnd, IDC_LISTUPDATES);
-			_hUpdateDescription = ::GetDlgItem(hWnd, IDC_UPDATEDESC);
+			_hListView = ::GetDlgItem(_hSelf, IDC_LISTUPDATES);
+			_hUpdateDescription = ::GetDlgItem(_hSelf, IDC_UPDATEDESC);
 			_pluginListView.init(_hListView, _hUpdateDescription, 2, columns, true);
 			
 			_pluginListView.setList(_updateList);
@@ -96,7 +96,7 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 			{
 				case IDC_IGNORE:
 					{
-						boost::shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
+						std::shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
 						tstring pluginConfigFilename(_pluginList->getVariableHandler()->getVariable(_T("CONFIGDIR")));
 						pluginConfigFilename.append(_T("\\PluginManager.ini"));
 						
@@ -113,7 +113,7 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
 						_pluginListView.removeSelected();
 
 						if (_pluginListView.empty())
-							::EndDialog(hWnd, 0);
+							::EndDialog(_hSelf, 0);
 
 						return TRUE;
 					}
@@ -123,20 +123,20 @@ BOOL CALLBACK NotifyUpdatesDialog::run_dlgProc(HWND hWnd, UINT Message, WPARAM w
                         CancelToken cancelToken;
 						ProgressDialog progress(_hInst, 
                             cancelToken,
-							boost::bind(&PluginList::startInstall, _pluginList, _nppData._nppHandle, _1, &_pluginListView, TRUE, cancelToken));
+							std::bind(&PluginList::startInstall, _pluginList, _nppData._nppHandle, _1, &_pluginListView, TRUE, cancelToken));
 						progress.doModal(_hSelf);
 						
 						_pluginListView.removeSelected();
 
 						if (_pluginListView.empty())
-							::EndDialog(hWnd, 0);
+							::EndDialog(_hSelf, 0);
 
 						_pluginListView.selectAll();
 
 						return TRUE;
 					}
 				case IDCANCEL :
-					::EndDialog(hWnd, 0);
+					::EndDialog(_hSelf, 0);
 					return TRUE;
 
 				default :

@@ -23,9 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/CancelToken.h"
 
 
-using namespace boost;
 
-ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, function<void(ProgressDialog*)> startFunction)
+ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, std::function<void(ProgressDialog*)> startFunction)
     : _hInst(hInst),
       _startFunction(startFunction),
       _hSelf(0),
@@ -36,7 +35,7 @@ ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, functio
 
 
 
-BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wParam*/, LPARAM /*lParam*/)
+INT_PTR CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	switch(message)
 	{
@@ -58,7 +57,7 @@ BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wPara
 	return FALSE;
 }
 
-BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
 	{
