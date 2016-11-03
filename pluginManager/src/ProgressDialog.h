@@ -19,8 +19,8 @@ public:
     void close();
 
     /* Dialog procedures */
-    static BOOL CALLBACK dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-    BOOL CALLBACK runDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    static INT_PTR CALLBACK dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    INT_PTR CALLBACK runDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
     int			_numberOfSteps;

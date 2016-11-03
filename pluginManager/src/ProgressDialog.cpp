@@ -36,7 +36,7 @@ ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, functio
 
 
 
-BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wParam*/, LPARAM /*lParam*/)
+INT_PTR CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	switch(message)
 	{
@@ -58,7 +58,7 @@ BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wPara
 	return FALSE;
 }
 
-BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
 	{
