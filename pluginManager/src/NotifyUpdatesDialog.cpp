@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "resource.h"
 
 using namespace std;
-using namespace boost;
+using namespace std::placeholders;
 
 void NotifyUpdatesDialog::doDialog()
 {
@@ -96,7 +96,7 @@ INT_PTR CALLBACK NotifyUpdatesDialog::run_dlgProc(UINT Message, WPARAM wParam, L
 			{
 				case IDC_IGNORE:
 					{
-						boost::shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
+						std::shared_ptr<list<Plugin*> > selectedPlugins = _pluginListView.getSelectedPlugins();
 						tstring pluginConfigFilename(_pluginList->getVariableHandler()->getVariable(_T("CONFIGDIR")));
 						pluginConfigFilename.append(_T("\\PluginManager.ini"));
 						
@@ -123,7 +123,7 @@ INT_PTR CALLBACK NotifyUpdatesDialog::run_dlgProc(UINT Message, WPARAM wParam, L
                         CancelToken cancelToken;
 						ProgressDialog progress(_hInst, 
                             cancelToken,
-							boost::bind(&PluginList::startInstall, _pluginList, _nppData._nppHandle, _1, &_pluginListView, TRUE, cancelToken));
+							std::bind(&PluginList::startInstall, _pluginList, _nppData._nppHandle, _1, &_pluginListView, TRUE, cancelToken));
 						progress.doModal(_hSelf);
 						
 						_pluginListView.removeSelected();

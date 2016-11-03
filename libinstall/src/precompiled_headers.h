@@ -26,14 +26,8 @@
 typedef std::basic_string<TCHAR>			tstring;
 
 
+#include <functional> // std::bind and std::function
 
-#pragma warning (push)
-#pragma warning (disable : 4512) // assignment operator could not be generated
-#include <boost/bind.hpp>
-#pragma warning (pop)
-
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <sstream>
 
