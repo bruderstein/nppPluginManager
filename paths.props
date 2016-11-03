@@ -4,8 +4,8 @@
   
   <PropertyGroup Label="UserMacros">
 	<ZlibPath>$(SolutionDir)\submodule\zlib</ZlibPath>
-	<TestNotepadPlusPlusUnicode>E:\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
-	<TestNotepadPlusPlusAnsi>e:\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
+	<TestNotepadPlusPlusUnicode>$(SolutionDir)\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
+	<TestNotepadPlusPlusAnsi>$(SolutionDir)\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ANSI-Debug' Or '$(Configuration)' == 'Debug-xml-test' Or '$(Configuration)' == 'ANSI-Debug-xml-test'">
