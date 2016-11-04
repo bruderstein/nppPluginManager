@@ -3,7 +3,9 @@
   <ImportGroup Label="PropertySheets" />
 
   <PropertyGroup Label="UserMacros">
-	<TestNotepadPlusPlusUnicode>$(SolutionDir)\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
-	<TestNotepadPlusPlusAnsi>$(SolutionDir)\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
+    <TestNotepadPlusPlusUnicode Condition=" '$(APPVEYOR)' == '' ">E:\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
+    <TestNotepadPlusPlusAnsi Condition=" '$(APPVEYOR)' == '' ">E:\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
+    <TestNotepadPlusPlusUnicode Condition=" '$(APPVEYOR)' != '' ">$(SolutionDir)\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
+    <TestNotepadPlusPlusAnsi Condition=" '$(APPVEYOR)' != '' ">$(SolutionDir)\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
   </PropertyGroup>
 </Project>

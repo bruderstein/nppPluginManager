@@ -122,7 +122,7 @@
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(ZlibPath)\..\x86\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -154,7 +154,7 @@ copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;Wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(ZlibPath)\..\x86\ZlibStatReleaseWithoutAsm\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;Wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatReleaseWithoutAsm\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -182,7 +182,7 @@ copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(ZlibPath)\..\x86\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
