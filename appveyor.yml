@@ -50,5 +50,6 @@ build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - mkdir NotepadTest\unicode\plugins
     - mkdir NotepadTest\unicode\updater
+    - rename paths.props.appveyor paths.props
     - msbuild PluginManager.sln /m /p:configuration="%configuration%" /p:platform="%platform%" /p:PlatformToolset="%PlatformToolset%"
 
