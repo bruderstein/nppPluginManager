@@ -24,7 +24,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Bitmap
 //
 
-IDB_BITMAP1             BITMAP                  "D:\\work\\npp\\PluginManager\\pluginManager\\res\\nbc_logo.bmp"
+IDB_BITMAP1             BITMAP                  "..\\res\\nbc_logo.bmp"
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

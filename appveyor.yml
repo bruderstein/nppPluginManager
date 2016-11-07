@@ -19,6 +19,7 @@ configuration:
     - Debug
 
 install:
+    - git submodule -q update --init
     - if "%platform%"=="x64" set archi=amd64
     - if "%platform%"=="Win32" set archi=x86
     - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %archi%
@@ -47,7 +48,8 @@ before_build:
 
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
-    - mkdir unicodeAppDataPlugins\plugins
-    - mkdir unicodeAppDataPlugins\updater
+    - mkdir NotepadTest\unicode\plugins
+    - mkdir NotepadTest\unicode\updater
+    - copy paths.props.appveyor paths.props
     - msbuild PluginManager.sln /m /p:configuration="%configuration%" /p:platform="%platform%" /p:PlatformToolset="%PlatformToolset%"
 
