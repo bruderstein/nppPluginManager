@@ -85,6 +85,7 @@ void doPluginManagerDlg(void);
 
 extern HANDLE g_hModule;
 extern BOOL   g_isUnicode;
+extern BOOL   g_isX64;
 extern winVer g_winVer;
 
 enum INSTALLLOCATION

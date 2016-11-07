@@ -197,11 +197,23 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 
 				if (g_isUnicode)
 				{
-					TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("unicodeVersion"));
-					if (versionUrlElement && versionUrlElement->FirstChild())
+					if (g_isX64)
 					{
-						plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
-						available = TRUE;
+						TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("unicodeX64Version"));
+						if (versionUrlElement && versionUrlElement->FirstChild())
+						{
+							plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
+							available = TRUE;
+						}
+					}
+					else
+					{
+						TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("unicodeVersion"));
+						if (versionUrlElement && versionUrlElement->FirstChild())
+						{
+							plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
+							available = TRUE;
+						}
 					}
 				}
 				else 
@@ -383,9 +395,13 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 	{
 		// If it is a unicode tag, then only process the contents if it's a unicode N++
 		// or if it's an ansi tag, then only process the contents if it's an ansi N++
-		if ((g_isUnicode 
-			&& !_tcscmp(installStepElement->Value(), _T("unicode")) 
+		if ((g_isUnicode && g_isX64
+			&& !_tcscmp(installStepElement->Value(), _T("unicodeX64")) 
 			&& installStepElement->FirstChild())
+			||
+			(g_isUnicode
+				&& !_tcscmp(installStepElement->Value(), _T("unicode"))
+				&& installStepElement->FirstChild())
 			||
 			(!g_isUnicode
 			&& !_tcscmp(installStepElement->Value(), _T("ansi")) 
