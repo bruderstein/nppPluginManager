@@ -17,6 +17,7 @@ platform:
 configuration:
     - Release
     - Debug
+    - Debug-xml-test
 
 install:
     - git submodule -q update --init
