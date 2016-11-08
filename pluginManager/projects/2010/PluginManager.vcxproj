@@ -202,9 +202,9 @@ copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <ImportLibrary>$(OutDir)PluginManager.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusUnicode)\plugins
-copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"
-copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusX64)\plugins
+copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\plugins"
+copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusX64)\plugins"</Command>
     </PostBuildEvent>
     <Manifest>
       <OutputManifestFile>$(IntDir)pluginamanger.manifest</OutputManifestFile>
@@ -324,8 +324,8 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <ImportLibrary>$(OutDir)PluginManager.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusUnicode)\plugins
-copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusX64)\plugins
+copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\plugins"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
