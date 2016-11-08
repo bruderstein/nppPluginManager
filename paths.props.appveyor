@@ -4,6 +4,7 @@
 
   <PropertyGroup Label="UserMacros">
     <TestNotepadPlusPlusUnicode>$(SolutionDir)\NotepadTest\unicode</TestNotepadPlusPlusUnicode>
+    <TestNotepadPlusPlusX64>$(SolutionDir)\NotepadTest\x64</TestNotepadPlusPlusX64>
     <TestNotepadPlusPlusAnsi>$(SolutionDir)\NotepadTest\ansi</TestNotepadPlusPlusAnsi>
   </PropertyGroup>
 </Project>
