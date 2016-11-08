@@ -10,8 +10,9 @@
 #include <sstream>
 
 
-
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <shellapi.h>
 #include <shlwapi.h>
 #include <commctrl.h>
 #include <process.h>
