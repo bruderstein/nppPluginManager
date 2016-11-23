@@ -4,6 +4,7 @@
 
   <PropertyGroup Label="UserMacros">
     <TestNotepadPlusPlusUnicode>c:\path\to\your\test\notepad++\unicode</TestNotepadPlusPlusUnicode>
+    <TestNotepadPlusPlusX64>c:\path\to\your\test\notepad++\x64</TestNotepadPlusPlusX64>
     <TestNotepadPlusPlusAnsi>c:\path\to\your\test\notepad++\ansi</TestNotepadPlusPlusAnsi>
   </PropertyGroup>
 </Project>

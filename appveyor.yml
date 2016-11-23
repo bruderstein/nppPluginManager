@@ -11,12 +11,13 @@ environment:
   - PlatformToolset: v120_xp
 
 platform:
-    #- x64
+    - x64
     - Win32
 
 configuration:
     - Release
     - Debug
+    - Debug-xml-test
 
 install:
     - git submodule -q update --init
@@ -50,6 +51,8 @@ build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - mkdir NotepadTest\unicode\plugins
     - mkdir NotepadTest\unicode\updater
+    - mkdir NotepadTest\x64\plugins
+    - mkdir NotepadTest\x64\updater
     - copy paths.props.appveyor paths.props
     - msbuild PluginManager.sln /m /p:configuration="%configuration%" /p:platform="%platform%" /p:PlatformToolset="%PlatformToolset%"
 
