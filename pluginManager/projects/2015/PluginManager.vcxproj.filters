@@ -123,7 +123,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\res\nbc_logo.png" />
     <Image Include="..\..\res\nbc_logo.bmp">
       <Filter>Resource Files</Filter>
     </Image>
