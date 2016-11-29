@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.4.3.{build}
 image: Visual Studio 2015
 
 
@@ -56,3 +56,15 @@ build_script:
     - copy paths.props.appveyor paths.props
     - msbuild PluginManager.sln /m /p:configuration="%configuration%" /p:platform="%platform%" /p:PlatformToolset="%PlatformToolset%"
 
+after_build:
+    - cd "%APPVEYOR_BUILD_FOLDER%"
+    - ps: >-
+        if ($env:PLATFORM -eq "x64" -and $env:CONFIGURATION -eq "Release") {
+            Push-AppveyorArtifact "pluginManager\bin\x64\Release\PluginManager.dll" -FileName "PluginManager.dll"
+            Push-AppveyorArtifact "gpup\bin\x64\Release\gpup.exe" -FileName "gpup.exe"
+        }
+
+        if ($env:PLATFORM -eq "Win32" -and $env:CONFIGURATION -eq "Release") {
+            Push-AppveyorArtifact "pluginManager\bin\Release\PluginManager.dll" -FileName "PluginManager.dll"
+            Push-AppveyorArtifact "gpup\bin\Release\gpup.exe" -FileName "gpup.exe"
+        }
