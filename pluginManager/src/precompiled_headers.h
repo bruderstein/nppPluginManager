@@ -10,15 +10,14 @@
 #include <sstream>
 
 
-
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <shellapi.h>
 #include <shlwapi.h>
 #include <commctrl.h>
 #include <process.h>
 #include <strsafe.h>
 
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
+#include <functional>   // std::bind and std::function
 
 typedef std::basic_string<TCHAR>			tstring;

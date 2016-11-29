@@ -23,9 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/CancelToken.h"
 
 
-using namespace boost;
 
-ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, function<void(ProgressDialog*)> startFunction)
+ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, std::function<void(ProgressDialog*)> startFunction)
     : _hInst(hInst),
       _startFunction(startFunction),
       _hSelf(0),
@@ -36,7 +35,7 @@ ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, functio
 
 
 
-BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wParam*/, LPARAM /*lParam*/)
+INT_PTR CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	switch(message)
 	{
@@ -58,13 +57,13 @@ BOOL CALLBACK ProgressDialog::runDlgProc(HWND hWnd, UINT message, WPARAM /*wPara
 	return FALSE;
 }
 
-BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
 	{
 		case WM_INITDIALOG:
 		{
-			::SetWindowLongPtr(hWnd, GWL_USERDATA, lParam);
+			::SetWindowLongPtr(hWnd, GWLP_USERDATA, lParam);
 			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(lParam);
 			return dlg->runDlgProc(hWnd, message, wParam, lParam);
 		}
@@ -74,7 +73,7 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
                 if (IDCANCEL == wParam) {
                     int mbResult = MessageBox(hWnd, _T("Are you sure you wish to abort the current installation/removal?"), _T("Cancel installation / removal?"), MB_YESNO | MB_ICONQUESTION);
                     if (IDYES == mbResult) {
-			            ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			            ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
                         dlg->_cancelToken.triggerCancel();
                     }
                 }
@@ -82,7 +81,7 @@ BOOL CALLBACK ProgressDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LP
             }
 		default:
 		{
-			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			ProgressDialog* dlg = reinterpret_cast<ProgressDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 			return dlg->runDlgProc(hWnd, message, wParam, lParam);
 		}
 	}

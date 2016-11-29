@@ -51,6 +51,12 @@ BOOL				g_isUnicode			= TRUE;
 BOOL				g_isUnicode			= FALSE;
 #endif
 
+#ifdef _WIN64
+BOOL				g_isX64 = TRUE;
+#else
+BOOL				g_isX64 = FALSE;
+#endif
+
 Options				g_options;
 SettingsDialog		g_settingsDlg;
 PluginList          *g_pluginList       = NULL;

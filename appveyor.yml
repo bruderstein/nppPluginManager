@@ -1,0 +1,58 @@
+version: 1.0.{build}
+image: Visual Studio 2015
+
+
+clone_depth: 1
+
+
+environment:
+  matrix:
+  - PlatformToolset: v140_xp
+  - PlatformToolset: v120_xp
+
+platform:
+    - x64
+    - Win32
+
+configuration:
+    - Release
+    - Debug
+    - Debug-xml-test
+
+install:
+    - git submodule -q update --init
+    - if "%platform%"=="x64" set archi=amd64
+    - if "%platform%"=="Win32" set archi=x86
+    - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %archi%
+
+build:
+    parallel: true                  # enable MSBuild parallel builds
+    verbosity: minimal
+
+before_build:
+- ps: |
+    Write-Output "Configuration: $env:CONFIGURATION"
+    Write-Output "Platform: $env:PLATFORM"
+    $generator = switch ($env:PLATFORMTOOLSET)
+    {
+        "v140" {"Visual Studio 14 2015"}
+        "v140_xp" {"Visual Studio 14 2015"}
+        "v120" {"Visual Studio 12 2013"}
+        "v120_xp" {"Visual Studio 12 2013"}
+    }
+    if ($env:PLATFORM -eq "x64")
+    {
+        $generator = "$generator Win64"
+    }
+    
+
+
+build_script:
+    - cd "%APPVEYOR_BUILD_FOLDER%"
+    - mkdir NotepadTest\unicode\plugins
+    - mkdir NotepadTest\unicode\updater
+    - mkdir NotepadTest\x64\plugins
+    - mkdir NotepadTest\x64\updater
+    - copy paths.props.appveyor paths.props
+    - msbuild PluginManager.sln /m /p:configuration="%configuration%" /p:platform="%platform%" /p:PlatformToolset="%PlatformToolset%"
+

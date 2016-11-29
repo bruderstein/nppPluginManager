@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _FILEBUFFER_H
 
 #define FILEBUFFER_EOF	  CHAR_MAX
-using namespace std;
 
 class FileBuffer
 {
@@ -34,8 +33,8 @@ public:
 	char getCharAt(size_t position);
 
 private:
-	ifstream _file;
-	boost::shared_ptr<char> _buffer;
+	std::ifstream _file;
+	std::shared_ptr<char> _buffer;
 
 	size_t _currentBufferStart;
 	size_t _bufferLength;

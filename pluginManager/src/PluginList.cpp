@@ -36,6 +36,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 using namespace std;
+using namespace std::placeholders;
 
 typedef BOOL (__cdecl * PFUNCISUNICODE)();
 
@@ -196,11 +197,23 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 
 				if (g_isUnicode)
 				{
-					TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("unicodeVersion"));
-					if (versionUrlElement && versionUrlElement->FirstChild())
+					if (g_isX64)
 					{
-						plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
-						available = TRUE;
+						TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("x64Version"));
+						if (versionUrlElement && versionUrlElement->FirstChild())
+						{
+							plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
+							available = TRUE;
+						}
+					}
+					else
+					{
+						TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("unicodeVersion"));
+						if (versionUrlElement && versionUrlElement->FirstChild())
+						{
+							plugin->setVersion(PluginVersion(versionUrlElement->FirstChild()->Value()));
+							available = TRUE;
+						}
 					}
 				}
 				else 
@@ -380,11 +393,16 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 
 	while (installStepElement)
 	{
-		// If it is a unicode tag, then only process the contents if it's a unicode N++
+		// If it is a unicode tag and build for x64, then only process the contents if it's a x64 N++, which is just available for unicode
+		// or if it's an unicode tag and build for x86, then only process the contents if it's an unicode N++
 		// or if it's an ansi tag, then only process the contents if it's an ansi N++
-		if ((g_isUnicode 
-			&& !_tcscmp(installStepElement->Value(), _T("unicode")) 
+		if ((g_isUnicode && g_isX64
+			&& !_tcscmp(installStepElement->Value(), _T("x64")) 
 			&& installStepElement->FirstChild())
+			||
+			(g_isUnicode
+				&& !_tcscmp(installStepElement->Value(), _T("unicode"))
+				&& installStepElement->FirstChild())
 			||
 			(!g_isUnicode
 			&& !_tcscmp(installStepElement->Value(), _T("ansi")) 
@@ -395,7 +413,7 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 		else 
 		{
 
-			boost::shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement);
+			std::shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement);
 			if (installStep.get()) 
 			{
 				if (INSTALL == ior)
@@ -792,10 +810,10 @@ BOOL PluginList::isInstallOrUpgrade(const tstring& name)
 
 
 
-boost::shared_ptr< list<tstring> > PluginList::calculateDependencies(boost::shared_ptr< list<Plugin*> > selectedPlugins)
+std::shared_ptr< list<tstring> > PluginList::calculateDependencies(std::shared_ptr< list<Plugin*> > selectedPlugins)
 {
 	set<tstring> toBeInstalled;
-	boost::shared_ptr< list<tstring> > installDueToDepends(new list<tstring>);
+	std::shared_ptr< list<tstring> > installDueToDepends(new list<tstring>);
 
 
 	// First add all selected plugins to a name map
@@ -889,7 +907,7 @@ void PluginList::downloadList()
 	BOOL downloadResult = downloadManager.getUrl(md5Url, serverMD5, &g_options.moduleInfo);
 #endif
 
-	boost::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
+	std::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
 
 	
 	if (downloadResult && serverMD5 != cHashBuffer.get())
@@ -1008,7 +1026,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	// or, the URL for the XML may have changed
 
 	g_options.moduleInfo.setHParent(hMessageBoxParent);
-	boost::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+	std::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 
 	if (selectedPlugins.get() == NULL)
 	{
@@ -1070,7 +1088,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	
 	
 
-	boost::shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
+	std::shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
 		
 	if (!installDueToDepends->empty())
 	{
@@ -1210,9 +1228,9 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		}
 
 		InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
-			boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
-			boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
-			boost::bind(&ProgressDialog::stepComplete, progressDialog),
+			std::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
+			std::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
+			std::bind(&ProgressDialog::stepComplete, progressDialog),
 			&g_options.moduleInfo, 
             _variableHandler,
             cancelToken);
@@ -1312,7 +1330,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str());
 	TiXmlElement*  installElement = forGpupDoc->FirstChildElement(_T("install"));
 
-	boost::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
+	std::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
 		
 
 	if (selectedPlugins.get() == NULL)
@@ -1346,9 +1364,9 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 		}
 		
 		(*pluginIter)->remove(removeBasePath, installElement, 
-					boost::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
-					boost::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
-					boost::bind(&ProgressDialog::stepComplete, progressDialog),
+					std::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
+					std::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
+					std::bind(&ProgressDialog::stepComplete, progressDialog),
 					&g_options.moduleInfo, 
                     _variableHandler,
                     cancelToken);

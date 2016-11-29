@@ -44,6 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif
 
 // Windows Header Files:
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commctrl.h>
 #include <ShellAPI.h>
@@ -57,5 +58,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <list>
 
 #include <map>
-#include <boost/shared_ptr.hpp>
+
+#include <functional> // std::bind and std::function
+#include <memory> //std::shared_ptr
 

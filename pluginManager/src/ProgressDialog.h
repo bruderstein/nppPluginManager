@@ -6,7 +6,7 @@
 class ProgressDialog
 {
 public:
-    ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, boost::function<void(ProgressDialog*)> startFunction);
+    ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, std::function<void(ProgressDialog*)> startFunction);
     ~ProgressDialog() {};
 
     void doModal(HWND parent);
@@ -19,8 +19,8 @@ public:
     void close();
 
     /* Dialog procedures */
-    static BOOL CALLBACK dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-    BOOL CALLBACK runDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    static INT_PTR CALLBACK dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    INT_PTR CALLBACK runDlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
     int			_numberOfSteps;
@@ -34,7 +34,7 @@ private:
     HINSTANCE	_hInst;
     CancelToken _cancelToken;
 
-    boost::function<void(ProgressDialog*)> _startFunction;
+    std::function<void(ProgressDialog*)> _startFunction;
 
 
     void goToCenter();

@@ -57,7 +57,7 @@ public:
 /* Checks dependencies on a list of plugins
  *  Any dependencies are added to the list, and a list of names of plugins added is returned
  */
-	boost::shared_ptr< std::list<tstring> > calculateDependencies(boost::shared_ptr< std::list<Plugin*> > selectedPlugins);
+	std::shared_ptr< std::list<tstring> > calculateDependencies(std::shared_ptr< std::list<Plugin*> > selectedPlugins);
 
 	/* Installs or updates given list of plugins, and also includes dependencies 
 	 * Warns user with messageboxes about intended actions

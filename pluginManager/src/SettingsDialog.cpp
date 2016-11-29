@@ -29,17 +29,17 @@ void SettingsDialog::doModal(NppData *nppData, HWND parent)
 	::DialogBoxParam((HINSTANCE)g_hModule, MAKEINTRESOURCE(IDD_CONFIGDIALOG), parent, SettingsDialog::dlgProc, reinterpret_cast<LPARAM>(this));
 }
 
-BOOL SettingsDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+INT_PTR SettingsDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch(message)
 	{
 		case WM_INITDIALOG:
-			::SetWindowLongPtr(hWnd, GWL_USERDATA, lParam);
+			::SetWindowLongPtr(hWnd, GWLP_USERDATA, lParam);
 			return reinterpret_cast<SettingsDialog*>(lParam)->run_dlgProc(hWnd, message, wParam, lParam);
 
 		default:
 		{
-			SettingsDialog* dlg = reinterpret_cast<SettingsDialog*>(::GetWindowLongPtr(hWnd, GWL_USERDATA));
+			SettingsDialog* dlg = reinterpret_cast<SettingsDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
 			if (dlg)
 				return dlg->run_dlgProc(hWnd, message, wParam, lParam);
 			else
@@ -52,7 +52,7 @@ BOOL SettingsDialog::dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 
 
 
-BOOL SettingsDialog::run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM /*lParam*/)
+INT_PTR SettingsDialog::run_dlgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM /*lParam*/)
 {
 	switch(message)
 	{
