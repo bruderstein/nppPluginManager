@@ -154,10 +154,6 @@
     <Manifest>
       <AdditionalManifestFiles>%(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusUnicode)\updater
 copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
@@ -185,10 +181,6 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
     <Manifest>
       <AdditionalManifestFiles>%(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
     <PostBuildEvent>
       <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusX64)\updater
 copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\updater"</Command>
@@ -214,6 +206,10 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\updater"</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusUnicode)\updater
+copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -234,6 +230,10 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\updater"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
+    <PostBuildEvent>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusX64)\updater
+copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\updater"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-xml-test|Win32'">
     <ClCompile>

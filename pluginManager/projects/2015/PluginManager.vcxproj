@@ -235,6 +235,10 @@ copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusX64)\plugins"</Command>
       <ImportLibrary>$(OutDir)PluginManager.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
+    <PostBuildEvent>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusUnicode)\plugins
+copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -260,6 +264,10 @@ copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusX64)\plugins"</Command>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)PluginManager.lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>echo Copying $(TargetPath) to $(TestNotepadPlusPlusX64)\plugins
+copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\plugins"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-xml-test|Win32'">
     <ClCompile>

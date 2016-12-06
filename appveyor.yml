@@ -60,11 +60,28 @@ after_build:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - ps: >-
         if ($env:PLATFORM -eq "x64" -and $env:CONFIGURATION -eq "Release") {
-            Push-AppveyorArtifact "pluginManager\bin\x64\Release\PluginManager.dll" -FileName "PluginManager.dll"
-            Push-AppveyorArtifact "gpup\bin\x64\Release\gpup.exe" -FileName "gpup.exe"
+            $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_x64.zip"
+            7z a $PluginManagerZipFileName .\NotepadTest\x64\*
         }
 
         if ($env:PLATFORM -eq "Win32" -and $env:CONFIGURATION -eq "Release") {
-            Push-AppveyorArtifact "pluginManager\bin\Release\PluginManager.dll" -FileName "PluginManager.dll"
-            Push-AppveyorArtifact "gpup\bin\Release\gpup.exe" -FileName "gpup.exe"
+            $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_UNI.zip"
+            7z a $PluginManagerZipFileName .\NotepadTest\unicode\*
         }
+
+artifacts:
+  - path: PluginManager_*.zip
+    name: releases
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: <your encrypted token> # your encrypted token from GitHub
+  artifact: /.PluginManager_*\.zip/ # upload all zip packages to release assets
+  draft: false
+  prerelease: false
+  on:
+    branch: master                 # release from master branch only
+    appveyor_repo_tag: true        # deploy on tag push only
+
+
