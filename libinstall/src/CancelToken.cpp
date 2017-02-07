@@ -28,7 +28,6 @@ CancelToken& CancelToken::operator=(CancelToken& other)
 
 CancelToken::~CancelToken() 
 {
-    printf("destructing %d\n", *m_refCount);
     (*m_refCount)--;
     if (0 == *m_refCount) {
         ::CloseHandle(m_token);
