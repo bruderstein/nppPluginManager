@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.4.3.{build}
 image: Visual Studio 2015
 
 
@@ -55,4 +55,33 @@ build_script:
     - mkdir NotepadTest\x64\updater
     - copy paths.props.appveyor paths.props
     - msbuild PluginManager.sln /m /p:configuration="%configuration%" /p:platform="%platform%" /p:PlatformToolset="%PlatformToolset%"
+
+after_build:
+    - cd "%APPVEYOR_BUILD_FOLDER%"
+    - ps: >-
+        if ($env:PLATFORM -eq "x64" -and $env:CONFIGURATION -eq "Release") {
+            $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_x64.zip"
+            7z a $PluginManagerZipFileName .\NotepadTest\x64\*
+        }
+
+        if ($env:PLATFORM -eq "Win32" -and $env:CONFIGURATION -eq "Release") {
+            $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_UNI.zip"
+            7z a $PluginManagerZipFileName .\NotepadTest\unicode\*
+        }
+
+artifacts:
+  - path: PluginManager_*.zip
+    name: releases
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: <your encrypted token> # your encrypted token from GitHub
+  artifact: /.PluginManager_*\.zip/ # upload all zip packages to release assets
+  draft: false
+  prerelease: false
+  on:
+    branch: master                 # release from master branch only
+    appveyor_repo_tag: true        # deploy on tag push only
+
 

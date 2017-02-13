@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginManager", "pluginManager\projects\2010\PluginManager.vcxproj", "{0A9F9D63-C282-4AE8-9F80-A6D5F541AD12}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginManager", "pluginManager\projects\2015\PluginManager.vcxproj", "{0A9F9D63-C282-4AE8-9F80-A6D5F541AD12}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C83E2A6F-9747-4855-9D61-A88359450ED6} = {C83E2A6F-9747-4855-9D61-A88359450ED6}
 		{F8F0B077-8778-4CB9-9B54-EC67A3D2C750} = {F8F0B077-8778-4CB9-9B54-EC67A3D2C750}
@@ -10,23 +10,23 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginManager", "pluginMana
 		{69CC76EB-0183-4622-929C-02E860A66A23} = {69CC76EB-0183-4622-929C-02E860A66A23}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libinstall", "libinstall\projects\2010\libinstall.vcxproj", "{F8F0B077-8778-4CB9-9B54-EC67A3D2C750}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libinstall", "libinstall\projects\2015\libinstall.vcxproj", "{F8F0B077-8778-4CB9-9B54-EC67A3D2C750}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C83E2A6F-9747-4855-9D61-A88359450ED6} = {C83E2A6F-9747-4855-9D61-A88359450ED6}
 		{E3DCABE9-3953-4A81-8B71-DEF9AD21753B} = {E3DCABE9-3953-4A81-8B71-DEF9AD21753B}
 		{69CC76EB-0183-4622-929C-02E860A66A23} = {69CC76EB-0183-4622-929C-02E860A66A23}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TinyXml", "TinyXml\projects\2010\TinyXml.vcxproj", "{C83E2A6F-9747-4855-9D61-A88359450ED6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TinyXml", "TinyXml\projects\2015\TinyXml.vcxproj", "{C83E2A6F-9747-4855-9D61-A88359450ED6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unzip", "unzip\projects\2010\unzip.vcxproj", "{E3DCABE9-3953-4A81-8B71-DEF9AD21753B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unzip", "unzip\projects\2015\unzip.vcxproj", "{E3DCABE9-3953-4A81-8B71-DEF9AD21753B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{745DEC58-EBB3-47A9-A9B8-4C6627C01BF8} = {745DEC58-EBB3-47A9-A9B8-4C6627C01BF8}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NppPlugin", "NppPlugin\projects\2010\NppPlugin.vcxproj", "{69CC76EB-0183-4622-929C-02E860A66A23}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NppPlugin", "NppPlugin\projects\2015\NppPlugin.vcxproj", "{69CC76EB-0183-4622-929C-02E860A66A23}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpup", "gpup\projects\2010\gpup.vcxproj", "{182656A0-B2AE-4955-9A2D-D8705FA52B27}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gpup", "gpup\projects\2015\gpup.vcxproj", "{182656A0-B2AE-4955-9A2D-D8705FA52B27}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C83E2A6F-9747-4855-9D61-A88359450ED6} = {C83E2A6F-9747-4855-9D61-A88359450ED6}
 		{F8F0B077-8778-4CB9-9B54-EC67A3D2C750} = {F8F0B077-8778-4CB9-9B54-EC67A3D2C750}
