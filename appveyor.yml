@@ -1,4 +1,4 @@
-version: 1.0.{build}
+version: 1.4.3.{build}
 image: Visual Studio 2015
 
 
@@ -44,7 +44,6 @@ before_build:
     {
         $generator = "$generator Win64"
     }
-    
 
 
 build_script:
@@ -55,4 +54,36 @@ build_script:
     - mkdir NotepadTest\x64\updater
     - copy paths.props.appveyor paths.props
     - msbuild PluginManager.sln /m /p:configuration="%configuration%" /p:platform="%platform%" /p:PlatformToolset="%PlatformToolset%"
+
+after_build:
+    - cd "%APPVEYOR_BUILD_FOLDER%"
+    - ps: >-
+        if ($($env:APPVEYOR_REPO_TAG) -eq "true" -and $env:CONFIGURATION -eq "Release" -and $env:PLATFORMTOOLSET -eq "v120_xp") {
+            if ($env:PLATFORM -eq "x64" -and $env:CONFIGURATION -eq "Release") {
+                $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_x64.zip"
+                7z a $PluginManagerZipFileName .\NotepadTest\x64\*
+            }
+
+            if ($env:PLATFORM -eq "Win32" -and $env:CONFIGURATION -eq "Release") {
+                $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_UNI.zip"
+                7z a $PluginManagerZipFileName .\NotepadTest\unicode\*
+            }
+        }
+
+artifacts:
+  - path: PluginManager_*.zip
+    name: releases
+
+deploy:
+    provider: GitHub
+    auth_token:
+        secure: z5nuqsjm/L3HYsjSkMsVBH8EPAK17v3OOXzZDyp9hWx9J6Ff/gDYtbzWMoUtW0dI
+    artifact: releases
+    draft: false
+    prerelease: false
+    force_update: true
+    on:
+        appveyor_repo_tag: true
+        PlatformToolset: v120_xp
+        configuration: Release
 
