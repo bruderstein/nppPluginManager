@@ -4,7 +4,7 @@
 #include "precompiled_headers.h"
 #include "../PluginManager/src/Encrypter.h"
 
-int _tmain(int argc, _TCHAR* argv[])
+int _tmain(int /*argc*/, _TCHAR* /*argv*/[])
 {
 	Encrypter encrypter;
 	unsigned char keyBuffer[20];

@@ -109,7 +109,7 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 				{
 					bytesRead = unzReadCurrentFile(hZip, buffer, BUFFER_SIZE);
 					
-					if (bytesRead > 0)
+					if (bytesRead > 0 && fp)
 						fwrite(buffer, bytesRead, 1, fp);
 				
 				} while(bytesRead > 0);
@@ -122,7 +122,10 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 			}
 
 			unzCloseCurrentFile(hZip);
-			fclose(fp);
+			if (fp)
+			{
+				fclose(fp);
+			}
 		}
 		nextFileResult = unzGoToNextFile(hZip);
 		

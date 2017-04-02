@@ -130,7 +130,7 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
         return DOWNLOAD_STATUS_FAIL;
     }
 
-    TCHAR headerBuffer[1024];
+    TCHAR headerBuffer[1024] = { 0 };
     DWORD headerIndex = 0;
     DWORD bufferLength = 1024;
 
@@ -176,10 +176,10 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
 
     DWORD bytesToRead = 16384;
     BYTE buffer[16384]; // InternetReadFile seems to give back 8k buffers, so an 8k buffer is optimal
-    DWORD *bytesRead = new DWORD();
+    DWORD bytesRead = 0;
     do {
         receivingResponse();
-        int readFileResponse = InternetReadFile(m_hHttp, buffer, bytesToRead, bytesRead);
+        int readFileResponse = InternetReadFile(m_hHttp, buffer, bytesToRead, &bytesRead);
         if (!readFileResponse && ERROR_IO_PENDING == GetLastError()) {
             if (!waitForHandle(m_responseReceived)) {
                 return DOWNLOAD_STATUS_CANCELLED;
@@ -194,16 +194,15 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
             return DOWNLOAD_STATUS_CANCELLED;
         }
 
-        (*this.*writeData)(buffer, *bytesRead, context);
-        bytesWritten += *bytesRead;
+        (*this.*writeData)(buffer, bytesRead, context);
+        bytesWritten += bytesRead;
         if (contentLength && m_progressFunction != nullptr) {
             int percent = static_cast<int>((static_cast<double>(bytesWritten) / static_cast<double>(contentLength)) * 95 + 5);
             m_progressFunction(percent);
         }
 
-    } while (*bytesRead != 0);
+    } while (bytesRead != 0);
 
-    delete bytesRead;
     return DOWNLOAD_STATUS_SUCCESS;
 
 }
@@ -213,7 +212,10 @@ BOOL InternetDownload::saveToFile(const tstring& filename) {
         FILE *fp = NULL;
         if (_tfopen_s(&fp, filename.c_str(), _T("wb")) == 0) {
             DOWNLOAD_STATUS status = getData(&InternetDownload::writeToFile, fp);
-            fclose(fp);
+            if (fp)
+            {
+                fclose(fp);
+            }
             if (status == DOWNLOAD_STATUS_FORCE_RETRY) {
                 // This is where we should have used a second class for the actual request.
                 ::InternetCloseHandle(m_hHttp);
