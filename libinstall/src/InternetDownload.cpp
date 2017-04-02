@@ -3,7 +3,7 @@
 #include "InternetDownload.h"
 #include "libinstall/CancelToken.h"
 
-InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, std::function<void(int)> progressFunction /* = NULL */) 
+InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, std::function<void(int)> progressFunction /* = NULL */)
     : m_parentHwnd(parentHwnd),
       m_url(url),
       m_hInternet(NULL),
@@ -18,7 +18,7 @@ InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, co
     m_responseReceived = ::CreateEvent(NULL, TRUE /*manualReset*/, FALSE /*initialState*/, NULL /*name*/);
 
     m_hInternet = ::InternetOpen(userAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL /* proxy*/ , NULL /* proxy bypass */, INTERNET_FLAG_ASYNC /* dwflags */);
-    
+
     INTERNET_STATUS_CALLBACK ourCallback = &InternetDownload::statusCallback;
     ::InternetSetStatusCallback(m_hInternet, ourCallback);
     DWORD timeout = 120000;
@@ -26,7 +26,7 @@ InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, co
     ::InternetSetOption(m_hInternet, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(DWORD));
 }
 
-InternetDownload::~InternetDownload() 
+InternetDownload::~InternetDownload()
 {
     if (m_hHttp) {
         ::InternetCloseHandle(m_hHttp);
@@ -63,7 +63,7 @@ void InternetDownload::statusCallback( HINTERNET /* hInternet */,
             download->m_hHttp = (*(HANDLE*)lpvStatusInformation);
             break;
 
-    default: 
+    default:
         break;
 
     }
@@ -79,7 +79,7 @@ BOOL InternetDownload::request() {
     if (!m_hInternet) {
         return FALSE;
     }
-    
+
     m_hHttp = InternetOpenUrl(m_hInternet, m_url.c_str(), NULL, 0, m_flags, reinterpret_cast<DWORD_PTR>(this));
     return TRUE;
 }
@@ -97,7 +97,7 @@ BOOL InternetDownload::waitForHandle(HANDLE handle)
                 // cancelled
                 return FALSE;
             }
-            
+
         case WAIT_TIMEOUT:
             {
                 // More than 60seconds for response
@@ -113,7 +113,7 @@ BOOL InternetDownload::waitForHandle(HANDLE handle)
     return TRUE;
 }
 
-DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context) 
+DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
 {
 
     if (m_error) {
@@ -147,7 +147,7 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
         if (errorResult == ERROR_INTERNET_FORCE_RETRY) {
             return DOWNLOAD_STATUS_FORCE_RETRY;
         }
-        
+
     }
 
     bufferLength = 1024;
@@ -210,16 +210,18 @@ DOWNLOAD_STATUS InternetDownload::getData(writeData_t writeData, void *context)
 
 BOOL InternetDownload::saveToFile(const tstring& filename) {
     if (request()) {
-        FILE *fp = _tfopen(filename.c_str(), _T("wb"));
-        DOWNLOAD_STATUS status = getData(&InternetDownload::writeToFile, fp);
-        fclose(fp);
-        if (status == DOWNLOAD_STATUS_FORCE_RETRY) {
-            // This is where we should have used a second class for the actual request.
-        ::InternetCloseHandle(m_hHttp);
-        m_hHttp = NULL;
-            return saveToFile(filename);
+        FILE *fp = NULL;
+        if (_tfopen_s(&fp, filename.c_str(), _T("wb")) == 0) {
+            DOWNLOAD_STATUS status = getData(&InternetDownload::writeToFile, fp);
+            fclose(fp);
+            if (status == DOWNLOAD_STATUS_FORCE_RETRY) {
+                // This is where we should have used a second class for the actual request.
+                ::InternetCloseHandle(m_hHttp);
+                m_hHttp = NULL;
+                return saveToFile(filename);
+            }
+            return DOWNLOAD_STATUS_SUCCESS == status;
         }
-        return DOWNLOAD_STATUS_SUCCESS == status;
     }
 
     return FALSE;
@@ -229,7 +231,7 @@ std::string InternetDownload::getContent() {
     if (request()) {
         std::string result;
         DOWNLOAD_STATUS status = getData(&InternetDownload::writeToString, &result);
-    
+
         if (DOWNLOAD_STATUS_FORCE_RETRY == status) {
             ::InternetCloseHandle(m_hHttp);
             m_hHttp = NULL;
