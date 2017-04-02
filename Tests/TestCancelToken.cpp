@@ -54,6 +54,15 @@ TEST_F(CancelTokenTest, test_copy_constructor_refCount)
     EXPECT_EQ(copyToken.getRefCount(), 2);
 }
 
+TEST_F(CancelTokenTest, test_assignement_operator_refCount)
+{
+    CancelToken cancelToken;
+    CancelToken copyToken = cancelToken;
+
+    EXPECT_EQ(cancelToken.getRefCount(), 2);
+    EXPECT_EQ(copyToken.getRefCount(), 2);
+}
+
 TEST_F(CancelTokenTest, test_destructor) 
 {
     CancelToken cancelToken;

@@ -3,9 +3,8 @@
 #include "libinstall/CancelToken.h"
 
 CancelToken::CancelToken() 
-    : m_refCount(new int())
+    : m_refCount(new int(1))
 {
-    *m_refCount = 1;
     m_token = ::CreateEvent(NULL, TRUE /*manualReset*/, FALSE /*initialState*/, NULL /*name*/); 
 }
 

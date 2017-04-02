@@ -319,27 +319,27 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 						status = STEPSTATUS_NEEDGPUP;
 						// Add file to forGpup doc
 						
-						TiXmlElement* copy = new TiXmlElement(_T("copy"));
+						TiXmlElement* copyElement = new TiXmlElement(_T("copy"));
 						
-						copy->SetAttribute(_T("from"), src.c_str());
+						copyElement->SetAttribute(_T("from"), src.c_str());
 						
 						if (_toDestination == TO_DIRECTORY)
-							copy->SetAttribute(_T("to"), _to.c_str());
+							copyElement->SetAttribute(_T("to"), _to.c_str());
 						else if (_toDestination == TO_FILE)
-							copy->SetAttribute(_T("toFile"), _toFile.c_str());
+							copyElement->SetAttribute(_T("toFile"), _toFile.c_str());
 
-						copy->SetAttribute(_T("replace"), _T("true"));
+						copyElement->SetAttribute(_T("replace"), _T("true"));
 						if (_backup)
-							copy->SetAttribute(_T("backup"), _T("true"));
+							copyElement->SetAttribute(_T("backup"), _T("true"));
 						
 						if (_recursive) {
-							copy->SetAttribute(_T("recursive"), _T("true"));
+							copyElement->SetAttribute(_T("recursive"), _T("true"));
 						}
 
 						if (_validate) {
-							copy->SetAttribute(_T("recursive"), _T("true"));
+							copyElement->SetAttribute(_T("recursive"), _T("true"));
 						}
-						forGpup->LinkEndChild(copy);
+						forGpup->LinkEndChild(copyElement);
 
 					}
 				}
