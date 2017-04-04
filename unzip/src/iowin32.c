@@ -97,10 +97,7 @@ voidpf ZCALLBACK win32_open_file_func (opaque, filename, mode)
         hFile = CreateFile((LPCTSTR)filename, dwDesiredAccess, dwShareMode, NULL,
                       dwCreationDisposition, dwFlagsAndAttributes, NULL);
 
-    if (hFile == INVALID_HANDLE_VALUE)
-        hFile = NULL;
-
-    if (hFile != NULL)
+    if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
     {
         WIN32FILE_IOWIN w32fiow;
         w32fiow.hf = hFile;

@@ -19,7 +19,7 @@ woven in by Terry Thorsen 1/2003.
   also may be found at:  ftp://ftp.info-zip.org/pub/infozip/license.html
 */
 /*
-  crypt.c (full version) by Info-ZIP.      Last revised:  [see crypt.h]
+        crypt.c (full version) by Info-ZIP.      Last revised:  [see crypt.h]
 
   The encryption/decryption parts of this source code (as opposed to the
   non-echoing password parts) were originally written in Europe.  The
@@ -28,7 +28,7 @@ woven in by Terry Thorsen 1/2003.
  */
 
 /*
-  This encryption code is a direct transcription of the algorithm from
+        This encryption code is a direct transcription of the algorithm from
   Roger Schlafly, described by Phil Katz in the file appnote.txt.  This
   file (appnote.txt) is distributed with the PKZIP program (even in the
   version without encryption capabilities).
@@ -204,7 +204,7 @@ local int unzlocal_getShort (pzlib_filefunc_def,filestream,pX)
     uLong *pX;
 {
     uLong x ;
-    int i;
+    int i = 0;
     int err;
 
     err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
@@ -232,7 +232,7 @@ local int unzlocal_getLong (pzlib_filefunc_def,filestream,pX)
     uLong *pX;
 {
     uLong x ;
-    int i;
+    int i = 0;
     int err;
 
     err = unzlocal_getByte(pzlib_filefunc_def,filestream,&i);
@@ -428,50 +428,50 @@ extern unzFile ZEXPORT unzOpen2 (path, pzlib_filefunc_def)
         return NULL;
 
     central_pos = unzlocal_SearchCentralDir(&us.z_filefunc,us.filestream);
-    if (central_pos==0)
-        err=UNZ_ERRNO;
+        if (central_pos==0)
+            err=UNZ_ERRNO;
 
     if (ZSEEK(us.z_filefunc, us.filestream,
-                                      central_pos,ZLIB_FILEFUNC_SEEK_SET)!=0)
-        err=UNZ_ERRNO;
+                                        central_pos,ZLIB_FILEFUNC_SEEK_SET)!=0)
+            err=UNZ_ERRNO;
 
-    /* the signature, already checked */
+        /* the signature, already checked */
     if (unzlocal_getLong(&us.z_filefunc, us.filestream,&uL)!=UNZ_OK)
-        err=UNZ_ERRNO;
+            err=UNZ_ERRNO;
 
-    /* number of this disk */
+        /* number of this disk */
     if (unzlocal_getShort(&us.z_filefunc, us.filestream,&number_disk)!=UNZ_OK)
-        err=UNZ_ERRNO;
+            err=UNZ_ERRNO;
 
-    /* number of the disk with the start of the central directory */
+        /* number of the disk with the start of the central directory */
     if (unzlocal_getShort(&us.z_filefunc, us.filestream,&number_disk_with_CD)!=UNZ_OK)
-        err=UNZ_ERRNO;
+            err=UNZ_ERRNO;
 
-    /* total number of entries in the central dir on this disk */
+        /* total number of entries in the central dir on this disk */
     if (unzlocal_getShort(&us.z_filefunc, us.filestream,&us.gi.number_entry)!=UNZ_OK)
-        err=UNZ_ERRNO;
+            err=UNZ_ERRNO;
 
-    /* total number of entries in the central dir */
+        /* total number of entries in the central dir */
     if (unzlocal_getShort(&us.z_filefunc, us.filestream,&number_entry_CD)!=UNZ_OK)
-        err=UNZ_ERRNO;
+            err=UNZ_ERRNO;
 
-    if ((number_entry_CD!=us.gi.number_entry) ||
-        (number_disk_with_CD!=0) ||
-        (number_disk!=0))
-        err=UNZ_BADZIPFILE;
+        if ((number_entry_CD!=us.gi.number_entry) ||
+            (number_disk_with_CD!=0) ||
+            (number_disk!=0))
+            err=UNZ_BADZIPFILE;
 
-    /* size of the central directory */
+        /* size of the central directory */
     if (unzlocal_getLong(&us.z_filefunc, us.filestream,&us.size_central_dir)!=UNZ_OK)
-        err=UNZ_ERRNO;
+            err=UNZ_ERRNO;
 
-    /* offset of start of central directory with respect to the
-          starting disk number */
+        /* offset of start of central directory with respect to the
+            starting disk number */
     if (unzlocal_getLong(&us.z_filefunc, us.filestream,&us.offset_central_dir)!=UNZ_OK)
-        err=UNZ_ERRNO;
+            err=UNZ_ERRNO;
 
-    /* zipfile comment length */
+        /* zipfile comment length */
     if (unzlocal_getShort(&us.z_filefunc, us.filestream,&us.gi.size_comment)!=UNZ_OK)
-        err=UNZ_ERRNO;
+            err=UNZ_ERRNO;
 
     if ((central_pos<us.offset_central_dir+us.size_central_dir) &&
         (err==UNZ_OK))
@@ -491,8 +491,11 @@ extern unzFile ZEXPORT unzOpen2 (path, pzlib_filefunc_def)
 
 
     s=(unz_s*)ALLOC(sizeof(unz_s));
-    *s=us;
-    unzGoToFirstFile((unzFile)s);
+    if( s != NULL)
+    {
+        *s=us;
+        unzGoToFirstFile((unzFile)s);
+    }
     return (unzFile)s;
 }
 
