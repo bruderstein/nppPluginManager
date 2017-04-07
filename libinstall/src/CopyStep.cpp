@@ -314,6 +314,12 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 
 					}
 
+					// Mainly for gpup, but also if copying to a filename, the path must exist
+					tstring destPath = dest.substr(0, dest.find_last_of(_T("\\")));
+					if (!::PathIsDirectory(destPath.c_str())) {
+						DirectoryUtil::createDirectories(destPath.c_str());
+					}
+
 					if (!::CopyFile(src.c_str(), dest.c_str(), _failIfExists))
 					{
 						status = STEPSTATUS_NEEDGPUP;
@@ -323,21 +329,14 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 						
 						copyElement->SetAttribute(_T("from"), src.c_str());
 						
-						if (_toDestination == TO_DIRECTORY)
-							copyElement->SetAttribute(_T("to"), _to.c_str());
-						else if (_toDestination == TO_FILE)
-							copyElement->SetAttribute(_T("toFile"), _toFile.c_str());
+						copyElement->SetAttribute(_T("toFile"), dest.c_str());
 
 						copyElement->SetAttribute(_T("replace"), _T("true"));
 						if (_backup)
 							copyElement->SetAttribute(_T("backup"), _T("true"));
 						
-						if (_recursive) {
-							copyElement->SetAttribute(_T("recursive"), _T("true"));
-						}
-
 						if (_validate) {
-							copyElement->SetAttribute(_T("recursive"), _T("true"));
+							copyElement->SetAttribute(_T("validate"), _T("true"));
 						}
 						forGpup->LinkEndChild(copyElement);
 
