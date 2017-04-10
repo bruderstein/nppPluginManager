@@ -1,4 +1,4 @@
-version: 1.4.4.{build}
+version: 1.4.6.{build}
 image: Visual Studio 2015
 
 
@@ -7,8 +7,8 @@ clone_depth: 1
 
 environment:
   matrix:
-  - PlatformToolset: v140_xp
   - PlatformToolset: v120_xp
+  - PlatformToolset: v140_xp
 
 platform:
     - x64
