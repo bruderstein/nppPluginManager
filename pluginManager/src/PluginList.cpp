@@ -582,8 +582,13 @@ BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
 							}
 						}
 
+						// Also update the registered plugin version to the installed version
+						Plugin* registeredPlugin = getPlugin(plugin->getName());
+						if (registeredPlugin) {
+							registeredPlugin->setInstalledVersion(plugin->getInstalledVersion());
+						}	
 					}
-						
+
 
 					if (plugin->getInstalledVersion().getIsBad() 
 						|| plugin->getVersion() > plugin->getInstalledVersion())
