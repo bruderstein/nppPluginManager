@@ -19,6 +19,8 @@
 *.vcproj.user
 *.vcproj.*.user
 *.vcxproj.user
+*.opendb
+*.db
 BuildLog.htm
 doc/Thumbs.db
 Debug/
