@@ -51,7 +51,7 @@ BOOL DirectoryUtil::createDirectories(const TCHAR *dir)
 		
 		if (created)
 		{
-			for(list<tstring>::reverse_iterator iter = pathsToCreate.rbegin(); iter != pathsToCreate.rend(); iter++)
+			for(list<tstring>::reverse_iterator iter = pathsToCreate.rbegin(); iter != pathsToCreate.rend(); ++iter)
 			{
 				::CreateDirectory(iter->c_str(), NULL);
 			}

@@ -1104,7 +1104,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			dependsMessage.append(_T("s"));
 
 		dependsMessage.append(_T(" need to be installed to support your selection.\r\n\r\n"));
-		for(list<tstring>::iterator msgIter = installDueToDepends->begin(); msgIter != installDueToDepends->end(); msgIter++)
+		for(list<tstring>::iterator msgIter = installDueToDepends->begin(); msgIter != installDueToDepends->end(); ++msgIter)
 		{
 			Plugin *plugin = getPlugin(*msgIter);
 			if (plugin && !plugin->getIsLibrary())
@@ -1283,7 +1283,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	if (needRestart)
 	{
 		
-		for(VariableHandler::iterator it = _variableHandler->begin(); it != _variableHandler->end(); it++) {
+		for(VariableHandler::iterator it = _variableHandler->begin(); it != _variableHandler->end(); ++it) {
 			TiXmlElement setVariable = TiXmlElement(_T("setVariable"));
 			setVariable.SetAttribute(_T("name"), it->first);
 			setVariable.SetAttribute(_T("value"), it->second);
@@ -1494,7 +1494,7 @@ void PluginList::clearPluginList()
 	while (iter != _plugins.end())
 	{
 		delete iter->second;
-		iter++;
+		++iter;
 	}
 
 	_plugins.clear();

@@ -56,7 +56,7 @@ void NotifyUpdatesDialog::init(HINSTANCE hInst, NppData nppData, PluginList* plu
 		if (PluginVersion(ignoreVersion) == (*iter)->getVersion())
 			iter = _updateList.erase(iter);
 		else
-			iter++;
+			++iter;
 	}
 
 	
@@ -107,7 +107,7 @@ INT_PTR CALLBACK NotifyUpdatesDialog::run_dlgProc(UINT Message, WPARAM wParam, L
 								(*iter)->getName().c_str(), 
 								(*iter)->getVersion().getDisplayString(),
 								pluginConfigFilename.c_str());
-							iter++;
+							++iter;
 						}
 
 						_pluginListView.removeSelected();
