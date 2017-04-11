@@ -135,5 +135,6 @@ private:
 	void addSteps(Plugin* plugin, TiXmlElement* installElement, InstallOrRemove ior);
 
     TCHAR *getPluginsUrl();
+	TCHAR *getPluginsMd5Url();
     TCHAR *getValidateUrl();
 };
