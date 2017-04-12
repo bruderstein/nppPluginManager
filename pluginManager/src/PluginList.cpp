@@ -904,18 +904,21 @@ void PluginList::downloadList()
 	}
 	else
 	{
-		downloadResult = downloadManager.getUrl(PLUGINS_MD5_URL, serverMD5, &g_options.moduleInfo);
+		TCHAR *md5Url = getPluginsMd5Url();
+		downloadResult = downloadManager.getUrl(md5Url, serverMD5, &g_options.moduleInfo);
 	}
 #else
-	// OSes less than vista don't support SNI, which cloudflare uses to support HTTPS, so we have to use HTTP on old OSes
-    TCHAR *md5Url = (g_options.forceHttp || g_winVer < WV_VISTA) ? PLUGINS_HTTP_MD5_URL : PLUGINS_MD5_URL;
+	TCHAR *md5Url = getPluginsMd5Url();
 	BOOL downloadResult = downloadManager.getUrl(md5Url, serverMD5, &g_options.moduleInfo);
 #endif
 
 	std::shared_ptr<char> cHashBuffer = WcharMbcsConverter::tchar2char(hashBuffer);
 
-	
-	if (downloadResult && serverMD5 != cHashBuffer.get())
+	if (downloadResult && serverMD5 == cHashBuffer.get()) {
+		// Server hash matches local hash, so we're ok to continue
+		downloadSuccess = TRUE;
+	}
+	else if (downloadResult && serverMD5 != cHashBuffer.get())
 	{
 		// If the build is allowing to override the download URL, then use the one from options
 		// Also, don't unzip it - assume if it's overridden, it's a test version and hence easier to treat it 
@@ -961,6 +964,18 @@ void PluginList::downloadList()
 			_T("Download Error"), MB_ICONERROR);
 	}
 	
+}
+
+TCHAR* PluginList::getPluginsMd5Url() {
+    if (g_options.useDevPluginList) {
+        return DEV_PLUGINS_MD5_URL;
+	}
+
+    if (g_options.forceHttp || g_winVer < WV_VISTA) {
+        return PLUGINS_HTTP_MD5_URL;
+	}
+
+	return PLUGINS_MD5_URL;
 }
 
 TCHAR* PluginList::getPluginsUrl() {
