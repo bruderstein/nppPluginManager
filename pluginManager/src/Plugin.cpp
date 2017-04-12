@@ -268,10 +268,9 @@ BOOL Plugin::isInstalled()
 
 void Plugin::addVersion(const TCHAR* hash, const PluginVersion &version)
 {
-	tstring *hashString = new tstring;
-	*hashString = hash;
+	tstring hashString = hash;
 
-	_versionMap[(*hashString)] = version;
+	_versionMap[hashString] = version;
 }
 
 void Plugin::addBadVersion(const PluginVersion &version, const TCHAR* report)
