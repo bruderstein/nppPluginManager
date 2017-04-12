@@ -26,12 +26,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/ModuleInfo.h"
 
 
-#define PLUGINS_MD5_URL     _T("https://nppxml.bruderste.in/pm/xml/plugins.md5.txt")
-#define PLUGINS_HTTP_MD5_URL     _T("http://nppxml.bruderste.in/pm/xml/plugins.md5.txt")
+#define PLUGINS_MD5_URL     _T("https://nppxml.bruderste.in/pm/xml/plugins2.md5.txt")
+#define PLUGINS_HTTP_MD5_URL     _T("http://nppxml.bruderste.in/pm/xml/plugins2.md5.txt")
 #define PLUGINS_URL         _T("https://nppxml.bruderste.in/pm/xml/plugins.zip")
 #define PLUGINS_HTTP_URL         _T("http://nppxml.bruderste.in/pm/xml/plugins.zip")
 
-#define DEV_PLUGINS_MD5_URL     _T("https://nppxmldev.bruderste.in/pm/xml/plugins.md5.txt")
+#define DEV_PLUGINS_MD5_URL     _T("https://nppxmldev.bruderste.in/pm/xml/plugins2.md5.txt")
 #define DEV_PLUGINS_URL         _T("https://nppxmldev.bruderste.in/pm/xml/plugins.zip")
 
 #ifdef ALLOW_OVERRIDE_XML_URL
