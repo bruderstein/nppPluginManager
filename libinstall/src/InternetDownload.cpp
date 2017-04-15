@@ -71,7 +71,7 @@ void InternetDownload::statusCallback( HINTERNET /* hInternet */,
 
 }
 void InternetDownload::disableCache() {
-    m_flags = INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_PRAGMA_NOCACHE;
+    m_flags = INTERNET_FLAG_PRAGMA_NOCACHE | INTERNET_FLAG_RESYNCHRONIZE;
 }
 
 BOOL InternetDownload::request() {
