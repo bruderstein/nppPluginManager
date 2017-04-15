@@ -26,6 +26,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "libinstall/ModuleInfo.h"
 
 
+#ifdef _WIN64
+#define PLUGINS_MD5_URL     _T("https://nppxml.bruderste.in/pm/xml/plugins64.md5.txt")
+#define PLUGINS_HTTP_MD5_URL     _T("http://nppxml.bruderste.in/pm/xml/plugins64.md5.txt")
+#define PLUGINS_URL         _T("https://nppxml.bruderste.in/pm/xml/plugins64.zip")
+#define PLUGINS_HTTP_URL         _T("http://nppxml.bruderste.in/pm/xml/plugins64.zip")
+
+#define DEV_PLUGINS_MD5_URL     _T("https://nppxmldev.bruderste.in/pm/xml/plugins64.md5.txt")
+#define DEV_PLUGINS_URL         _T("https://nppxmldev.bruderste.in/pm/xml/plugins64.zip")
+#else
 #define PLUGINS_MD5_URL     _T("https://nppxml.bruderste.in/pm/xml/plugins2.md5.txt")
 #define PLUGINS_HTTP_MD5_URL     _T("http://nppxml.bruderste.in/pm/xml/plugins2.md5.txt")
 #define PLUGINS_URL         _T("https://nppxml.bruderste.in/pm/xml/plugins.zip")
@@ -33,6 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #define DEV_PLUGINS_MD5_URL     _T("https://nppxmldev.bruderste.in/pm/xml/plugins2.md5.txt")
 #define DEV_PLUGINS_URL         _T("https://nppxmldev.bruderste.in/pm/xml/plugins.zip")
+#endif
 
 #ifdef ALLOW_OVERRIDE_XML_URL
 #define VALIDATE_BASE_URL          _T("http://www.brotherstone.co.uk/npp/pm/admin/validate.php?md5=")
