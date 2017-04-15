@@ -894,7 +894,8 @@ void PluginList::downloadList()
 	TCHAR hashBuffer[(MD5LEN * 2) + 1];
 	MD5::hash(pluginsListFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1);
 	string serverMD5;
-    BOOL downloadSuccess = FALSE;
+	BOOL downloadSuccess = FALSE;
+	downloadManager.disableCache();
 
 #ifdef ALLOW_OVERRIDE_XML_URL
 	BOOL downloadResult;
