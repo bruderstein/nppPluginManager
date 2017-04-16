@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 
 
-CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace, 
+CopyStep::CopyStep(const TCHAR *from, const TCHAR *to, const TCHAR *toFile, BOOL attemptReplace,
 				   BOOL validate, BOOL isGpup, BOOL backup, BOOL recursive,
 				   const tstring& validateBaseUrl)
 				   : _from(from), _validate(validate), _failIfExists(!attemptReplace),
@@ -59,7 +59,7 @@ void CopyStep::replaceVariables(VariableHandler *variableHandler)
 	if (variableHandler)
 	{
 		variableHandler->replaceVariables(_from);
-		
+
 		if (_toDestination == TO_DIRECTORY)
 			variableHandler->replaceVariables(_to);
 		else if (_toDestination == TO_FILE)
@@ -71,7 +71,7 @@ void CopyStep::replaceVariables(VariableHandler *variableHandler)
 
 
 
-StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup, 
+StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 							 std::function<void(const TCHAR*)> setStatus,
 							 std::function<void(const int)> stepProgress,
 							 const ModuleInfo* moduleInfo,
@@ -79,24 +79,24 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 {
 
 	tstring fromPath = basePath;
-	
+
 	fromPath.append(_from);
-	
+
 	tstring statusString = _T("Copying files...");
 	setStatus(statusString.c_str());
 
 
-	
+
 
 
 	tstring toPath;
-	
+
 	// Need to split this out into separate function, then we can call it recursively (if _recursive).
-	
+
 	if (_toDestination == TO_DIRECTORY)
 	{
 		toPath = _to;
-		
+
 		if (toPath == _T(""))
 			return STEPSTATUS_FAIL;
 
@@ -105,7 +105,7 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		{
 			DirectoryUtil::createDirectories(_to.c_str());
 		}
-	
+
 
 		toPath.append(_T("\\"));
 	}
@@ -115,8 +115,8 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		if (toPath == _T(""))
 			return STEPSTATUS_FAIL;
 	}
-	
-	
+
+
 	//////////// Special GPUP.EXE handling (run the new version to copy itself over the old one)
 	if (_isGpup)
 	{
@@ -127,14 +127,14 @@ StepStatus CopyStep::perform(tstring &basePath, TiXmlElement* forGpup,
 		return STEPSTATUS_SUCCESS;
 	}
 
-	return copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, moduleInfo, cancelToken); 
+	return copyDirectory(fromPath, toPath, forGpup, setStatus, stepProgress, moduleInfo, cancelToken);
 }
 
 
-StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath, 
+StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 					 TiXmlElement* forGpup,
 					 std::function<void(const TCHAR*)> setStatus,
-					 std::function<void(const int)> stepProgress, 
+					 std::function<void(const int)> stepProgress,
                      const ModuleInfo* moduleInfo,
                      CancelToken& cancelToken)
 {
@@ -146,7 +146,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 	if (backSlash != tstring::npos)
 	{
 		fromDir = fromPath.substr(0, backSlash + 1);
-	
+
 	} else
 	{
 		// Was basePath
@@ -161,14 +161,13 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 	tstring src;
 	tstring dest;
 	tstring statusString;
-	tstring fullFoundPath ;
-	bool copy;
+	tstring fullFoundPath;
 
-	
+
 
 	if(hFindFile != INVALID_HANDLE_VALUE)
 	{
-		do 
+		do
 		{
             if (cancelToken.isSignalled()) {
                 return STEPSTATUS_FAIL;
@@ -177,25 +176,25 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 			dest = toPath;
 			if (_toDestination == TO_DIRECTORY)
 				dest.append(foundData.cFileName);
-			else if (_toDestination == TO_FILE && dest[dest.size() - 1] == _T('\\'))	
+			else if (_toDestination == TO_FILE && dest[dest.size() - 1] == _T('\\'))
 				dest.append(foundData.cFileName);
 			else if (_toDestination == TO_FILE && ::PathIsDirectory(dest.c_str()))
 			{
 				dest.append(_T("\\"));
 				dest.append(foundData.cFileName);
 			}
-			
+
 			fullFoundPath = fromDir;
 			fullFoundPath.append(foundData.cFileName);
 
-			
+
 
 			// Exclude the . and .. directories
-			if (_tcscmp(foundData.cFileName, _T(".")) 
+			if (_tcscmp(foundData.cFileName, _T("."))
 				&& _tcscmp(foundData.cFileName, _T("..")))
 			{
 
-				// Check if we've found a directory, if so, then 
+				// Check if we've found a directory, if so, then
 				if (::PathIsDirectory(fullFoundPath.c_str()))
 				{
 					if (_recursive)
@@ -218,7 +217,7 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 
 					// Skip to next file
 					continue;
-				} 
+				}
 
 				statusString = _T("Copying ");
 				statusString.append(foundData.cFileName);
@@ -226,12 +225,12 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 
 				src = fromDir;
 				src.append(foundData.cFileName);
-				copy = false;
+				bool copy = false;
 				if (_validate)
 				{
 					switch(Validator::validate(_validateBaseUrl.c_str(), src, cancelToken, moduleInfo))
 					{
-					
+
 						case VALIDATE_OK:
 							copy = true;
 							break;
@@ -241,9 +240,9 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 								tstring msg(_T("It has not been possible to validate the integrity of '"));
 								msg.append(foundData.cFileName);
 								msg.append(_T("' needed to install or update a plugin.  Do you want to copy this file anyway (not recommended)?"));
-								
+
 								int userChoice = ::MessageBox(moduleInfo->getHParent(), msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
-								
+
 								if (userChoice == IDYES)
 								{
 									copy = true;
@@ -262,9 +261,9 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 								tstring msg(_T("'"));
 								msg.append(foundData.cFileName);
 								msg.append(_T("' has been identified as unstable, incorrect or dangerous.  It is NOT recommended you install this file.  Do you want to install this file anyway?"));
-								
+
 								int userChoice = ::MessageBox(moduleInfo->getHParent(), msg.c_str(), _T("Plugin Manager"), MB_ICONWARNING | MB_YESNO);
-								
+
 								if (userChoice == IDYES)
 								{
 									copy = true;
@@ -276,12 +275,12 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 								}
 								break;
 							}
-							
+
 
 
 					}
 				}
-				else 
+				else
 					copy = true;
 
 				if (copy)
@@ -324,17 +323,17 @@ StepStatus CopyStep::copyDirectory(tstring& fromPath, tstring& toPath,
 					{
 						status = STEPSTATUS_NEEDGPUP;
 						// Add file to forGpup doc
-						
+
 						TiXmlElement* copyElement = new TiXmlElement(_T("copy"));
-						
+
 						copyElement->SetAttribute(_T("from"), src.c_str());
-						
+
 						copyElement->SetAttribute(_T("toFile"), dest.c_str());
 
 						copyElement->SetAttribute(_T("replace"), _T("true"));
 						if (_backup)
 							copyElement->SetAttribute(_T("backup"), _T("true"));
-						
+
 						if (_validate) {
 							copyElement->SetAttribute(_T("validate"), _T("true"));
 						}
@@ -392,5 +391,5 @@ void CopyStep::callGpup(const TCHAR *gpupPath, const TCHAR *arguments)
 	{
 		WaitForSingleObject(sei.hProcess, INFINITE);
 	}
-	
+
 }

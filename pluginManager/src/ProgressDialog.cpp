@@ -28,7 +28,11 @@ ProgressDialog::ProgressDialog(HINSTANCE hInst, CancelToken cancelToken, std::fu
     : _hInst(hInst),
       _startFunction(startFunction),
       _hSelf(0),
+      _numberOfSteps(0),
       _completedSteps(0),
+      _hProgressOverall(0),
+      _hProgressCurrent(0),
+      _hStatus(0),
       _cancelToken(cancelToken)
 {
 }

@@ -350,9 +350,9 @@ UINT startupChecks(LPVOID /*param*/)
     ::SendMessage(nppData._nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(tNppPath));
 
 
-    tstring configPath = tConfigPath;
-    configPath.append(_T("\\PluginManagerGpup.xml"));
-    TiXmlDocument gpupDoc(configPath);
+    tstring configPathVar = tConfigPath;
+    configPathVar.append(_T("\\PluginManagerGpup.xml"));
+    TiXmlDocument gpupDoc(configPathVar);
     if (gpupDoc.LoadFile() 
         && gpupDoc.FirstChildElement(_T("install")) 
         && !gpupDoc.FirstChildElement(_T("install"))->NoChildren())
@@ -361,9 +361,9 @@ UINT startupChecks(LPVOID /*param*/)
                 _T("Notepad++ Plugin Manager"), MB_YESNO | MB_ICONEXCLAMATION);
             if (mbResult == IDYES)
             {
-                configPath.insert(0, _T("-a \""));
-                configPath.append(_T("\""));
-                Utility::startGpup(nppData._nppHandle, tNppPath, configPath.c_str(), TRUE);
+                configPathVar.insert(0, _T("-a \""));
+                configPathVar.append(_T("\""));
+                Utility::startGpup(nppData._nppHandle, tNppPath, configPathVar.c_str(), TRUE);
             }
 
     }
@@ -375,7 +375,7 @@ UINT startupChecks(LPVOID /*param*/)
         Utility::removeDirectory(tempDir.c_str());
         
         // Remove the Gpup file (if it exists, doesn't matter if it doesn't)
-        ::DeleteFile(configPath.c_str());
+        ::DeleteFile(configPathVar.c_str());
     }
 
 

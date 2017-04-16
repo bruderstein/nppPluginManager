@@ -1448,7 +1448,7 @@ void PluginList::startInstall(HWND hMessageBoxParent,
 	ip->hMessageBoxParent = hMessageBoxParent;
     ip->cancelToken       = cancelToken;
 
-	::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::installThreadProc, 
+	(void)::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::installThreadProc, 
 		(LPVOID)ip, 0, 0);
 }
 
@@ -1485,7 +1485,7 @@ void PluginList::startRemove(HWND hMessageBoxParent,
 	ip->hMessageBoxParent = hMessageBoxParent;
     ip->cancelToken       = cancelToken;
 
-	::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::removeThreadProc, 
+	(void)::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::removeThreadProc, 
 		(LPVOID)ip, 0, 0);
 }
 

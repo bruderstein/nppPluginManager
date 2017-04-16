@@ -25,10 +25,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 
 
-PluginListView::PluginListView()
+PluginListView::PluginListView():
+	_hListView(NULL),
+	_hDescription(NULL),
+	_nVersionColumns(0),
+	_columns(NULL),
+	_displayUpdateDesc(false),
+	_listMode(LISTMODE_LIST),
+	_message(NULL)
 {
-	_listMode = LISTMODE_LIST;
-	_message = NULL;
 }
 
 void PluginListView::init(HWND hListView, HWND hDescription, int nVersionColumns, VERSIONCOLUMN columns[], bool displayUpdateDesc)
