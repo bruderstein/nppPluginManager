@@ -24,13 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 using namespace std;
 
 PluginVersion::PluginVersion(void)
-: _displayString(NULL), _isBad(false)
+: _major(0), _minor(0), _revision(0), _build(0), _displayString(NULL), _isBad(false)
 {
-	_major = _minor = _revision = _build = 0;
 }
 
 PluginVersion::PluginVersion(const char *version)
-: _displayString(NULL), _isBad(false)
+: _major(0), _minor(0), _revision(0), _build(0), _displayString(NULL), _isBad(false)
 {
 	
 	size_t versionSize = strlen(version) + 1;
@@ -42,7 +41,7 @@ PluginVersion::PluginVersion(const char *version)
 
 
 PluginVersion::PluginVersion(string version)
-: _displayString(NULL), _isBad(false)
+: _major(0), _minor(0), _revision(0), _build(0), _displayString(NULL), _isBad(false)
 {
 	char *str = new char[version.size() + 1];
 	strcpy_s(str, version.size() + 1, version.c_str());
@@ -54,7 +53,7 @@ PluginVersion::PluginVersion(string version)
 #ifdef _UNICODE
 
 PluginVersion::PluginVersion(const TCHAR *version)
-: _displayString(NULL), _isBad(false)
+: _major(0), _minor(0), _revision(0), _build(0), _displayString(NULL), _isBad(false)
 {
 	size_t versionSize = _tcslen(version) + 1;
 	TCHAR *str = new TCHAR[versionSize];
@@ -65,7 +64,7 @@ PluginVersion::PluginVersion(const TCHAR *version)
 }
 
 PluginVersion::PluginVersion(tstring version)
-: _displayString(NULL), _isBad(false)
+: _major(0), _minor(0), _revision(0), _build(0), _displayString(NULL), _isBad(false)
 {
 	TCHAR *str = new TCHAR[version.size() + 1];
 	_tcscpy_s(str, version.size() + 1, version.c_str());

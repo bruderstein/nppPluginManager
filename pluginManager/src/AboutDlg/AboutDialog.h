@@ -31,7 +31,7 @@ class AboutDialog : public StaticDialog
 {
 
 public:
-	AboutDialog() : StaticDialog() {};
+	AboutDialog() : StaticDialog(), _HSource(nullptr) {};
     
     void init(HINSTANCE hInst, NppData nppData)
 	{

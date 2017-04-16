@@ -181,7 +181,7 @@ extern "C" __declspec(dllexport) void beNotified(SCNotification *notifyCode)
 #ifdef ALLOW_OVERRIDE_XML_URL
             ::MessageBox(nppData._nppHandle, _T("The Plugin Manager is running as a special build that allows override of the XML download URL.  This version should be used for testing purposes ONLY."), _T("Plugin Manager"), MB_ICONEXCLAMATION);
 #endif
-            ::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)startupChecks, NULL, 0, 0);
+            (void)::CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)startupChecks, NULL, 0, 0);
             break;
 
     }

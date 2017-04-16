@@ -41,8 +41,23 @@ using namespace std::placeholders;
 
 
 PluginManagerDialog::PluginManagerDialog()
+	: _HSource(nullptr), 
+	  _hCloseButton(nullptr),
+	  _hSettingsButton(nullptr),
+	  _hNbcLogo(nullptr),
+	  _pluginList(nullptr),
+	  _leftMargin(0),
+	  _rightMargin(0),
+	  _topMargin(0), 
+	  _bottomMargin(0),
+	  _tabBottomOffset(0),
+	  _closeButtonBottomOffset(0), 
+	  _closeButtonRightOffset(0),
+	  _closeButtonWidth(0), 
+	  _closeButtonHeight(0),
+	  _isDownloading(false),
+	  _downloadThread(0)
 {
-	_pluginList = NULL;
 }
 
 void PluginManagerDialog::doDialog()
@@ -673,7 +688,7 @@ void PluginManagerDialog::sizeTab(TABPAGE tab, int width, int height)
 void PluginManagerDialog::downloadAndPopulate(PVOID pvoid)
 {
 	PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog *>(pvoid);
-    dlg->_isDownloading = TRUE;
+    dlg->_isDownloading = true;
 	if (!dlg->_pluginList)
 	{
 		dlg->_pluginList = new PluginList();
