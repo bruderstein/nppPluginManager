@@ -9,7 +9,7 @@ class SettingsDialog
 {
 
 public:
-	SettingsDialog() {};
+	SettingsDialog(): _nppData(nullptr), _hSelf(nullptr) {};
 	~SettingsDialog() {};    
     
 	void doModal(NppData *nppData, HWND parent);

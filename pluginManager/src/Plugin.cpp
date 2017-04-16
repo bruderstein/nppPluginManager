@@ -29,7 +29,11 @@ using namespace std;
 
 
 Plugin::Plugin(void)
-: _isInstalled(FALSE), _detailsAdded(FALSE), _updateDetailsAdded(FALSE), _installedForAllUsers(FALSE), _isLibrary(FALSE)
+: _isInstalled(FALSE),
+  _detailsAdded(FALSE),
+  _updateDetailsAdded(FALSE),
+  _installedForAllUsers(FALSE),
+  _isLibrary(FALSE)
 {
 }
 
@@ -403,7 +407,6 @@ InstallStatus Plugin::runSteps(InstallStepContainer steps, tstring& basePath, Ti
 
 void Plugin::addDependency(const TCHAR* pluginName)
 {
-	tstring plugin = pluginName;
 	_dependencies.push_back(pluginName);
 }
 

@@ -26,12 +26,12 @@ class PluginVersion
 {
 public:
 	PluginVersion(void);
-	PluginVersion(const char *version);
-	PluginVersion(std::string version);
+	explicit PluginVersion(const char *version);
+	explicit PluginVersion(std::string version);
 
 #ifdef _UNICODE
-	PluginVersion(const TCHAR *version);
-	PluginVersion(tstring version);
+	explicit PluginVersion(const TCHAR *version);
+	explicit PluginVersion(tstring version);
 #endif
 	
 	

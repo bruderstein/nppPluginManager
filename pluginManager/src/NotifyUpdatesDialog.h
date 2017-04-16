@@ -31,7 +31,7 @@ class NotifyUpdatesDialog : public StaticDialog
 {
 
 public:
-	NotifyUpdatesDialog() : StaticDialog() {};
+	NotifyUpdatesDialog() : StaticDialog(), _HSource(nullptr), _hListView(nullptr), _hUpdateDescription(nullptr), _pluginList(nullptr) {};
     
     void init(HINSTANCE hInst, NppData nppData, PluginList* pluginList);
 	

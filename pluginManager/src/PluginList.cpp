@@ -42,7 +42,8 @@ typedef BOOL (__cdecl * PFUNCISUNICODE)();
 
 
 PluginList::PluginList(void)
-: _variableHandler(NULL)
+: _nppData(nullptr),
+  _variableHandler(nullptr)
 {
 	_hListsAvailableEvent = CreateEvent(
 			NULL,				//   LPSECURITY_ATTRIBUTES
@@ -70,16 +71,16 @@ void PluginList::init(NppData *nppData)
 	::SendMessage(nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, reinterpret_cast<LPARAM>(configDir));
 	::SendMessage(nppData->_nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDir));
 	LPARAM nppVersion = ::SendMessage(nppData->_nppHandle, NPPM_GETNPPVERSION, 0, 0);
-	
+
 	int majorVersion = HIWORD(nppVersion);
 	int minorVersion = LOWORD(nppVersion);
 	TCHAR tmp[10];
 	_itot_s(majorVersion, tmp, 10, 10);
 	tstring versionString(tmp);
-	
+
 	_itot_s(minorVersion, tmp, 10, 10);
-	
-	
+
+
 	for(int i = 0; tmp[i]; i++)
 	{
 		versionString.push_back(_T('.'));
@@ -87,21 +88,21 @@ void PluginList::init(NppData *nppData)
 	}
 
 	_nppVersion = versionString;
-	
-	_tcscpy_s(allUsersPluginDir, MAX_PATH, nppDir);	
+
+	_tcscpy_s(allUsersPluginDir, MAX_PATH, nppDir);
 	::PathAppend(allUsersPluginDir, _T("plugins"));
-	
+
 	_variableHandler = new VariableHandler();
 	_variableHandler->setVariable(_T("NPPDIR"), nppDir);
 	_variableHandler->setVariable(_T("ALLUSERSPLUGINDIR"), allUsersPluginDir);
 	_variableHandler->setVariable(VALIDATE_BASE_URL_VAR, getValidateUrl());
-	
+
 	ITEMIDLIST *pidl;
 	HRESULT result = SHGetSpecialFolderLocation(NULL, CSIDL_APPDATA, &pidl);
 	if (result == S_OK)
 	{
 		TCHAR appDataPluginDir[MAX_PATH];
-		
+
 		if (SHGetPathFromIDList(pidl, appDataPluginDir))
 		{
 			PathAppend(appDataPluginDir, _T("Notepad++\\plugins"));
@@ -152,7 +153,7 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 	clearPluginList();
 
 	TiXmlDocument doc(filename);
-	
+
 	doc.LoadFile();
 	if (doc.Error())
 	{
@@ -165,11 +166,11 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 			error += tmp;
 
 		error += _T(", col ");
-		
+
 		if (!_itot_s(doc.ErrorCol(), tmp, 10, 10))
 			error += tmp;
 
-		
+
 		::MessageBox(_nppData->_nppHandle, error.c_str(), _T("Error parsing XML File"), 0);
 #endif
 		return FALSE;
@@ -192,7 +193,7 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 				plugin = new Plugin();
 
 				plugin->setName(pluginNode->Attribute(_T("name")));
-				 
+
 				BOOL available = FALSE;
 
 				if (g_isUnicode)
@@ -216,7 +217,7 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 						}
 					}
 				}
-				else 
+				else
 				{
 					TiXmlElement *versionUrlElement = pluginNode->FirstChildElement(_T("ansiVersion"));
 					if (versionUrlElement && versionUrlElement->FirstChild())
@@ -251,9 +252,9 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 				TiXmlElement *filenameUrlElement = pluginNode->FirstChildElement(_T("filename"));
 				if (filenameUrlElement && filenameUrlElement->FirstChild())
 					plugin->setFilename(filenameUrlElement->FirstChild()->Value());
-				
+
 				TiXmlElement *versionsUrlElement = pluginNode->FirstChildElement(_T("versions"));
-				
+
 				if (versionsUrlElement)
 				{
 					TiXmlElement *versionUrlElement = versionsUrlElement->FirstChildElement(_T("version"));
@@ -265,7 +266,7 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 				}
 
 				TiXmlElement *badVersionsElement = pluginNode->FirstChildElement(_T("badVersions"));
-				
+
 				if (badVersionsElement)
 				{
 					TiXmlElement *versionElement = badVersionsElement->FirstChildElement(_T("version"));
@@ -279,7 +280,7 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 
 
 				TiXmlElement *aliasesElement = pluginNode->FirstChildElement(_T("aliases"));
-				
+
 				if (aliasesElement)
 				{
 					TiXmlElement *aliasElement = aliasesElement->FirstChildElement(_T("alias"));
@@ -292,17 +293,17 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 
 				/* Installation / Removal */
 				TiXmlElement *installElement = pluginNode->FirstChildElement(_T("install"));
-				
+
 				addSteps(plugin, installElement, INSTALL);
-				
+
 				TiXmlElement *removeElement = pluginNode->FirstChildElement(_T("remove"));
-				
+
 				if (NULL != removeElement)
 				{
 					addSteps(plugin, removeElement, REMOVE);
 				}
 
-				
+
 
 				TiXmlElement *dependencies = pluginNode->FirstChildElement(_T("dependencies"));
 				if (dependencies && !dependencies->NoChildren())
@@ -322,7 +323,7 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 					}
 				}
 
-				
+
 				TiXmlElement *authorElement = pluginNode->FirstChildElement(_T("author"));
 				if (authorElement && authorElement->FirstChild())
 					plugin->setAuthor(authorElement->FirstChild()->Value());
@@ -342,7 +343,7 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 					plugin->setCategory(categoryElement->FirstChild()->Value());
 				else
 					plugin->setCategory(_T("Others"));
-				
+
 				TiXmlElement *latestUpdateElement = pluginNode->FirstChildElement(_T("latestUpdate"));
 				if (latestUpdateElement && latestUpdateElement->FirstChild())
 					plugin->setLatestUpdate(latestUpdateElement->FirstChild()->Value());
@@ -365,13 +366,13 @@ BOOL PluginList::parsePluginFile(CONST TCHAR *filename)
 						plugin->setIsLibrary(true);
 					}
 				}
-				
+
 
 
 
 				if (available)
 					_plugins[plugin->getName()] = plugin;
-				
+
 			}
 
 			pluginNode = (TiXmlElement *)pluginsDoc->IterateChildren(pluginNode);
@@ -397,7 +398,7 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 		// or if it's an unicode tag and build for x86, then only process the contents if it's an unicode N++
 		// or if it's an ansi tag, then only process the contents if it's an ansi N++
 		if ((g_isUnicode && g_isX64
-			&& !_tcscmp(installStepElement->Value(), _T("x64")) 
+			&& !_tcscmp(installStepElement->Value(), _T("x64"))
 			&& installStepElement->FirstChild())
 			||
 			(g_isUnicode
@@ -405,16 +406,16 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 				&& installStepElement->FirstChild())
 			||
 			(!g_isUnicode
-			&& !_tcscmp(installStepElement->Value(), _T("ansi")) 
+			&& !_tcscmp(installStepElement->Value(), _T("ansi"))
 			&& installStepElement->FirstChild()))
 		{
 			addSteps(plugin, installStepElement, ior);
 		}
-		else 
+		else
 		{
 
 			std::shared_ptr<InstallStep> installStep = installStepFactory.create(installStepElement);
-			if (installStep.get()) 
+			if (installStep.get())
 			{
 				if (INSTALL == ior)
 					plugin->addInstallStep(installStep);
@@ -425,7 +426,7 @@ void PluginList::addSteps(Plugin* plugin, TiXmlElement* installElement, InstallO
 		}
 
 
-		
+
 		installStepElement = (TiXmlElement *)installElement->IterateChildren(installStepElement);
 	}
 }
@@ -461,7 +462,7 @@ BOOL PluginList::checkInstalledPlugins()
 BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
 {
 	tstring pluginsFullPathFilter(pluginPath);
-	
+
 	pluginsFullPathFilter += _T("\\*.dll");
 
 	WIN32_FIND_DATA foundData;
@@ -470,26 +471,26 @@ BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
 
 	if (hFindFile != INVALID_HANDLE_VALUE)
 	{
-		do 
+		do
 		{
-			
+
 			tstring pluginFilename(pluginPath);
 			pluginFilename += _T("\\");
 			pluginFilename += foundData.cFileName;
 			BOOL pluginOK = false;
 			tstring pluginName;
-			try 
+			try
 			{
 				pluginName = getPluginName(pluginFilename);
 				pluginOK = true;
-			} 
+			}
 			catch (...)
-			{ 
+			{
 				pluginOK = false;
 			}
 
-			
-			
+
+
 			if (pluginOK)
 			{
 				PluginContainer::iterator knownPlugin = _plugins.find(pluginName);
@@ -497,7 +498,7 @@ BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
 				if (knownPlugin == _plugins.end())
 				{
 					// plugin name is not known, so see if we recognise the hash
-					// i.e. is it export plugin which renames itself 
+					// i.e. is it export plugin which renames itself
 					// (or some other plugin that does the same thing)
 					TCHAR hash[(MD5::HASH_LENGTH * 2) + 1];
 					if (MD5::hash(pluginFilename.c_str(), hash, (MD5::HASH_LENGTH * 2) + 1))
@@ -525,30 +526,30 @@ BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
 				if (knownPlugin != _plugins.end())
 				{
 					Plugin* plugin = knownPlugin->second;
-					
+
 					// If the plugin is already installed, then make a copy for the list
 					if (plugin->isInstalled())
 					{
 						plugin = new Plugin(*plugin);
 					}
-					
+
 
 					plugin->setFilename(foundData.cFileName);
 
 					setInstalledVersion(pluginFilename, plugin);
-					
+
 					plugin->setInstalledForAllUsers(allUsers);
 
 					TCHAR hashBuffer[(MD5LEN * 2) + 1];
-					
+
 					if (MD5::hash(pluginFilename.c_str(), hashBuffer, (MD5LEN * 2) + 1))
 					{
 						tstring hash = hashBuffer;
 						plugin->setInstalledVersionFromHash(hash);
 					}
-				
-					// If this is a user's plugin (in AppData), and there's already a version 
-					// for all users, and AppData plugins are supported, then remove the 
+
+					// If this is a user's plugin (in AppData), and there's already a version
+					// for all users, and AppData plugins are supported, then remove the
 					// allusers version of the plugin, as the appdata one will take precedence
 					if (g_options.appDataPluginsSupported && FALSE == allUsers)
 					{
@@ -560,13 +561,13 @@ BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
 							{
 								it = _installedPlugins.erase(it);
 							}
-							else 
+							else
 							{
 								++it;
 							}
 						}
 
-						// Remove the plugin from updateable plugins too, as whether or not it can be 
+						// Remove the plugin from updateable plugins too, as whether or not it can be
 						// updated depends on THIS version, not the all users version
 						it = _updateablePlugins.begin();
 						while (it != _updateablePlugins.end())
@@ -586,14 +587,14 @@ BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
 						Plugin* registeredPlugin = getPlugin(plugin->getName());
 						if (registeredPlugin) {
 							registeredPlugin->setInstalledVersion(plugin->getInstalledVersion());
-						}	
+						}
 					}
 
 
-					if (plugin->getInstalledVersion().getIsBad() 
+					if (plugin->getInstalledVersion().getIsBad()
 						|| plugin->getVersion() > plugin->getInstalledVersion())
 						_updateablePlugins.push_back(plugin);
-					else 
+					else
 						_installedPlugins.push_back(plugin);
 				}
 				else
@@ -603,21 +604,21 @@ BOOL PluginList::checkInstalledPlugins(const TCHAR *pluginPath, BOOL allUsers)
 					plugin->setName(pluginName);
 					plugin->setFilename(foundData.cFileName);
 					setInstalledVersion(pluginFilename, plugin);
-					
+
 					plugin->setDescription(_T("Unknown plugin - please let us know about this plugin on the forums"));
 
 					_installedPlugins.push_back(plugin);
 				}
 
 			}
-			
+
 		} while(::FindNextFile(hFindFile, &foundData));
 
-		
 
+		FindClose(hFindFile);
 	}
 
-		
+
 	return TRUE;
 }
 
@@ -662,7 +663,7 @@ tstring PluginList::getPluginName(tstring pluginFilename)
 				}
 
 				::FreeLibrary(pluginInstance);
-				
+
 				return tpluginName;
 			}
 			else
@@ -670,7 +671,7 @@ tstring PluginList::getPluginName(tstring pluginFilename)
 				::FreeLibrary(pluginInstance);
 				return _T("");
 			}
-		
+
 		}
 		else
 		{
@@ -682,20 +683,20 @@ tstring PluginList::getPluginName(tstring pluginFilename)
 	{
 		throw tstring(_T("Load library failed"));
 	}
-	
+
 }
 
 BOOL PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 {
 	DWORD handle;
 	DWORD bufferSize = ::GetFileVersionInfoSize(pluginFilename.c_str(), &handle);
-	
-	if (bufferSize <= 0) 
+
+	if (bufferSize <= 0)
 		return FALSE;
 
 	unsigned char* buffer = new unsigned char[bufferSize];
 	::GetFileVersionInfo(pluginFilename.c_str(), handle, bufferSize, buffer);
-	
+
 	/*struct LANGANDCODEPAGE {
 		WORD wLanguage;
 		WORD wCodePage;
@@ -705,14 +706,14 @@ BOOL PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 
 	UINT cbFileInfo;
 
-	VerQueryValue(buffer, 
+	VerQueryValue(buffer,
               _T("\\"),
               (LPVOID*)&lpFileInfo,
               &cbFileInfo);
 
 	if (cbFileInfo)
 	{
-		plugin->setInstalledVersion(PluginVersion((lpFileInfo->dwFileVersionMS & 0xFFFF0000) >> 16, 
+		plugin->setInstalledVersion(PluginVersion((lpFileInfo->dwFileVersionMS & 0xFFFF0000) >> 16,
 												  lpFileInfo->dwFileVersionMS & 0x0000FFFF,
 												  (lpFileInfo->dwFileVersionLS & 0xFFFF0000) >> 16,
 												  lpFileInfo->dwFileVersionLS & 0x0000FFFF));
@@ -733,7 +734,7 @@ BOOL PluginList::setInstalledVersion(tstring pluginFilename, Plugin* plugin)
 			TCHAR *fileVersion;
 			UINT fileVersionLength;
 			if(::VerQueryValue(buffer, subBlock, reinterpret_cast<LPVOID *>(&fileVersion), &fileVersionLength))
-			{	
+			{
 				if (fileVersion)
 					plugin->setInstalledVersion(PluginVersion(fileVersion));
 			}
@@ -836,7 +837,7 @@ std::shared_ptr< list<tstring> > PluginList::calculateDependencies(std::shared_p
 	{
 		if ((*pluginIter)->hasDependencies())
 		{
-			
+
 			list<tstring> dependencies = (*pluginIter)->getDependencies();
 			list<tstring>::iterator depIter = dependencies.begin();
 			while(depIter != dependencies.end())
@@ -853,8 +854,8 @@ std::shared_ptr< list<tstring> > PluginList::calculateDependencies(std::shared_p
 
 							selectedPlugins->push_back(dependsPlugin);
 							// Add the name to the list to show the message
-							installDueToDepends->push_back(*depIter); 
-							
+							installDueToDepends->push_back(*depIter);
+
 						}
 					}
 				}
@@ -874,7 +875,7 @@ void PluginList::downloadList()
 		// Work out the path of the Plugins.xml destination (in config dir)
 	TCHAR pluginConfig[MAX_PATH];
 	::SendMessage(_nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH - 26, reinterpret_cast<LPARAM>(pluginConfig));
-	
+
 	if (!::PathFileExists(pluginConfig))
 	{
 		DirectoryUtil::createDirectories(pluginConfig);
@@ -885,7 +886,7 @@ void PluginList::downloadList()
 
 	pluginsListFilename.append(_T("\\PluginManagerPlugins.xml"));
 	pluginsListZipFilename.append(_T("\\PluginManagerPlugins.zip"));
-	
+
 
 	// Download the plugins.xml from the repository
     CancelToken cancelToken;
@@ -922,7 +923,7 @@ void PluginList::downloadList()
 	else if (downloadResult && serverMD5 != cHashBuffer.get())
 	{
 		// If the build is allowing to override the download URL, then use the one from options
-		// Also, don't unzip it - assume if it's overridden, it's a test version and hence easier to treat it 
+		// Also, don't unzip it - assume if it's overridden, it's a test version and hence easier to treat it
 		// as a plain xml file
 #ifdef ALLOW_OVERRIDE_XML_URL
 	if (!g_options.downloadUrl.empty())
@@ -946,7 +947,7 @@ void PluginList::downloadList()
 			tstring unzipPath(pluginConfig);
 			unzipPath.append(_T("\\"));
 			Decompress::unzip(pluginsListZipFilename, unzipPath);
-		} 
+		}
 
 	}
 
@@ -961,10 +962,10 @@ void PluginList::downloadList()
 
 		::SetEvent(_hListsAvailableEvent);
 	} else {
-        MessageBox(_nppData->_nppHandle, _T("There was an error downloading the plugin list. Please check your internet connection, and your proxy settings in Internet Explorer, Edge or Chrome"), 
+        MessageBox(_nppData->_nppHandle, _T("There was an error downloading the plugin list. Please check your internet connection, and your proxy settings in Internet Explorer, Edge or Chrome"),
 			_T("Download Error"), MB_ICONERROR);
 	}
-	
+
 }
 
 TCHAR* PluginList::getPluginsMd5Url() {
@@ -1007,7 +1008,7 @@ void PluginList::reparseFile(const tstring& pluginsListFilename)
 {
 	// Parse it
 	parsePluginFile(pluginsListFilename.c_str());
-	
+
 	// Check for what is installed
 	TCHAR nppDirectory[MAX_PATH];
 	::SendMessage(_nppData->_nppHandle, NPPM_GETNPPDIRECTORY, MAX_PATH, reinterpret_cast<LPARAM>(nppDirectory));
@@ -1040,7 +1041,7 @@ TiXmlDocument* PluginList::getGpupDocument(const TCHAR* filename)
 
 void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, BOOL isUpgrade, CancelToken& cancelToken)
 {
-	
+
 
 	// Check if Plugin Manager has an update, and the list is not only updating this plugin
 	// If not, then the user *really* ought to do that first, as the XML may have changed
@@ -1066,7 +1067,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			int updatePM = ::MessageBox(hMessageBoxParent, _T("An update is available to Plugin Manager.  ")
 				                            _T("It is *strongly* advised that the Plugin Manager is updated ")
 											_T("before any other plugin is installed or updated.  Would you ")
-											_T("like to update the Plugin Manager now?"), _T("Plugin Manager"), 
+											_T("like to update the Plugin Manager now?"), _T("Plugin Manager"),
 											MB_ICONWARNING | MB_YESNOCANCEL);
 
 			switch(updatePM)
@@ -1090,7 +1091,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 
 	tstring configDir = _variableHandler->getVariable(_T("CONFIGDIR"));
-	
+
 	tstring basePath(configDir);
 
 	basePath.append(_T("\\plugin_install_temp"));
@@ -1098,19 +1099,19 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	// Create the temp directory if it doesn't exist already
 	::CreateDirectory(basePath.c_str(), NULL);
 	basePath.append(_T("\\plugin"));
-	
+
 	tstring gpupFile(configDir);
 	gpupFile.append(_T("\\PluginManagerGpup.xml"));
 
-	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str()); 
+	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str());
 	TiXmlElement* installElement = forGpupDoc->FirstChildElement(_T("install"));
 
-	
-	
-	
+
+
+
 
 	std::shared_ptr< list<tstring> > installDueToDepends = calculateDependencies(selectedPlugins);
-		
+
 	if (!installDueToDepends->empty())
 	{
 		bool dependentPluginsToInstall = false;
@@ -1129,7 +1130,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 				dependsMessage.append(_T("\r\n"));
 				dependentPluginsToInstall = true;
 			}
-			
+
 
 		}
 
@@ -1143,7 +1144,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 	}
 
-	
+
 
 	size_t installSteps = 0;
 	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
@@ -1161,7 +1162,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 	tstring pluginTemp;
 	int pluginCount = 1;
-	
+
 	BOOL needRestart = FALSE;
 	BOOL somethingInstalled = FALSE;
 
@@ -1171,7 +1172,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	while(pluginIter != selectedPlugins->end())
 	{
 		BOOL directoryCreated = FALSE;
-		do 
+		do
 		{
 			pluginTemp = basePath;
 			_itot_s(pluginCount, pluginCountChar, 10, 10);
@@ -1192,9 +1193,9 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 
 		pluginTemp.append(_T("\\"));
-		
 
-		/* If we're upgrading, and 
+
+		/* If we're upgrading, and
 		   either:
 		      The current plugin is installed in appdata, and the new one will be installed in appdata
 		   or:
@@ -1204,16 +1205,16 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		   so that a normal user can install an upgrade (when this feature is enabled by the admin)
 		   N++ will use the plugin in AppData to override N++\plugins dir
 		*/
-		if (isUpgrade 
+		if (isUpgrade
 			&& (   ((*pluginIter)->getInstalledForAllUsers() == FALSE
 			         && g_options.installLocation == INSTALLLOC_APPDATA
 			       )
-		       || 
-			  
+		       ||
+
 			     ((*pluginIter)->getInstalledForAllUsers() == TRUE
 			         && g_options.installLocation != INSTALLLOC_APPDATA
 			       )
-			     
+
 			   )
 			)
 		{
@@ -1227,7 +1228,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 			 */
 
 			TiXmlElement* removeElement = new TiXmlElement(_T("delete"));
-			
+
 			tstring fullFilename;
 			if ((*pluginIter)->getInstalledForAllUsers())
 			{
@@ -1245,14 +1246,14 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 			removeElement->SetAttribute(_T("file"), fullFilename.c_str());
 			installElement->LinkEndChild(removeElement);
-			
+
 		}
 
-		InstallStatus status = (*pluginIter)->install(pluginTemp, installElement, 
+		InstallStatus status = (*pluginIter)->install(pluginTemp, installElement,
 			std::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 			std::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 			std::bind(&ProgressDialog::stepComplete, progressDialog),
-			&g_options.moduleInfo, 
+			&g_options.moduleInfo,
             _variableHandler,
             cancelToken);
 
@@ -1291,14 +1292,14 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 
 		++pluginIter;
 	}
-	
-	
-	progressDialog->close(); 
+
+
+	progressDialog->close();
 
 
 	if (needRestart)
 	{
-		
+
 		for(VariableHandler::iterator it = _variableHandler->begin(); it != _variableHandler->end(); ++it) {
 			TiXmlElement setVariable = TiXmlElement(_T("setVariable"));
 			setVariable.SetAttribute(_T("name"), it->first);
@@ -1312,7 +1313,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 		int restartNow = ::MessageBox(hMessageBoxParent, _T("Some installation steps still need to be completed.  Notepad++ needs to be restarted in order to complete these steps.  If you restart later, you will be prompted again.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 		if (restartNow == IDYES)
 		{
-			
+
 			tstring gpupArguments(_T("-a \""));
 			gpupArguments.append(gpupFile);
 			gpupArguments.append(_T("\""));
@@ -1334,7 +1335,7 @@ void PluginList::installPlugins(HWND hMessageBoxParent, ProgressDialog* progress
 	{
 		delete forGpupDoc;
 	}
-	
+
 }
 
 void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressDialog, PluginListView* pluginListView, CancelToken& cancelToken)
@@ -1342,17 +1343,15 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	g_options.moduleInfo.setHParent(hMessageBoxParent);
 
 	tstring configDir = _variableHandler->getVariable(_T("CONFIGDIR"));
-	
-	tstring basePath(configDir);
 
 	tstring gpupFile(configDir);
 	gpupFile.append(_T("\\PluginManagerGpup.xml"));
-	
+
 	TiXmlDocument* forGpupDoc = getGpupDocument(gpupFile.c_str());
 	TiXmlElement*  installElement = forGpupDoc->FirstChildElement(_T("install"));
 
 	std::shared_ptr< list<Plugin*> > selectedPlugins = pluginListView->getSelectedPlugins();
-		
+
 
 	if (selectedPlugins.get() == NULL)
 	{
@@ -1360,10 +1359,10 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 		progressDialog->close();
 		return;
 	}
-	
+
 	size_t removeSteps = 0;
 	list<Plugin*>::iterator pluginIter = selectedPlugins->begin();
-	
+
 	while(pluginIter != selectedPlugins->end())
 	{
 		removeSteps += (*pluginIter)->getRemoveStepCount();
@@ -1383,19 +1382,19 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 		{
 			needAdmin = true;
 		}
-		
-		(*pluginIter)->remove(removeBasePath, installElement, 
+
+		(*pluginIter)->remove(removeBasePath, installElement,
 					std::bind(&ProgressDialog::setCurrentStatus, progressDialog, _1),
 					std::bind(&ProgressDialog::setStepProgress, progressDialog, _1),
 					std::bind(&ProgressDialog::stepComplete, progressDialog),
-					&g_options.moduleInfo, 
+					&g_options.moduleInfo,
                     _variableHandler,
                     cancelToken);
 		++pluginIter;
 	}
 
 
-	
+
 
 	forGpupDoc->SaveFile(gpupFile.c_str());
 	delete forGpupDoc;
@@ -1405,7 +1404,7 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	int restartNow = ::MessageBox(hMessageBoxParent, _T("Notepad++ needs to be restarted in order to complete the removal.  If you restart later, you will be prompted again.  Would you like to restart now?"), _T("Plugin Manager"), MB_YESNO | MB_ICONINFORMATION);
 	if (restartNow == IDYES)
 	{
-		
+
 		tstring gpupArguments(_T("-a \""));
 		gpupArguments.append(gpupFile);
 		gpupArguments.append(_T("\""));
@@ -1416,8 +1415,8 @@ void PluginList::removePlugins(HWND hMessageBoxParent, ProgressDialog* progressD
 	{
 		pluginListView->removeSelected();
 	}
-	
-	
+
+
 }
 
 
@@ -1433,9 +1432,9 @@ struct InstallParam
     CancelToken          cancelToken;
 };
 
-void PluginList::startInstall(HWND hMessageBoxParent, 
-							  ProgressDialog* progressDialog, 
-							  PluginListView *pluginListView, 
+void PluginList::startInstall(HWND hMessageBoxParent,
+							  ProgressDialog* progressDialog,
+							  PluginListView *pluginListView,
 							  BOOL isUpdate,
                               CancelToken& cancelToken)
 {
@@ -1448,7 +1447,7 @@ void PluginList::startInstall(HWND hMessageBoxParent,
 	ip->hMessageBoxParent = hMessageBoxParent;
     ip->cancelToken       = cancelToken;
 
-	(void)::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::installThreadProc, 
+	(void)::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::installThreadProc,
 		(LPVOID)ip, 0, 0);
 }
 
@@ -1456,10 +1455,10 @@ void PluginList::startInstall(HWND hMessageBoxParent,
 UINT PluginList::installThreadProc(LPVOID param)
 {
 	InstallParam *ip = reinterpret_cast<InstallParam*>(param);
-	
-	ip->pluginList->installPlugins(ip->hMessageBoxParent, 
-								   ip->progressDialog, 
-								   ip->pluginListView, 
+
+	ip->pluginList->installPlugins(ip->hMessageBoxParent,
+								   ip->progressDialog,
+								   ip->pluginListView,
 								   ip->isUpdate,
                                    ip->cancelToken);
 
@@ -1472,8 +1471,8 @@ UINT PluginList::installThreadProc(LPVOID param)
 
 
 
-void PluginList::startRemove(HWND hMessageBoxParent, 
-							  ProgressDialog* progressDialog, 
+void PluginList::startRemove(HWND hMessageBoxParent,
+							  ProgressDialog* progressDialog,
 							  PluginListView *pluginListView,
                               CancelToken& cancelToken)
 {
@@ -1485,16 +1484,16 @@ void PluginList::startRemove(HWND hMessageBoxParent,
 	ip->hMessageBoxParent = hMessageBoxParent;
     ip->cancelToken       = cancelToken;
 
-	(void)::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::removeThreadProc, 
+	(void)::CreateThread(0, 0, (LPTHREAD_START_ROUTINE)PluginList::removeThreadProc,
 		(LPVOID)ip, 0, 0);
 }
 
 UINT PluginList::removeThreadProc(LPVOID param)
 {
 	InstallParam *ip = reinterpret_cast<InstallParam*>(param);
-	
-	ip->pluginList->removePlugins(ip->hMessageBoxParent, 
-								   ip->progressDialog, 
+
+	ip->pluginList->removePlugins(ip->hMessageBoxParent,
+								   ip->progressDialog,
 								   ip->pluginListView,
                                    ip->cancelToken);
 

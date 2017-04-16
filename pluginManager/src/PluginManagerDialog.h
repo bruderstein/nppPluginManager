@@ -112,7 +112,7 @@ private:
 	int _closeButtonBottomOffset, _closeButtonRightOffset;
 	int _closeButtonWidth, _closeButtonHeight;
 
-    BOOL _isDownloading;
+    bool _isDownloading;
     uintptr_t _downloadThread;
     std::list<std::shared_ptr<POSITIONINFO>> _bottomComponents;
 
