@@ -19,21 +19,16 @@ DownloadStep::DownloadStep(const TCHAR *url, const TCHAR *filename)
         _filename = filename;
 }
 
-StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup, 
+StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
                                  std::function<void(const TCHAR*)> setStatus,
-                                 std::function<void(const int)> stepProgress, 
+                                 std::function<void(const int)> stepProgress,
                                  const ModuleInfo* moduleInfo,
                                  CancelToken &cancelToken)
 {
     DownloadManager downloadManager(cancelToken);
 
-    tstring fullPath = basePath;
-    
-    TCHAR tempPath[MAX_PATH];
-    ::GetTempPath(MAX_PATH, tempPath);
 
 
-    
     tstring downloadFilename;
 
     if (_filename.empty())
@@ -49,7 +44,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
         downloadFilename = tDownloadPath;
     }
 
-    // Set the status 
+    // Set the status
     tstring status = _T("Downloading ");
     status.append(_url);
     setStatus(status.c_str());
@@ -84,7 +79,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
                 {
                     length = length - lastSlash;
                 }
-                
+
 
                 tstring filenameInUrl = _url.substr(lastSlash, length);
                 realLink = linkSearch.search(filenameInUrl.c_str());
@@ -99,7 +94,7 @@ StepStatus DownloadStep::perform(tstring &basePath, TiXmlElement* forGpup,
                 return STEPSTATUS_FAIL;
         } else {
             // Attempt to unzip file into basePath
-            // Assume it is a zip file - if unzipping fails, then check if the filename is filled in 
+            // Assume it is a zip file - if unzipping fails, then check if the filename is filled in
             // - if it is, then just leave the file as it is (ie. direct download)
             //   the file will be available for copying or installing.
             if (Decompress::unzip(downloadFilename, basePath) || !_filename.empty())

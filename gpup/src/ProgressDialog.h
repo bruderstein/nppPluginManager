@@ -4,7 +4,7 @@
 class ProgressDialog
 {
 public:
-    ProgressDialog(HINSTANCE hInst);
+    explicit ProgressDialog(HINSTANCE hInst);
 
     void stepComplete();
     void setStatus(const TCHAR* status);

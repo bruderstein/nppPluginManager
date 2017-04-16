@@ -191,7 +191,7 @@ BOOL closeMainProgram(Options &options)
 	HWND h = ::FindWindowEx(NULL, NULL, options.getWindowName().c_str(), NULL);
 	
 	DWORD dwPid;
-	HANDLE hProc;
+	HANDLE hProc = NULL;
 
 	while (h)
 	{
@@ -216,6 +216,12 @@ BOOL closeMainProgram(Options &options)
 		}
 
 		h = ::FindWindowEx(NULL, NULL, options.getWindowName().c_str(), NULL);
+	}
+
+	if (hProc)
+	{
+		CloseHandle(hProc);
+		hProc = NULL;
 	}
 
 	return TRUE;
@@ -367,7 +373,6 @@ BOOL actionsFileHasActions(const tstring& actionsFile)
 	{
 		TiXmlElement *install = xmlDocument.FirstChildElement(_T("install"));
 		TiXmlElement stillToComplete(_T("install"));
-		tstring basePath;
 
 		if (install && !install->NoChildren())
 		{

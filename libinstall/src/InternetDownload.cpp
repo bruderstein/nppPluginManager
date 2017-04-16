@@ -4,14 +4,15 @@
 #include "libinstall/CancelToken.h"
 
 InternetDownload::InternetDownload(HWND parentHwnd, const tstring& userAgent, const tstring& url, CancelToken cancelToken, std::function<void(int)> progressFunction /* = NULL */)
-    : m_parentHwnd(parentHwnd),
+    : m_progressFunction(progressFunction),
       m_url(url),
       m_hInternet(NULL),
       m_hConnect(NULL),
       m_hHttp(NULL),
-      m_error(0),
       m_cancelToken(cancelToken),
-      m_progressFunction(progressFunction),
+      m_parentHwnd(parentHwnd),
+      m_receivedBytes(0),
+      m_error(0),
       m_flags(0)
 {
     m_requestComplete = ::CreateEvent(NULL, TRUE /*manualReset*/, FALSE /*initialState*/, NULL /*name*/);
@@ -42,6 +43,16 @@ InternetDownload::~InternetDownload()
         ::InternetCloseHandle(m_hInternet);
         m_hInternet = NULL;
     }
+
+    if (m_responseReceived) {
+        ::CloseHandle(m_responseReceived);
+        m_responseReceived = NULL;
+    }
+
+    if (m_requestComplete) {
+        ::CloseHandle(m_requestComplete);
+        m_requestComplete = NULL;
+    }
 }
 
 void InternetDownload::statusCallback( HINTERNET /* hInternet */,
@@ -50,7 +61,7 @@ void InternetDownload::statusCallback( HINTERNET /* hInternet */,
      LPVOID lpvStatusInformation,
      DWORD /* dwStatusInformationLength */)
 {
-    InternetDownload *download = (InternetDownload*)dwContext;
+    InternetDownload *download = reinterpret_cast<InternetDownload*>(dwContext);
     switch(dwInternetStatus) {
     case INTERNET_STATUS_RECEIVING_RESPONSE:
             download->receivingResponse();

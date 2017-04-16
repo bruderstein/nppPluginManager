@@ -111,7 +111,7 @@ INT_PTR CALLBACK PluginManagerDialog::availableTabDlgProc(HWND hWnd, UINT Messag
 		case WM_NOTIFY:
 		{
 			PluginManagerDialog *dlg = reinterpret_cast<PluginManagerDialog*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
-            HWND hwndFrom = ((LPNMHDR)lParam)->hwndFrom;
+            //HWND hwndFrom = ((LPNMHDR)lParam)->hwndFrom;
 
 			if (dlg && ((LPNMHDR)lParam)->hwndFrom == dlg->_tabs[TAB_AVAILABLE].hListView)
 				return dlg->_availableListView.notify(wParam, lParam);

@@ -997,10 +997,12 @@ public:
 	#ifdef TIXML_USE_STL
 	/// Constructor.
 	TiXmlDocument( const std::generic_string& documentName ) :
-	    TiXmlNode( TiXmlNode::DOCUMENT )
+	    TiXmlNode( TiXmlNode::DOCUMENT ),
+		error(false),
+		errorId(0),
+		tabsize(0)
 	{
         value = documentName;
-		error = false;
 	}
 	#endif
 
@@ -1212,6 +1214,8 @@ public:
 	TiXmlHandle( TiXmlNode* node )			{ this->node = node; }
 	/// Copy constructor
 	TiXmlHandle( const TiXmlHandle& ref )	{ this->node = ref.node; }
+	/// assignment operator
+	TiXmlHandle operator=(const TiXmlHandle& ref) { if (&ref != this) this->node = ref.node; return *this; }
 
 	/// Return a handle to the first child node.
 	TiXmlHandle FirstChild() const;

@@ -34,7 +34,7 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 	zlib_filefunc_def filefunc;
 	fill_win32_filefunc(&filefunc);
 	unzFile hZip = unzOpen2(zipFile.c_str(), &filefunc);
-	
+
 	if (unzGoToFirstFile(hZip) != UNZ_OK)
 	{
 		unzClose(hZip);
@@ -59,12 +59,12 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 		}
 
 		std::shared_ptr<TCHAR> tFilename = WcharMbcsConverter::char2tchar(filename);
-	
+
 
 		if ((tFilename.get())[_tcslen(tFilename.get()) - 1] == _T('/'))
 		{
 			tstring outputDir(destDir);
-			
+
 			outputDir.append(tFilename.get());
 			outputDir.erase(outputDir.size() - 1);
 			::CreateDirectory(outputDir.c_str(), NULL);
@@ -73,23 +73,20 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 		else
 		{
 
-			char buffer[BUFFER_SIZE];
-			int bytesRead;
-			
 			FILE *fp = NULL;
 			tstring outputFilename (destDir);
-			
+
 			outputFilename.append(tFilename.get());
-			
+
 			tstring::size_type pos = outputFilename.find_first_of(_T('/'));
-			// Replace all the forward slashes with backward ones 
+			// Replace all the forward slashes with backward ones
 			while (pos != string::npos)
 			{
 
 				outputFilename.replace(pos, 1, 1, _T('\\'));
 				pos = outputFilename.find_first_of(_T('/'), pos);
 			}
-			
+
 			// Now grab the directory name of the output
 			pos = outputFilename.find_last_of(_T('\\'));
 
@@ -105,13 +102,16 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 
 			if (_tfopen_s(&fp, outputFilename.c_str(), _T("wb")) == 0)
 			{
+				char buffer[BUFFER_SIZE];
+				int bytesRead;
+
 				do
 				{
 					bytesRead = unzReadCurrentFile(hZip, buffer, BUFFER_SIZE);
-					
+
 					if (bytesRead > 0 && fp)
 						fwrite(buffer, bytesRead, 1, fp);
-				
+
 				} while(bytesRead > 0);
 			}
 			else
@@ -128,7 +128,7 @@ BOOL Decompress::unzip(const tstring &zipFile, const tstring &destDir)
 			}
 		}
 		nextFileResult = unzGoToNextFile(hZip);
-		
+
 	} while (nextFileResult == UNZ_OK);
 
 	unzClose(hZip);

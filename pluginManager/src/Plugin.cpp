@@ -29,7 +29,7 @@ using namespace std;
 
 
 Plugin::Plugin(void)
-: _isInstalled(FALSE), _detailsAdded(FALSE), _updateDetailsAdded(FALSE), _isLibrary(FALSE)
+: _isInstalled(FALSE), _detailsAdded(FALSE), _updateDetailsAdded(FALSE), _installedForAllUsers(FALSE), _isLibrary(FALSE)
 {
 }
 
