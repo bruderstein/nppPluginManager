@@ -334,12 +334,12 @@ const TCHAR* TiXmlBase::ReadText(	const TCHAR* p,
 		while (	   p && *p
 				&& !StringEqual( p, endTag, caseInsensitive ) )
 		{
-			if ( *p == '\r' || *p == '\n' )
+			if ( *p == L'\r' || *p == L'\n' )
 			{
 				whitespace = true;
 				++p;
 			}
-			else if ( isspace( *p ) )
+			else if (_istspace( *p ) )
 			{
 				whitespace = true;
 				++p;
