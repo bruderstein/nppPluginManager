@@ -746,6 +746,18 @@ bool TiXmlDocument::LoadFile( const TCHAR* filename )
 		}
 		fclose( file );
 
+		//input is in UTF-8, so transformation is needed to UTF-16 used by windows for TCHAR in unicode mode
+		std::vector<char> inputdataInUTF8(data.size()+1); //+1 for the null termination
+		size_t datalength = wcstombs(inputdataInUTF8.data(), data.c_str(), data.size());
+		int transformedDataCharCount = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)inputdataInUTF8.data(), -1, nullptr, 0);
+		std::vector<wchar_t> transformedData(transformedDataCharCount+1); //+1 for the null termination
+		transformedDataCharCount = MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)inputdataInUTF8.data(), -1, transformedData.data(), transformedDataCharCount);
+		if(transformedDataCharCount > 0)
+		{
+			//replace the original data with the new tranformed one, on success ot transformation otherwise go with old style data
+			data.clear();
+			data = transformedData.data();
+		}
 		Parse( data.c_str(), 0 );
 
 		if (  Error() )
