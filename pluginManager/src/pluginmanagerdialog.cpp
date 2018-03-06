@@ -644,18 +644,18 @@ void PluginManagerDialog::sizeWindow(int width, int height)
 {
 	// Size the tab control
 	::MoveWindow(_tabHeader.hwndTab, _leftMargin, _topMargin, width - _leftMargin - _rightMargin, height - _tabBottomOffset, FALSE);
-	
-	// Move the close button
-	::MoveWindow(_hCloseButton, width - _closeButtonRightOffset, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, FALSE);
-
-	// Move the settings button
-	::MoveWindow(_hSettingsButton, _leftMargin, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, FALSE);
-
     
     // Move the sponsor message 
     for(std::list<std::shared_ptr<POSITIONINFO>>::iterator it = _bottomComponents.begin(); it != _bottomComponents.end(); it++) {
 		::MoveWindow((*it)->handle, (*it)->leftOffset, height - (*it)->bottomOffset, (*it)->width, (*it)->height, FALSE);
 	}
+
+	// Move the settings button, _closeButtonHeight is also the width between settings and close buttons
+	::MoveWindow(_hSettingsButton, width - _closeButtonRightOffset - _closeButtonWidth - _closeButtonHeight, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, FALSE);	
+
+	// Move the close button, move last to have let it draw last and have it at the top, also on small dialog sizes
+	::MoveWindow(_hCloseButton, width - _closeButtonRightOffset, height - _closeButtonBottomOffset, _closeButtonWidth, _closeButtonHeight, FALSE);
+
 	::InvalidateRect(_hSelf, NULL, TRUE);
 }
 

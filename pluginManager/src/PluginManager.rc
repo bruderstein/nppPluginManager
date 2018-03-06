@@ -175,8 +175,6 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_THICKFRAME
 CAPTION "Plugin Manager"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Close",IDOK,378,346,50,14
-    PUSHBUTTON      "Settings",IDC_SETTINGS,314,346,50,14
     CONTROL         "",IDC_PLUGINTABCTRL,"SysTabControl32",0x0,0,0,444,328
     LTEXT           "Plugin list hosting generously provided by",IDC_PLUGINLISTHOSTING,102,333,133,8
     LTEXT           "Nexinto Business Cloud",IDC_NEXINTOBUSINESSCLOUD,102,343,75,8
@@ -185,6 +183,8 @@ BEGIN
     CONTROL         "<A HREF=""http://bruderste.in/npp/pm/sponsor/"">Why is this here?</A>",IDC_WHYISTHISHERE,
                     "SysLink",WS_TABSTOP,101,362,59,8
     CONTROL         121,IDC_NBCLOGO,"Static",SS_BITMAP | SS_NOTIFY,6,333,90,36
+    PUSHBUTTON      "Settings",IDC_SETTINGS,314,346,50,14
+    DEFPUSHBUTTON   "Close",IDOK,378,346,50,14
 END
 
 
