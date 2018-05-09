@@ -8,7 +8,7 @@ Plugin Manager is a plugin for [Notepad++](https://github.com/notepad-plus-plus/
 
  ### Installation
  
-To install the plugin manager, simply download (links below) the .zip, and place the PluginManager.dll file in the Notepad++ plugins directory, and the gpup.exe in the updater directory under your Notepad++ program directory. (e.g. "C:\Program Files\Notepad++\updater")
+To install the plugin manager, simply download ([release section](https://github.com/bruderstein/nppPluginManager/releases)) the .zip, and place the PluginManager.dll file in the Notepad++ plugins directory, and the gpup.exe in the updater directory under your Notepad++ program directory. (e.g. "C:\Program Files\Notepad++\updater")
 
 In fact, if you prefer, you can just add the PluginManager.dll to the plugins directory, then do a reinstall of Plugin Manager from the plugin itself, which will place the file in the right place! Of course, if you're already using an earlier version of the plugin manager, you'll be able to just update from the update tab (or when you get the notification that the update has happened).
 
