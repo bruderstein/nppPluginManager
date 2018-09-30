@@ -42,12 +42,12 @@ after_build:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - ps: >-
         if ($($env:APPVEYOR_REPO_TAG) -eq "true" -and $env:CONFIGURATION -eq "Release" -and $env:PLATFORMTOOLSET -eq "v141_xp") {
-            if ($env:PLATFORM -eq "x64" -and $env:CONFIGURATION -eq "Release") {
+            if ($env:PLATFORM_INPUT -eq "x64" -and $env:CONFIGURATION -eq "Release") {
                 $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_x64.zip"
                 7z a $PluginManagerZipFileName .\NotepadTest\x64\*
             }
 
-            if ($env:PLATFORM -eq "Win32" -and $env:CONFIGURATION -eq "Release") {
+            if ($env:PLATFORM_INPUT -eq "Win32" -and $env:CONFIGURATION -eq "Release") {
                 $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_UNI.zip"
                 7z a $PluginManagerZipFileName .\NotepadTest\unicode\*
             }
