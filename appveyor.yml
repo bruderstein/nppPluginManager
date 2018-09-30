@@ -5,8 +5,8 @@ image: Visual Studio 2017
 environment:
   matrix:
   #- PlatformToolset: v120_xp
-  - PlatformToolset: v140_xp
-  #- PlatformToolset: v141_xp
+  #- PlatformToolset: v140_xp
+  - PlatformToolset: v141_xp
 
 platform:
     - x64
