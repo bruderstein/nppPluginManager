@@ -12,6 +12,10 @@ To install the plugin manager, simply download ([release section](https://github
 
 In fact, if you prefer, you can just add the PluginManager.dll to the plugins directory, then do a reinstall of Plugin Manager from the plugin itself, which will place the file in the right place! Of course, if you're already using an earlier version of the plugin manager, you'll be able to just update from the update tab (or when you get the notification that the update has happened).
 
+Additionally for the x64 version there is a Chocolatey package for [nppPluginManager](https://chocolatey.org/packages/notepadplusplus-npppluginmanager) so that it can be installed with one command for N++ installer version:
+
+`choco install notepadplusplus-nppPluginManager`
+
 ### **Documentation**
 
 More information available in the **[DOC section](https://rawgit.com/bruderstein/nppPluginManager/master/doc/index.html)**.
