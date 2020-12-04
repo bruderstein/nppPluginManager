@@ -1,0 +1,39 @@
+name: Continuous Integration
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: windows-2016
+    strategy:
+      max-parallel: 6
+      matrix:
+        build_configuration: [Release, Debug, Debug-xml-test]
+        build_platform: [x64, Win32]
+        
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+      with:
+        submodules: 'true'
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1
+
+    - name: "Use CI config files"
+      run: |
+           Write-Host "rename paths.props.appveyor" -ForegroundColor Green
+           Rename-Item -Path ".\paths.props.appveyor" -NewName "paths.props"
+           New-Item -ItemType directory -Path NotepadTest\unicode\plugins
+           New-Item -ItemType directory -Path NotepadTest\unicode\updater
+           New-Item -ItemType directory -Path NotepadTest\x64\plugins
+           New-Item -ItemType directory -Path NotepadTest\x64\updater
+      shell: pwsh
+      working-directory: .
+
+    - name: MSBuild of solution
+      working-directory: .
+      run: msbuild PluginManager.sln /m /verbosity:minimal /p:configuration="${{ matrix.build_configuration }}" /p:platform="${{ matrix.build_platform }}"
+
+
