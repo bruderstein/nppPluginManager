@@ -1,0 +1,76 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [master, github_action ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [master]
+  schedule:
+    - cron: '0 23 * * 6'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: windows-2016
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
+        submodules: 'true'
+
+    # If this run was triggered by a pull request event, then checkout
+    # the head of the pull request instead of the merge commit.
+    - run: git checkout HEAD^2
+      if: ${{ github.event_name == 'pull_request' }}
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: cpp
+      # Override language selection by uncommenting this and choosing your languages
+      # with:
+      #   languages: go, javascript, csharp, python, cpp, java
+
+    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+    # If this step fails, then you should remove it and run the build manually (see below)
+    #- name: Autobuild
+    #  uses: github/codeql-action/autobuild@v1
+
+    # ℹ️ Command-line programs to run using the OS shell.
+    # 📚 https://git.io/JvXDl
+
+    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
+    #    and modify them (or add more) to build your code if your project
+    #    uses a compiled language
+
+    #- run: |
+    #   make bootstrap
+    #   make release
+
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1
+
+    - name: "Use CI config files"
+      run: |
+           Write-Host "rename paths.props.appveyor" -ForegroundColor Green
+           Rename-Item -Path ".\paths.props.appveyor" -NewName "paths.props"
+           New-Item -ItemType directory -Path NotepadTest\unicode\plugins
+           New-Item -ItemType directory -Path NotepadTest\unicode\updater
+           New-Item -ItemType directory -Path NotepadTest\x64\plugins
+           New-Item -ItemType directory -Path NotepadTest\x64\updater
+      shell: pwsh
+      working-directory: .
+
+    - name: MSBuild of solution
+      working-directory: .
+      run: msbuild PluginManager.sln /m /verbosity:minimal /p:configuration="Debug" /p:platform="x64"
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
