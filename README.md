@@ -1,5 +1,7 @@
 # nppPluginManager
 
+ATTENTION: This plugin is not actively supported since 2019. The webservice to host the plugin list was stopped. Please use the built-in solution of N++.
+
 [![Appveyor build status](https://ci.appveyor.com/api/projects/status/github/bruderstein/npppluginmanager?branch=master&svg=true)](https://ci.appveyor.com/project/bruderstein/npppluginmanager)
 [![GitHub release](https://img.shields.io/github/release/bruderstein/npppluginmanager.svg)](https://github.com/bruderstein/nppPluginManager/releases)
 [![Github Releases](https://img.shields.io/github/downloads/bruderstein/nppPluginManager/latest/total.svg)](https://github.com/bruderstein/nppPluginManager/releases)
