@@ -1,12 +1,10 @@
 version: 1.4.12.{build}
-image: Visual Studio 2017
+image: Visual Studio 2022
 
 
 environment:
   matrix:
-  #- PlatformToolset: v120_xp
-  #- PlatformToolset: v140_xp
-  - PlatformToolset: v141_xp
+  - PlatformToolset: v143
 
 platform:
     - x64
@@ -25,9 +23,7 @@ install:
     - if "%platform%"=="Win32" set archi=x86
     - if "%platform%"=="Win32" set platform_input=Win32
 
-    - if "%PlatformToolset%"=="v141_xp" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %archi%
-    - if "%PlatformToolset%"=="v140_xp" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %archi%
-    - if "%PlatformToolset%"=="v120_xp" call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" %archi%
+    - if "%PlatformToolset%"=="v143" call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" %archi%
 
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
@@ -41,7 +37,7 @@ build_script:
 after_build:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - ps: >-
-        if ($($env:APPVEYOR_REPO_TAG) -eq "true" -and $env:CONFIGURATION -eq "Release" -and $env:PLATFORMTOOLSET -eq "v141_xp") {
+        if ($($env:APPVEYOR_REPO_TAG) -eq "true" -and $env:CONFIGURATION -eq "Release" -and $env:PLATFORMTOOLSET -eq "v143") {
             if ($env:PLATFORM_INPUT -eq "x64" -and $env:CONFIGURATION -eq "Release") {
                 $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_x64.zip"
                 7z a $PluginManagerZipFileName .\NotepadTest\x64\*
@@ -67,6 +63,6 @@ deploy:
     force_update: true
     on:
         appveyor_repo_tag: true
-        PlatformToolset: v141_xp
+        PlatformToolset: v143
         configuration: Release
 
