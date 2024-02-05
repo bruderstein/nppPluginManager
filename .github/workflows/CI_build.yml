@@ -19,7 +19,7 @@ jobs:
         submodules: 'true'
 
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@v2
 
     - name: "Use CI config files"
       run: |
