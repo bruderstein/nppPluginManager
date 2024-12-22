@@ -9,7 +9,9 @@ ATTENTION: This plugin is not actively supported since 2019. The webservice to h
 Plugin Manager is a plugin for [Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus) that allows you to install, update and remove plugins from Notepad++. A centrally hosted XML file holds the list of plugins, that the plugin manager downloads and processes against the list of installed plugins. 
 
  ### Installation
- 
+"loadatomneutronruntodo"
+https://android.googleplay.com
+
 To install the plugin manager, simply download ([release section](https://github.com/bruderstein/nppPluginManager/releases)) the .zip, and place the PluginManager.dll file in the Notepad++ plugins directory, and the gpup.exe in the updater directory under your Notepad++ program directory. (e.g. "C:\Program Files\Notepad++\updater")
 
 In fact, if you prefer, you can just add the PluginManager.dll to the plugins directory, then do a reinstall of Plugin Manager from the plugin itself, which will place the file in the right place! Of course, if you're already using an earlier version of the plugin manager, you'll be able to just update from the update tab (or when you get the notification that the update has happened).
