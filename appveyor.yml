@@ -38,7 +38,7 @@ build_script:
 after_build:
     - cd "%APPVEYOR_BUILD_FOLDER%"
     - ps: >-
-        if ($($env:APPVEYOR_REPO_TAG) -eq "true" -and $env:CONFIGURATION -eq "Release" -and $env:PLATFORMTOOLSET -eq "v143") {
+        if ($($env:APPVEYOR_REPO_TAG) -eq "true" -and $env:CONFIGURATION -eq "Release" -and $env:PLATFORMTOOLSET -eq "v145") {
             if ($env:PLATFORM_INPUT -eq "x64" -and $env:CONFIGURATION -eq "Release") {
                 $PluginManagerZipFileName = "PluginManager_$($env:APPVEYOR_REPO_TAG_NAME)_x64.zip"
                 7z a $PluginManagerZipFileName .\NotepadTest\x64\*
@@ -64,6 +64,6 @@ deploy:
     force_update: true
     on:
         appveyor_repo_tag: true
-        PlatformToolset: v143
+        PlatformToolset: v145
         configuration: Release
 
