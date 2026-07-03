@@ -30,37 +30,38 @@
     <ProjectGuid>{0A9F9D63-C282-4AE8-9F80-A6D5F541AD12}</ProjectGuid>
     <RootNamespace>PluginManager</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-xml-test|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-xml-test|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -150,6 +151,7 @@
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -188,6 +190,7 @@ copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Platform)\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Platform)\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Platform)\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Platform)\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\$(Platform)\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -221,6 +224,7 @@ copy "$(TargetDir)\*.pdb" "$(TestNotepadPlusPlusX64)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;Wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatReleaseWithoutAsm\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -251,6 +255,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;Wininet.lib;..\..\..\libinstall\bin\$(Platform)\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Platform)\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Platform)\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Platform)\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\$(Platform)\ZlibStatReleaseWithoutAsm\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -284,6 +289,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -318,6 +324,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\plugins"</Command>
       <PrecompiledHeaderFile>precompiled_headers.h</PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>version.lib;shlwapi.lib;comctl32.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Platform)\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Platform)\$(Configuration)\TinyXml.lib;..\..\..\NppPlugin\bin\$(Platform)\$(Configuration)\NppPlugin.lib;..\..\..\unzip\bin\$(Platform)\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\$(Platform)\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>

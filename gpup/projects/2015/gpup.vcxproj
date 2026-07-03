@@ -30,39 +30,40 @@
     <ProjectGuid>{182656A0-B2AE-4955-9A2D-D8705FA52B27}</ProjectGuid>
     <RootNamespace>gpup</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-xml-test|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-xml-test|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -145,6 +146,7 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -174,6 +176,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Platform)\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Platform)\$(Configuration)\TinyXml.lib;..\..\..\unzip\bin\$(Platform)\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\$(Platform)\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -200,6 +203,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\updater"</Command>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatReleaseWithoutAsm\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -226,6 +230,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Platform)\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Platform)\$(Configuration)\TinyXml.lib;..\..\..\unzip\bin\$(Platform)\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\$(Platform)\ZlibStatReleaseWithoutAsm\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -254,6 +259,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusX64)\updater"</Command>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Configuration)\TinyXml.lib;..\..\..\unzip\bin\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\x86\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -284,6 +290,7 @@ copy "$(TargetPath)" "$(TestNotepadPlusPlusUnicode)\updater"</Command>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;Ws2_32.lib;wininet.lib;..\..\..\libinstall\bin\$(Platform)\$(Configuration)\libinstall.lib;..\..\..\TinyXml\bin\$(Platform)\$(Configuration)\TinyXml.lib;..\..\..\unzip\bin\$(Platform)\$(Configuration)\unzip.lib;$(SolutionDir)\submodule\zlib\..\$(Platform)\ZlibStatDebug\zlibstat.lib;%(AdditionalDependencies)</AdditionalDependencies>

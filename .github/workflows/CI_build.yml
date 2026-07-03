@@ -7,11 +7,10 @@ jobs:
 
     runs-on: windows-latest
     strategy:
-      max-parallel: 6
       matrix:
         build_configuration: [Release, Debug, Debug-xml-test]
         build_platform: [x64, Win32]
-        
+
     steps:
     - name: Checkout repo
       uses: actions/checkout@v7

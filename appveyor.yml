@@ -1,10 +1,10 @@
 version: 1.4.12.{build}
-image: Visual Studio 2022
+image: Visual Studio 2026
 
 
 environment:
   matrix:
-  - PlatformToolset: v143
+  - PlatformToolset: v145
 
 platform:
     - x64
@@ -24,6 +24,7 @@ install:
     - if "%platform%"=="Win32" set platform_input=Win32
 
     - if "%PlatformToolset%"=="v143" call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" %archi%
+    - if "%PlatformToolset%"=="v145" call "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvarsall.bat" %archi%
 
 build_script:
     - cd "%APPVEYOR_BUILD_FOLDER%"
